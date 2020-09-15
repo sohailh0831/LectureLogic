@@ -1,0 +1,31 @@
+{
+  "name": "lecturelogic",
+  "version": "1.0.0",
+  "description": "LectureLogic base",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sohailh0831/LectureLogic.git"
+  },
+  "keywords": [
+    "LectureLogic",
+    "Lecture",
+    "Logic",
+    "Learning"
+  ],
+  "author": "Team 3",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sohailh0831/LectureLogic/issues"
+  },
+  "homepage": "https://github.com/sohailh0831/LectureLogic#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "eslint": "^7.9.0"
+  }
+}
