@@ -1,1 +1,3 @@
 # LectureLogic
+
+Welcome to LectureLogic
