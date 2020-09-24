@@ -2,6 +2,12 @@ import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+import {BrowserRouter as Router, Route, Switch, Link, Redirect} from "react-router-dom";
+/* pages */
+import MainPage from './pages';
+import errorPage from './pages/errorPage';
+import login from './pages/login'
+
 
 class App extends React.Component{
   constructor(props){
@@ -21,17 +27,32 @@ class App extends React.Component{
     this.callAPI();
   }
 
-  render() {
-  return (
-    <div className="App">
-      <p>{this.state.apiResponse}</p>
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+
+render(){
+  return(
+    <Router>
+      <Switch>
+      <Route exact path ="/" component={MainPage} />
+      <Route exact path ="/404" component = {errorPage} />
+      <Route exact path ="/login" component = {login} />
+      <Redirect to="/404" />
+      </Switch>
+    </Router>
+  )
+}
+
+
+  // render() {
+  // return (
+  //   <div className="App">
+  //     <p>{this.state.apiResponse}</p>
+  //     <header className="App-header">
+  //       <img src={logo} className="App-logo" alt="logo" />
         
-      </header>
-    </div>
-  );
-  }
+  //     </header>
+  //   </div>
+  // );
+  // }
 }
 
 export default App;
