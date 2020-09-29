@@ -12,4 +12,8 @@ router.get('/hello',function(req,res,next){
   res.render('index', {title: "Hello"});
 })
 
+/* GET test page */
+router.get('/test', function(req, res, next) {
+  res.send('success');
+});
 module.exports = router;

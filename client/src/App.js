@@ -6,6 +6,7 @@ import {BrowserRouter as Router, Route, Switch, Link, Redirect} from "react-rout
 /* pages */
 import MainPage from './pages';
 import errorPage from './pages/errorPage';
+
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
 
@@ -35,6 +36,7 @@ render(){
       <Switch>
       <Route exact path ="/" component={MainPage} />
       <Route exact path ="/404" component = {errorPage} />
+
       <Route exact path ="/login" component = {SignIn} />
       <Route exaxt path ="/register" component ={SignUp}/>
       <Redirect to="/404" />
