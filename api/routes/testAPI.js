@@ -15,7 +15,7 @@ let dbInfo = {
   };
   
 
-router.get('/',function(req,res,next){
+router.get('/testAPI',function(req,res,next){
     
     let con = mysql.createConnection(dbInfo);
     con.query(`SELECT * FROM student;`, (error, results, fields) => {
