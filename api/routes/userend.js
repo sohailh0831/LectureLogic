@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var passport = require("passport");
 const flash = require('connect-flash');
-const uuidv4 = require('uuid');
+const uuid = require('uuid');
 const mysql = require("mysql");
 const bcrypt = require('bcrypt');
 
@@ -28,7 +28,7 @@ router.get('/', AuthenticationFunctions.ensureAuthenticated,function(req, res, n
 passport.use(new LocalStrategy({ passReqToCallback: true, },
   function (req, username, password, done) {
     let con = mysql.createConnection(dbInfo);
-    con.query(`SELECT * FROM student WHERE username=${mysql.escape(username)};`, (error, results, fields) => {
+    con.query(`SELECT * FROM user WHERE username=${mysql.escape(username)};`, (error, results, fields) => {
       if (error) {
         console.log(error.stack);
         con.end();
@@ -100,6 +100,11 @@ router.get('/register', function(req, res, next) {
     let password = req.body.password;
     let name = req.body.name;
     let email = req.body.email;
+    let type = "1"; //1 = student, 0 = instructor
+    if(req.body.type === "Instructor"){
+      type = "0";
+    }
+    let school = req.body.school;
     let phone_number = req.body.phone_number
   
     req.checkBody('username', 'Username field is required.').notEmpty();
@@ -114,7 +119,7 @@ router.get('/register', function(req, res, next) {
     }
   
     let con = mysql.createConnection(dbInfo);
-    con.query(`SELECT * FROM student WHERE username=${mysql.escape(req.body.username)};`, (error, results, fields) => { //checks to see if username is already taken
+    con.query(`SELECT * FROM user WHERE username=${mysql.escape(req.body.username)};`, (error, results, fields) => { //checks to see if username is already taken
       if (error) {
         console.log(error.stack);
         con.end();
@@ -122,10 +127,10 @@ router.get('/register', function(req, res, next) {
       }
   
       if (results.length == 0) {
-        let userid = 45;//uuidv4();
+        let userid = uuid.v4();
         let salt = bcrypt.genSaltSync(10);
         let hashedPassword = bcrypt.hashSync(password, salt);
-        con.query(`INSERT INTO student ( username, password, name, email, phone_number, class_list) VALUES (${mysql.escape(username)}, ${mysql.escape(hashedPassword)}, ${mysql.escape(name)}, ${mysql.escape(email)}, ${mysql.escape(phone_number)}, ${mysql.escape('["1"]')} );`, (error, results, fields) =>  {
+        con.query(`INSERT INTO user (id, type, username, password, name, email, phone_number, school, class_list) VALUES (${mysql.escape(userid)}, ${mysql.escape(type)}, ${mysql.escape(username)}, ${mysql.escape(hashedPassword)}, ${mysql.escape(name)}, ${mysql.escape(email)}, ${mysql.escape(phone_number)},${mysql.escape(school)}, ${mysql.escape('[]')});`, (error, results, fields) =>  {
           if (error) {
             console.log(error.stack);
             con.end();
