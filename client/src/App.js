@@ -9,6 +9,7 @@ import errorPage from './pages/errorPage';
 
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
+import PWReset from './pages/resetPass';
 
 
 class App extends React.Component{
@@ -39,6 +40,7 @@ render(){
 
       <Route exact path ="/login" component = {SignIn} />
       <Route exaxt path ="/register" component ={SignUp}/>
+      <Route exaxt path ="/resetpass" component ={PWReset}/>
       <Redirect to="/404" />
       </Switch>
     </Router>
