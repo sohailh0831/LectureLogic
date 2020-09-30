@@ -9,10 +9,10 @@
     "test": "npm run chai && npm run selenium"
   },
   "dependencies": {
-    "bcrypt": "^5.0.0",
-    "bcryptjs": "^2.4.3",
     "axios": "^0.20.0",
     "babel-core": "^6.26.3",
+    "bcrypt": "^5.0.0",
+    "bcryptjs": "^2.4.3",
     "chai": "^4.2.0",
     "cookie-parser": "~1.4.4",
     "cors": "^2.8.5",
