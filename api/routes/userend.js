@@ -10,6 +10,10 @@ const bcrypt = require('bcrypt');
 const LocalStrategy = require('passport-local').Strategy;
 const AuthenticationFunctions = require('../Authentication.js');
 
+import {
+  resetEmail,
+} from '../store/reset';
+
 let dbInfo = {
   connectionLimit: 100,
   host: '134.122.115.102',
@@ -20,10 +24,6 @@ let dbInfo = {
   multipleStatements: true
 };
 
-
-router.get('/', AuthenticationFunctions.ensureAuthenticated,function(req, res, next) {
-    res.render('index.ejs', { name: req.user.name });
-  });
 
 passport.use(new LocalStrategy({ passReqToCallback: true, },
   function (req, username, password, done) {
@@ -52,27 +52,33 @@ passport.use(new LocalStrategy({ passReqToCallback: true, },
         }
 
       }
-    });
-
-  }));
-
-
-  passport.serializeUser(function (uuid, done) {
-    done(null, uuid);
   });
+
+}));
+
+
+passport.serializeUser(function (uuid, done) {
+  done(null, uuid);
+});
+
+
+router.get('/', AuthenticationFunctions.ensureAuthenticated,function(req, res, next) {
+    res.render('index.ejs', { name: req.user.name });
+});
+
   
-  passport.deserializeUser(function (uuid, done) {
-    done(null, uuid);
+passport.deserializeUser(function (uuid, done) {
+  done(null, uuid);
+});
+
+
+
+router.get('/', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
+  return res.render('index.ejs', { name: req.user.name }, {
+    error: req.flash('error'),
+    success: req.flash('success'),
   });
-
-
-
-  router.get('/', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
-    return res.render('index.ejs', { name: req.user.name }, {
-      error: req.flash('error'),
-      success: req.flash('success'),
-    });
-  });
+});
 
 
 
@@ -171,6 +177,10 @@ router.get('/logout', AuthenticationFunctions.ensureAuthenticated, (req, res) =>
   req.logout();
   req.session.destroy();
   return res.redirect('/login');
+});
+
+router.put('/reset-email', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
+  return resetEmail;
 });
 
 module.exports = router;
