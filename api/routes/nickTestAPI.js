@@ -117,8 +117,17 @@ router.post('/addStudentToClass', function(req, res, next) {
         }
 
         var listStud = JSON.parse(results[0].student_list);
-        listStud.push(studentId.toString());
-        console.log("UPDATED LIST: "+listStud);
+        
+        if ( listStud.includes(studentId.toString()) ) {
+            console.log("ALREADY CONTAINS IT");
+        } else {
+            listStud.push(studentId.toString());
+            console.log("UPDATED LIST: "+listStud);
+        }
+
+        
+
+        /* may need to check if its already there */
 
         con.query(`update class set student_list = ${mysql.escape(JSON.stringify(listStud))} where id = ${mysql.escape(classId)}`, (error2, results2, fields2) => {
                 if (error2) {
@@ -160,8 +169,13 @@ function addClassToStudent(studentId, classId, req, res, next) {
         }
 
         var listStud = JSON.parse(results[0].class_list);
-        listStud.push(classId.toString());
-        console.log("UPDATED LIST: "+listStud);
+
+        if (listStud.includes(classId.toString()) ) {
+            console.log("USER LIST ALREADY CONTAINS IT");
+        } else {
+            listStud.push(classId.toString());
+            console.log("UPDATED LIST: "+listStud);
+        }
 
         con.query(`update user set class_list = ${mysql.escape(JSON.stringify(listStud))} where id = ${mysql.escape(studentId)}`, (error2, results2, fields2) => {
                 if (error2) {
