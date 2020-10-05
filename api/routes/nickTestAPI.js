@@ -45,8 +45,8 @@ router.post('/addClass', function(req, res, next) {
 });
 
 /* --- Gets list of classes (maybe for recommendation for teacher when creating classes?)--- */
-router.get('/classes', function(req, res, next) {
-    let con = mysql.createConnection(dbInfo);
+router.get('/classList', function(req, res, next) {
+    let con = mysql.createConnection(dbInfo);      // select * from `class` where instructor_id in (select id from `user` where school = (SELECT school FROM `user` WHERE username = 'afsjbaf') and type = 1)
     con.query('select name, description from class', (error, results, fields) => {
         if (error) {
             console.log(error.stack);
@@ -60,8 +60,8 @@ router.get('/classes', function(req, res, next) {
     });
 });
 
-//getting schools instructors have registered for
-//to be used to populate school list for student reg
+/* --- getting schools instructors have registered for --- */
+/* --- to be used to populate school list for student reg- */
 router.get('/instructorSchools', function(req, res, next) {
     let con = mysql.createConnection(dbInfo);
     con.query('select school from user where type = 0', (error, results, fields) => {
@@ -78,7 +78,7 @@ router.get('/instructorSchools', function(req, res, next) {
 });
 
 /* --- official school list --- */
-router.get('/officialSchoolList', function(req, res, next) {
+router.get('/officialSchools', function(req, res, next) {
     let con = mysql.createConnection(dbInfo);
     con.query('select LocationName from official_schools', (error, results, fields) => {
         if (error) {
@@ -124,10 +124,6 @@ router.post('/addStudentToClass', function(req, res, next) {
             listStud.push(studentId.toString());
             console.log("UPDATED LIST: "+listStud);
         }
-
-        
-
-        /* may need to check if its already there */
 
         con.query(`update class set student_list = ${mysql.escape(JSON.stringify(listStud))} where id = ${mysql.escape(classId)}`, (error2, results2, fields2) => {
                 if (error2) {
