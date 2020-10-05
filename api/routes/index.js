@@ -13,7 +13,5 @@ router.get('/hello',function(req,res,next){
 })
 
 /* GET test page */
-router.get('/test', function(req, res, next) {
-  res.send('success');
-});
+router.get('/test',(req, res) => res.send('successssss'));
 module.exports = router;

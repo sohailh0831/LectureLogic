@@ -9,6 +9,7 @@ import errorPage from './pages/errorPage';
 
 import SignIn from './pages/SignIn';
 import SignUp from './pages/SignUp';
+import Login from './pages/login'
 
 
 class App extends React.Component{
@@ -18,8 +19,7 @@ class App extends React.Component{
   }
 
   callAPI(){
-    
-    fetch("http://localhost:9000/testAPI")
+    fetch("http://localhost:9000/")
     .then(res => res.text())
     .then(res => this.setState({apiResponse: res})
     );
@@ -30,15 +30,16 @@ class App extends React.Component{
   }
 
 
+
 render(){
   return(
     <Router>
       <Switch>
       <Route exact path ="/" component={MainPage} />
       <Route exact path ="/404" component = {errorPage} />
-
       <Route exact path ="/login" component = {SignIn} />
       <Route exaxt path ="/register" component ={SignUp}/>
+      <Route exaxt path ="/login2" component ={Login}/>
       <Redirect to="/404" />
       </Switch>
     </Router>

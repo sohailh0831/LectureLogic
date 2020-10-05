@@ -22,11 +22,15 @@ let dbInfo = {
 
 
 router.get('/', AuthenticationFunctions.ensureAuthenticated,function(req, res, next) {
-    res.render('index.ejs', { name: req.user.name });
+    //res.render('index.ejs', { name: req.user.name });
+    res.send(req.user.name);
   });
 
 passport.use(new LocalStrategy({ passReqToCallback: true, },
   function (req, username, password, done) {
+    // console.log(username);
+    // console.log(password);
+    // console.log(req);
     let con = mysql.createConnection(dbInfo);
     con.query(`SELECT * FROM user WHERE username=${mysql.escape(username)};`, (error, results, fields) => {
       if (error) {
@@ -44,6 +48,7 @@ passport.use(new LocalStrategy({ passReqToCallback: true, },
             username: results[0].username,
             name: results[0].name
           };
+          console.log("Successfully logged in " + user.username);
           con.end();
           return done(null, user);
         } else {
@@ -85,7 +90,7 @@ router.get('/login', AuthenticationFunctions.ensureNotAuthenticated, (req, res) 
 
 
 router.post('/login', AuthenticationFunctions.ensureNotAuthenticated, passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login', failureFlash: true }), (req, res) => {
-  res.redirect('/dashboard');
+  res.send(req.user);
 });
 
 
