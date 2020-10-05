@@ -36,8 +36,10 @@ render(){
       <Route exact path ="/" component={MainPage} />
       <Route exact path ="/404" component = {errorPage} />
 
+
       <Route exact path ="/login" component = {Login} />
       <Route exaxt path ="/register" component ={Register}/>
+
       <Redirect to="/404" />
       </Switch>
     </Router>
