@@ -10,6 +10,10 @@ const bcrypt = require('bcrypt');
 const LocalStrategy = require('passport-local').Strategy;
 const AuthenticationFunctions = require('../Authentication.js');
 
+import {
+  resetEmail,
+} from '../store/reset';
+
 let dbInfo = {
   connectionLimit: 100,
   host: '134.122.115.102',
@@ -171,6 +175,10 @@ router.get('/logout', AuthenticationFunctions.ensureAuthenticated, (req, res) =>
   req.logout();
   req.session.destroy();
   return res.redirect('/login');
+});
+
+router.put('/reset-email', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
+  return resetEmail;
 });
 
 module.exports = router;
