@@ -9,11 +9,6 @@ import errorPage from './pages/errorPage';
 import Register from './pages/Register';
 import Login from './pages/Login';
 
-import SignIn from './pages/SignIn';
-import SignUp from './pages/SignUp';
-import PWReset from './pages/resetPass';
-import EMReset from './pages/resetEmail';
-
 
 class App extends React.Component{
   constructor(props){
@@ -43,8 +38,6 @@ render(){
 
       <Route exact path ="/login" component = {Login} />
       <Route exaxt path ="/register" component ={Register}/>
-      <Route exaxt path ="/resetpass" component ={PWReset}/>
-      <Route exaxt path ="/resetemail" component ={EMReset}/>
       <Redirect to="/404" />
       </Switch>
     </Router>
