@@ -21,10 +21,6 @@ let dbInfo = {
 };
 
 
-router.get('/', AuthenticationFunctions.ensureAuthenticated,function(req, res, next) {
-    res.render('index.ejs', { name: req.user.name });
-  });
-
 passport.use(new LocalStrategy({ passReqToCallback: true, },
   function (req, username, password, done) {
     let con = mysql.createConnection(dbInfo);
@@ -52,27 +48,33 @@ passport.use(new LocalStrategy({ passReqToCallback: true, },
         }
 
       }
-    });
-
-  }));
-
-
-  passport.serializeUser(function (uuid, done) {
-    done(null, uuid);
   });
+
+}));
+
+
+passport.serializeUser(function (uuid, done) {
+  done(null, uuid);
+});
+
+
+router.get('/', AuthenticationFunctions.ensureAuthenticated,function(req, res, next) {
+    res.render('index.ejs', { name: req.user.name });
+});
+
   
-  passport.deserializeUser(function (uuid, done) {
-    done(null, uuid);
+passport.deserializeUser(function (uuid, done) {
+  done(null, uuid);
+});
+
+
+
+router.get('/', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
+  return res.render('index.ejs', { name: req.user.name }, {
+    error: req.flash('error'),
+    success: req.flash('success'),
   });
-
-
-
-  router.get('/', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
-    return res.render('index.ejs', { name: req.user.name }, {
-      error: req.flash('error'),
-      success: req.flash('success'),
-    });
-  });
+});
 
 
 
