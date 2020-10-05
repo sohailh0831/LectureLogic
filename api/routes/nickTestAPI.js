@@ -168,6 +168,38 @@ router.post('/addClass', function(req, res, next) {
 
 });
 
+router.get('/classes', function(req, res, next) {
+    let con = mysql.createConnection(dbInfo);
+    con.query('select name, description from class', (error, results, fields) => {
+        if (error) {
+            console.log(error.stack);
+            con.end();
+            res.status(400).send(error);
+            return;
+        }
+        console.log(results);
+        con.end();
+        res.send(results);
+    });
+});
+
+//getting schools instructors have registered for
+//to be used to populate school list for student reg
+router.get('/instructorSchools', function(req, res, next) {
+    let con = mysql.createConnection(dbInfo);
+    con.query('select school from user where type = 0', (error, results, fields) => {
+        if (error) {
+            console.log(error.stack);
+            con.end();
+            res.status(400).send(error);
+            return;
+        }
+        console.log(results);
+        con.end();
+        res.send(results);
+    });
+});
+
 router.post('/addStudentToClass', function(req, res, next) {
     let studentId = req.body.studentId;
     let classId = req.body.classId;
@@ -244,7 +276,10 @@ function addClassToStudent(studentId, classId, req, res, next) {
                     return;
                 }
 
-                console.log("Results3: " + results + "\nResults4" + results2);
+                console.log("Results3 ");
+                console.log(results);
+                console.log("\nResults4: ");
+                console.log(results2);
                 console.log(`${req.body.classId} successfully added.`);
                 con.end();
                 //req.flash('success', 'Successfully added class to student\'s list.');
