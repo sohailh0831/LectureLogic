@@ -178,7 +178,17 @@ router.get('/logout', AuthenticationFunctions.ensureAuthenticated, (req, res) =>
 });
 
 router.put('/reset-email', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
-  return resetEmail;
+  let results = resetEmail(req, res);
+  if (results) {
+    console.log(`${req.body.newEmail} successfully registered.`);
+    req.flash('success', 'Successfully updated.');
+    return res.redirect('/login');
+}
+else {
+    req.flash('error', 'Something Went Wrong. Try Again.');
+    return res.redirect('/register');
+}
+  return;
 });
 
 module.exports = router;
