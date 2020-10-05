@@ -14,7 +14,7 @@ export default class Routes extends React.Component {
     } /* End constructor */
     render() {
       console.log("ROUTES!"); //just testing to see when exactly i make it to routes
-      window.location.href="/login"
+      window.location.href="/register"
     }
   
   }

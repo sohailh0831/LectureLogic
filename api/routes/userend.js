@@ -96,6 +96,7 @@ router.get('/register', function(req, res, next) {
 
 
   router.post('/register', AuthenticationFunctions.ensureNotAuthenticated, (req, res) => {
+    console.log(req.body.username);
     let username = req.body.username;
     let password = req.body.password;
     let name = req.body.name;
@@ -140,7 +141,8 @@ router.get('/register', function(req, res, next) {
             console.log(`${req.body.email} successfully registered.`);
             con.end();
             req.flash('success', 'Successfully registered. You may now login.');
-            return res.redirect('/login');
+            //return res.redirect('/login');
+            return res.send("[\"OK\"]");
           }
           else {
             con.end();
