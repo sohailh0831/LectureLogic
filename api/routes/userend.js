@@ -102,6 +102,7 @@ router.get('/register', function(req, res, next) {
 
 
   router.post('/register', AuthenticationFunctions.ensureNotAuthenticated, (req, res) => {
+    console.log(req.body.username);
     let username = req.body.username;
     let password = req.body.password;
     let name = req.body.name;
@@ -146,7 +147,8 @@ router.get('/register', function(req, res, next) {
             console.log(`${req.body.email} successfully registered.`);
             con.end();
             req.flash('success', 'Successfully registered. You may now login.');
-            return res.redirect('/login');
+            //return res.redirect('/login');
+            return res.send("[\"OK\"]");
           }
           else {
             con.end();
@@ -183,11 +185,11 @@ router.put('/reset-email', AuthenticationFunctions.ensureAuthenticated, (req, re
     console.log(`${req.body.newEmail} successfully registered.`);
     req.flash('success', 'Successfully updated.');
     return res.redirect('/login');
-}
-else {
-    req.flash('error', 'Something Went Wrong. Try Again.');
-    return res.redirect('/register');
-}
+  }
+  else {
+      req.flash('error', 'Something Went Wrong. Try Again.');
+      return res.redirect('/register');
+  }
   return;
 });
 

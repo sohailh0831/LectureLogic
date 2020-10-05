@@ -6,11 +6,8 @@ import {BrowserRouter as Router, Route, Switch, Link, Redirect} from "react-rout
 /* pages */
 import MainPage from './pages';
 import errorPage from './pages/errorPage';
-
-import SignIn from './pages/SignIn';
-import SignUp from './pages/SignUp';
-import PWReset from './pages/resetPass';
-import EMReset from './pages/resetEmail';
+import Register from './pages/Register';
+import Login from './pages/Login';
 
 
 class App extends React.Component{
@@ -39,10 +36,15 @@ render(){
       <Route exact path ="/" component={MainPage} />
       <Route exact path ="/404" component = {errorPage} />
 
+<<<<<<< HEAD
       <Route exact path ="/login" component = {SignIn} />
       <Route exaxt path ="/register" component ={SignUp}/>
       <Route exaxt path ="/resetpass" component ={PWReset}/>
       <Route exaxt path ="/resetemail" component ={EMReset}/>
+=======
+      <Route exact path ="/login" component = {Login} />
+      <Route exaxt path ="/register" component ={Register}/>
+>>>>>>> master
       <Redirect to="/404" />
       </Switch>
     </Router>
