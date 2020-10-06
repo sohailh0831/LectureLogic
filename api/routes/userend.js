@@ -10,9 +10,9 @@ const bcrypt = require('bcrypt');
 const LocalStrategy = require('passport-local').Strategy;
 const AuthenticationFunctions = require('../Authentication.js');
 
-import {
-  resetEmail,
-} from '../store/reset';
+// import {
+//   resetEmail,
+// } from '../store/reset';
 
 let dbInfo = {
   connectionLimit: 100,

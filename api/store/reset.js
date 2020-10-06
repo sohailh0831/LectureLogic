@@ -15,7 +15,7 @@ let dbInfo = {
   
 
 
-export const resetEmail = (req, res) => {
+ const resetEmail = (req, res) => {
     let username = req.body.username;
     let email = req.body.email;
     let newEmail = '';
@@ -32,3 +32,5 @@ export const resetEmail = (req, res) => {
         }
     });
 }
+
+module.exports = {resetEmail}
