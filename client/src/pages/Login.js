@@ -3,7 +3,7 @@ import { Button, Form, Grid, Header, Segment, Modal, Icon, Message } from 'seman
 import 'semantic-ui-css/semantic.min.css';
 import { Redirect } from "react-router-dom";
 
-export default class Login extends React.Component {
+class Login extends React.Component {
     constructor(props) {
         super(props);
         this.handleUserChange = this.handleUserChange.bind(this);
@@ -78,7 +78,8 @@ export default class Login extends React.Component {
     async handleLogin() {
         console.log("handle login");
         //THIS IS WHERE THE FETCH NEEDS TO GO---------------------------------------------
-        
     }
     
 }
+
+export default Login
