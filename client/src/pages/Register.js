@@ -1,4 +1,4 @@
-/* Register.jsx -- Handles registering a new user */
+/* Register.js -- Handles registering a new user */
 import React from "react";
 import {Button, Form, Grid, Message, Segment, Icon, Header, Label, Radio, FormField} from "semantic-ui-react";
 import 'semantic-ui-css/semantic.min.css'
@@ -68,7 +68,8 @@ export default class Register extends React.Component {
 
                         {/* Phone Input */}
                         <Form.Input
-                            placeholder='Phone Number'
+                            placeholder='Phone Number: 999-999-9999'
+                            type='tel' pattern='[0-9]{3}-[0-9]{3}-[0-9]{4}'
                             required={true}
                             value={this.state.phone}
                             onChange={this.handlePhoneChange}
@@ -124,7 +125,7 @@ export default class Register extends React.Component {
                         <br/>
 
                         {/* Register Button */}
-                        <Button color='purple' fluid size='large' active={this.state.enabled} onClick={this.handleSubmit}>
+                        <Button color='purple' fluid size='large' active={this.state.enabled} onClick={this.handleRegister}>
                             Register
                         </Button>
 
@@ -177,6 +178,12 @@ export default class Register extends React.Component {
 
     
     async handleRegister() {
+        console.log(this.state.value);
+        //handle phonenumber shortening -- USE phone_tmp TO ACCESS PHONE NUMBER IN HERE
+        let phone_tmp = this.state.phone;
+        phone_tmp = phone_tmp.replace(/\D/g,'');
+
+        console.log(phone_tmp);
         await fetch("http://localhost:9000/register", {
             method: 'POST',
             headers: {
@@ -185,15 +192,15 @@ export default class Register extends React.Component {
             },
             body: JSON.stringify({
                 username: this.state.username,
-                phone_number: this.state.phone,
+                phone_number: phone_tmp,
                 password: this.state.password,
                 name: this.state.name,
                 email: this.state.email,
-                type: "student",
+                type: this.state.value,
                 school: this.state.school
             })
         }).then(res => res.json()).then((data) => { 
-            console.log(data); //if it makes it her, it was succesful
+            console.log(data); //if it makes it here, it was succesful
             window.location.replace('/login'); //redirect to login page 
             this.setState({response: data})
         }).catch(console.log);
