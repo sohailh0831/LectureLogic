@@ -4,10 +4,8 @@ import './App.css';
 
 import {BrowserRouter as Router, Route, Switch, Link, Redirect} from "react-router-dom";
 /* pages */
-import MainPage from './pages';
-import errorPage from './pages/errorPage';
-import Register from './pages/Register';
-import Login from './pages/Login';
+
+import Routes from './Routes';
 
 
 class App extends React.Component{
@@ -29,33 +27,27 @@ class App extends React.Component{
   }
 
 
-render(){
-  return(
-    <Router>
-      <Switch>
-      <Route exact path ="/" component={MainPage} />
-      <Route exact path ="/404" component = {errorPage} />
+  render(){
+    return(
+      <div className="App">
+        <Routes/>
+      </div>
 
-      <Route exact path ="/login" component = {Login} />
-      <Route exaxt path ="/register" component ={Register}/>
-      <Redirect to="/404" />
-      </Switch>
-    </Router>
-  )
-}
+      
 
+      //<Routes/>
 
-  // render() {
-  // return (
-  //   <div className="App">
-  //     <p>{this.state.apiResponse}</p>
-  //     <header className="App-header">
-  //       <img src={logo} className="App-logo" alt="logo" />
-        
-  //     </header>
-  //   </div>
-  // );
-  // }
+      // <Switch>
+        //   <Route exact path ="/" component={MainPage} />
+        //   <Route exact path ="/404" component = {errorPage} />
+
+        //   <Route exact path ="/login" component = {Login} />
+        //   <Route exaxt path ="/register" component ={Register}/>
+        //   <Redirect to="/404" />
+        // </Switch>
+    )
+  }
+
 }
 
 export default App;
