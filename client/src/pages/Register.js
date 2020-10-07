@@ -40,7 +40,7 @@ export default class Register extends React.Component {
 
     //Main render method that is called on load or when the component's state changes
     render() { 
-        if(localStorage.getItem("authenticated") == "true"){
+        if(localStorage.getItem("authenticated") == "authenticated"){
             window.location.replace('/dashboard'); //redirects to dashboard if already logged in
         }
         return(
@@ -71,7 +71,8 @@ export default class Register extends React.Component {
 
                         {/* Phone Input */}
                         <Form.Input
-                            placeholder='Phone Number'
+                            placeholder='Phone Number: 999-999-9999'
+                            type='tel' pattern='[0-9]{3}-[0-9]{3}-[0-9]{4}'
                             required={true}
                             value={this.state.phone}
                             onChange={this.handlePhoneChange}
@@ -180,6 +181,9 @@ export default class Register extends React.Component {
 
     
     async handleRegister() {
+        let phone_tmp = this.state.phone;
+        phone_tmp = phone_tmp.replace(/\D/g,'');
+
         await fetch("http://localhost:9000/register", {
             method: 'POST',
             headers: {
@@ -188,11 +192,11 @@ export default class Register extends React.Component {
             },
             body: JSON.stringify({
                 username: this.state.username,
-                phone_number: this.state.phone,
+                phone_number: phone_tmp,
                 password: this.state.password,
                 name: this.state.name,
                 email: this.state.email,
-                type: "student",
+                type: this.state.value,
                 school: this.state.school
             })
         }).then(res => res.text()).then((data) => { 

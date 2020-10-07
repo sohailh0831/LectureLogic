@@ -3,7 +3,7 @@ import { Button, Form, Grid, Header, Segment, Modal, Icon, Message } from 'seman
 import 'semantic-ui-css/semantic.min.css';
 import { Redirect } from "react-router-dom";
 
-class Login extends React.Component {
+export default class Login extends React.Component {
     constructor(props) {
         super(props);
         this.handleUserChange = this.handleUserChange.bind(this);
@@ -19,9 +19,9 @@ class Login extends React.Component {
     }
 
     render() {
-        //console.log("local in login: " + localStorage.getItem("authenticated"))
-        if(localStorage.getItem("authenticated") == "true"){
-                window.location.replace('/dashboard'); //redirects to dashboard if already logged in
+        console.log("local in login: " + localStorage.getItem("authenticated"))
+        if(localStorage.getItem("authenticated") == "authenticated"){
+               window.location.replace('/dashboard'); //redirects to dashboard if already logged in
         }
         const errorStatus = this.state.loginError;
         //console.log(errorStatus);
@@ -101,12 +101,12 @@ class Login extends React.Component {
             })
         }).then(res => res.json()).then((data) => { 
             if(data == "OK"){ //successfully logged in
-                localStorage.setItem("authenticated", "true");
+                localStorage.setItem("authenticated", "authenticated");
             }
             else{
            //window.location.replace('/login'); // need to flash that authentication failed
            this.setState.loginError = true;
-           localStorage.setItem("authenticated", "false");
+           localStorage.setItem("authenticated", "not");
             }
             this.setState({response: data})
         }).catch(console.log)
@@ -114,4 +114,4 @@ class Login extends React.Component {
     
 }
 
-export default Login
+//export default Login
