@@ -12,7 +12,8 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import MainPage from './pages/MainPage';
 import errorPage from './pages/errorPage';
-import Dashboard from './pages/Dashboard';
+import Dashboard from './pages/Dashboard'
+import ChangePassword from './pages/ChangePassword'
 
 
 
@@ -74,6 +75,7 @@ export default class Routes extends React.Component {
                             <Route exact path ="/login" component = {Login} />
                             <Route exaxt path ="/register" component ={Register}/>
                             <Route exact path ="/dashboard" component ={Dashboard}/>
+                            <Route exact path ="/changePassword" component ={ChangePassword}/>
                             <Redirect to="/404" />
                           </Switch>
 

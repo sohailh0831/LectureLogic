@@ -42,6 +42,7 @@ passport.use(new LocalStrategy({ passReqToCallback: true, },
           let user = {
             id: results[0].id,
             username: results[0].username,
+            password: results[0].password,
             name: results[0].name,
             type: results[0].type,
             email: results[0].email,
@@ -51,7 +52,7 @@ passport.use(new LocalStrategy({ passReqToCallback: true, },
           };
           con.end();
           //return done(null, user);
-          return done(null, { id: user.id, username: user.username, name: user.username, type: user.type, email: user.email, phone_number: user.phone_number, school: user.school, class_list: user.class_list})
+          return done(null, { id: user.id, username: user.username, name: user.username, type: user.type, email: user.email, phone_number: user.phone_number, school: user.school, class_list: user.class_list, password: user.password})
         } else {
           con.end();
           return done(null, false, req.flash('error', 'Username or Password is incorrect.'));
@@ -87,6 +88,33 @@ passport.use(new LocalStrategy({ passReqToCallback: true, },
   router.get('/dashboard', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
     return res.send(req.user);
   });
+
+  router.post('/changePassword', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
+    let currentPassword = req.body.currentPassword;
+    let newPassword = req.body.newPassword;
+    let reNewPassword = req.body.reNewPassword;
+    let userId = req.user.id;
+
+    if (bcrypt.compareSync(currentPassword, req.user.password)) { // compare current password
+      let salt = bcrypt.genSaltSync(10);
+      let hashedPassword = bcrypt.hashSync(newPassword, salt);
+      let con = mysql.createConnection(dbInfo);
+      con.query(`UPDATE user SET password = ${mysql.escape(hashedPassword)} WHERE id=${mysql.escape(userId)};`, (error, results, fields) => {
+        if (error) {
+          console.log(error.stack);
+        }
+        con.end();
+        res.send("\"OK\"");
+        return;
+    });
+  }
+    else{ //flash error
+
+        return;
+    }
+
+  });
+
 
 
 router.get('/login', AuthenticationFunctions.ensureNotAuthenticated, (req, res) => {

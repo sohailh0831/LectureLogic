@@ -3,25 +3,25 @@ import { Button, Form, Grid, Header, Segment, Modal, Icon, Message } from 'seman
 import 'semantic-ui-css/semantic.min.css';
 import { Redirect } from "react-router-dom";
 
-export default class Login extends React.Component {
+export default class ChangePassword extends React.Component {
     constructor(props) {
         super(props);
-        this.handleUserChange = this.handleUserChange.bind(this);
-        this.handlePasswordChange = this.handlePasswordChange.bind(this);
-        this.handleLogin = this.handleLogin.bind(this);
+        this.handleCurrentPasswordChange = this.handleCurrentPasswordChange.bind(this);
+        this.handleNewPasswordChange = this.handleNewPasswordChange.bind(this);
+        this.handleReNewPasswordChange = this.handleReNewPasswordChange.bind(this);
+        this.handleChangePasswordFunction = this.handleChangePasswordFunction.bind(this);
         this.state = {
-            username: '',
-            password: '',
-            email_reset: '',
+            currentPassword: '',
+            newPassword: '',
+            reNewPassword: '',
             response: '',
             loginError: false
         };
     }
 
     render() {
-        //console.log("local in login: " + localStorage.getItem("authenticated"))
-        if(localStorage.getItem("authenticated") == "authenticated"){
-               window.location.replace('/dashboard'); //redirects to dashboard if already logged in
+        if(localStorage.getItem("authenticated") != "authenticated"){
+               window.location.replace('/login'); 
         }
         const errorStatus = this.state.loginError;
         //console.log(errorStatus);
@@ -30,7 +30,7 @@ export default class Login extends React.Component {
                 <Grid.Column style={{maxWidth: 450}}>
                 { errorStatus && <h1>Authentication Failed. Please Try Again</h1>}
                     <Header as='h2' color='grey' textAlign='center'>
-                        Log-in to your account
+                        Change Your Password
                     </Header>
 
                     <Form size='large'>
@@ -39,25 +39,36 @@ export default class Login extends React.Component {
                                 fluid
                                 icon='user'
                                 iconPosition='left'
-                                placeholder='Username'
+                                placeholder='Current Password'
+                                type='password'
                                 required={true}
-                                value={this.state.username}
-                                onChange={this.handleUserChange}
+                                value={this.state.currentPassword}
+                                onChange={this.handleCurrentPasswordChange}
                             />
 
                             <Form.Input
                                 fluid
                                 icon='lock'
                                 iconPosition='left'
-                                placeholder='Password'
+                                placeholder='New Password'
                                 type='password'
                                 required={true}
-                                value={this.state.password}
-                                onChange={this.handlePasswordChange}
+                                value={this.state.newPassword}
+                                onChange={this.handleNewPasswordChange}
+                            />
+                            <Form.Input
+                                fluid
+                                icon='lock'
+                                iconPosition='left'
+                                placeholder='Re-enter New Password'
+                                type='password'
+                                required={true}
+                                value={this.state.reNewPassword}
+                                onChange={this.handleReNewPasswordChange}
                             />
 
-                            <Button onClick={this.handleLogin} color='purple' fluid size='large'>
-                                Login
+                            <Button onClick={this.handleChangePasswordFunction} color='purple' fluid size='large'>
+                                Change Password
                             </Button>
                             
                             
@@ -74,20 +85,22 @@ export default class Login extends React.Component {
 
 
     //When the user types in stuff in the username box, the username variable is updated
-    async handleUserChange(event) {
+    async handleCurrentPasswordChange(event) {
         const value = event.target.value;
-        await this.setState({username: value});
+        await this.setState({currentPassword: value});
     };
-
-    //When the user types in stuff in the password box, the password variable is updated
-    async handlePasswordChange(event) {
+    async handleNewPasswordChange(event) {
         const value = event.target.value;
-        await this.setState({password: value});
+        await this.setState({newPassword: value});
+    };
+    async handleReNewPasswordChange(event) {
+        const value = event.target.value;
+        await this.setState({reNewPassword: value});
     };
 
     //when the "login" button is clicked
-    async handleLogin() {
-        await fetch("http://localhost:9000/login", {
+    async handleChangePasswordFunction() {
+        await fetch("http://localhost:9000/changePassword", {
             method: 'POST',
             credentials: "include",
             headers: {
@@ -96,22 +109,22 @@ export default class Login extends React.Component {
                 'Access-Control-Allow-Credentials': true,
             },
             body: JSON.stringify({
-                username: this.state.username,
-                password: this.state.password,
+                currentPassword: this.state.currentPassword,
+                newPassword: this.state.newPassword,
+                reNewPassword: this.state.reNewPassword
             })
         }).then(res => res.json()).then((data) => { 
             if(data == "OK"){ //successfully logged in
                 localStorage.setItem("authenticated", "authenticated");
+                console.log("successfully changed password")
+                window.location.replace('/');
             }
             else{
            //window.location.replace('/login'); // need to flash that authentication failed
-           this.setState.loginError = true;
-           localStorage.setItem("authenticated", "not");
+           console.log("password change fail")
             }
             this.setState({response: data})
         }).catch(console.log)
     }
     
 }
-
-//export default Login
