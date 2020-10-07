@@ -18,7 +18,7 @@ class Dashboard extends React.Component {
     componentDidMount() { // this is function called before render() ... use it to fetch any info u need
         // Simple GET request using fetch
         //console.log(localStorage.getItem("authenticated"))
-        if(localStorage.getItem("authenticated") != "true"){
+        if(localStorage.getItem("authenticated") != "authenticated"){
             window.location.replace('/login'); //redirects to login if not already logged in
         }
         fetch('http://localhost:9000/dashboard' ,{

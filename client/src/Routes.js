@@ -67,9 +67,9 @@ export default class Routes extends React.Component {
                               />
                           </Menu>
 
-                          {/* FOR NEW PAGES ADD PATHNAMES HERE */}
+                          {/* NEW PAGES ADD PATHNAMES HERE */}
                           <Switch>
-                            <Route exact path ="/" component={MainPage} />
+                            <Route exact path ="/" component={Login} />
                             <Route exact path ="/404" component = {errorPage} />
                             <Route exact path ="/login" component = {Login} />
                             <Route exaxt path ="/register" component ={Register}/>
