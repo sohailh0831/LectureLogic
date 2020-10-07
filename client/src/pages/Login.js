@@ -14,14 +14,21 @@ export default class Login extends React.Component {
             password: '',
             email_reset: '',
             response: '',
+            loginError: false
         };
     }
 
     render() {
+        console.log("local in login: " + localStorage.getItem("authenticated"))
+        if(localStorage.getItem("authenticated") == "authenticated"){
+               window.location.replace('/dashboard'); //redirects to dashboard if already logged in
+        }
+        const errorStatus = this.state.loginError;
+        //console.log(errorStatus);
         return (
             <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle'>
                 <Grid.Column style={{maxWidth: 450}}>
-
+                { errorStatus && <h1>Authentication Failed. Please Try Again</h1>}
                     <Header as='h2' color='grey' textAlign='center'>
                         Log-in to your account
                     </Header>
@@ -52,12 +59,16 @@ export default class Login extends React.Component {
                             <Button onClick={this.handleLogin} color='purple' fluid size='large'>
                                 Login
                             </Button>
-
+                            
                             
                         </Segment>
                     </Form>
                 </Grid.Column>
+                
             </Grid>
+            
+            
+            
         ) //End Return
     } //End Render
 
@@ -76,9 +87,31 @@ export default class Login extends React.Component {
 
     //when the "login" button is clicked
     async handleLogin() {
-        console.log("handle login");
-        //THIS IS WHERE THE FETCH NEEDS TO GO---------------------------------------------
-        
+        await fetch("http://localhost:9000/login", {
+            method: 'POST',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            },
+            body: JSON.stringify({
+                username: this.state.username,
+                password: this.state.password,
+            })
+        }).then(res => res.json()).then((data) => { 
+            if(data == "OK"){ //successfully logged in
+                localStorage.setItem("authenticated", "authenticated");
+            }
+            else{
+           //window.location.replace('/login'); // need to flash that authentication failed
+           this.setState.loginError = true;
+           localStorage.setItem("authenticated", "not");
+            }
+            this.setState({response: data})
+        }).catch(console.log)
     }
     
 }
+
+//export default Login

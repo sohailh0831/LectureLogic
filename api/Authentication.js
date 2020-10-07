@@ -10,7 +10,7 @@ module.exports = {
   },
 
   ensureNotAuthenticated: function(req, res, next) {
-    if (req.isAuthenticated()) { return res.redirect('/'); }
+    if (req.isAuthenticated()) { return res.redirect('/postLogin'); }
     next();
   },
 

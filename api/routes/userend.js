@@ -42,10 +42,16 @@ passport.use(new LocalStrategy({ passReqToCallback: true, },
           let user = {
             id: results[0].id,
             username: results[0].username,
-            name: results[0].name
+            name: results[0].name,
+            type: results[0].type,
+            email: results[0].email,
+            phone_number: results[0].phone_number,
+            school: results[0].school,
+            class_list: results[0].class_list,
           };
           con.end();
-          return done(null, user);
+          //return done(null, user);
+          return done(null, { id: user.id, username: user.username, name: user.username, type: user.type, email: user.email, phone_number: user.phone_number, school: user.school, class_list: user.class_list})
         } else {
           con.end();
           return done(null, false, req.flash('error', 'Username or Password is incorrect.'));
@@ -74,6 +80,13 @@ passport.use(new LocalStrategy({ passReqToCallback: true, },
     });
   });
 
+  router.get('/postLogin', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
+    return res.send("\"OK\"")
+  });
+
+  router.get('/dashboard', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
+    return res.send(req.user);
+  });
 
 
 router.get('/login', AuthenticationFunctions.ensureNotAuthenticated, (req, res) => {
@@ -83,10 +96,16 @@ router.get('/login', AuthenticationFunctions.ensureNotAuthenticated, (req, res) 
   });
 });
 
-
-router.post('/login', AuthenticationFunctions.ensureNotAuthenticated, passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login', failureFlash: true }), (req, res) => {
-  res.redirect('/dashboard');
+router.get('/loginFail', AuthenticationFunctions.ensureNotAuthenticated, (req, res) => {
+  return res.send("\"Authentication Fail\"");
 });
+
+router.post('/login', AuthenticationFunctions.ensureNotAuthenticated, passport.authenticate('local', {failureFlash: true, failureRedirect: '/loginFail' }), (req, res) => {
+   return res.send("\"OK\"");
+});
+
+
+
 
 
 router.get('/register', function(req, res, next) {
@@ -96,7 +115,6 @@ router.get('/register', function(req, res, next) {
 
 
   router.post('/register', AuthenticationFunctions.ensureNotAuthenticated, (req, res) => {
-    console.log(req.body.username);
     let username = req.body.username;
     let password = req.body.password;
     let name = req.body.name;
@@ -138,7 +156,7 @@ router.get('/register', function(req, res, next) {
             return;
           }
           if (results) {
-            console.log(`${req.body.email} successfully registered.`);
+           // console.log(`${req.body.email} successfully registered.`);
             con.end();
             req.flash('success', 'Successfully registered. You may now login.');
             //return res.redirect('/login');
@@ -170,7 +188,8 @@ router.get('/register', function(req, res, next) {
 router.get('/logout', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
   req.logout();
   req.session.destroy();
-  return res.redirect('/login');
+  //return res.redirect('/login');
+  return res.send("\"OK\"");
 });
 
 module.exports = router;
