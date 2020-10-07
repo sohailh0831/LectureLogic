@@ -12,6 +12,7 @@ import Register from './pages/Register';
 import Login from './pages/Login';
 import MainPage from './pages/MainPage';
 import errorPage from './pages/errorPage';
+import Dashboard from './pages/Dashboard';
 
 
 
@@ -72,8 +73,7 @@ export default class Routes extends React.Component {
                             <Route exact path ="/404" component = {errorPage} />
                             <Route exact path ="/login" component = {Login} />
                             <Route exaxt path ="/register" component ={Register}/>
-
-                            {/* I */}
+                            <Route exact path ="/dashboard" component ={Dashboard}/>
                             <Redirect to="/404" />
                           </Switch>
 

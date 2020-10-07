@@ -1,4 +1,4 @@
-/* Register.js -- Handles registering a new user */
+/* Register.jsx -- Handles registering a new user */
 import React from "react";
 import {Button, Form, Grid, Message, Segment, Icon, Header, Label, Radio, FormField} from "semantic-ui-react";
 import 'semantic-ui-css/semantic.min.css'
@@ -40,6 +40,9 @@ export default class Register extends React.Component {
 
     //Main render method that is called on load or when the component's state changes
     render() { 
+        if(localStorage.getItem("authenticated") == "true"){
+            window.location.replace('/dashboard'); //redirects to dashboard if already logged in
+        }
         return(
             <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle'>
                 <Form size='large'>
@@ -68,8 +71,7 @@ export default class Register extends React.Component {
 
                         {/* Phone Input */}
                         <Form.Input
-                            placeholder='Phone Number: 999-999-9999'
-                            type='tel' pattern='[0-9]{3}-[0-9]{3}-[0-9]{4}'
+                            placeholder='Phone Number'
                             required={true}
                             value={this.state.phone}
                             onChange={this.handlePhoneChange}
@@ -141,49 +143,43 @@ export default class Register extends React.Component {
     async handleNameChange(event) {
         const value = event.target.value;
         await this.setState({name: value});
-        console.log(this.state.name);
+       // console.log(this.state.name);
     }
     async handleEmailChange(event) { 
         const value = event.target.value;           //All "change" function act to update the state variables with the information that the user is typing
         await this.setState({email: value});     //This makes it easier to give information to the backend
-        console.log("Email Change");
+        //console.log("Email Change");
     }
     async handleUsernameChange(event) {
         const value = event.target.value;
         await this.setState({username: value});
-        console.log("Username Change");
+       // console.log("Username Change");
     }
     async handlePhoneChange(event) {
         const value = event.target.value;
         await this.setState({phone: value});
-        console.log(this.state.phone);
+        //console.log(this.state.phone);
     }
     async handleSchoolChange(event) {
         const value = event.target.value;
         await this.setState({school: value});
-        console.log(this.state.school);
+       // console.log(this.state.school);
     }
     async handlePasswordChange(event) {
         const value = event.target.value;
         await this.setState({password: value});
-        console.log(this.state.password);
+       // console.log(this.state.password);
     }
     async handleConfirmPasswordChange(event) {
         const value = event.target.value;
         await this.setState({confirmPassword: value});
-        console.log(this.state.confirmPassword);
+        //console.log(this.state.confirmPassword);
     }
     
     handleStudentChange = (e, { value }) => this.setState({ value })
 
     
     async handleRegister() {
-        console.log(this.state.value);
-        //handle phonenumber shortening -- USE phone_tmp TO ACCESS PHONE NUMBER IN HERE
-        let phone_tmp = this.state.phone;
-        phone_tmp = phone_tmp.replace(/\D/g,'');
-
-        console.log(phone_tmp);
         await fetch("http://localhost:9000/register", {
             method: 'POST',
             headers: {
@@ -192,15 +188,15 @@ export default class Register extends React.Component {
             },
             body: JSON.stringify({
                 username: this.state.username,
-                phone_number: phone_tmp,
+                phone_number: this.state.phone,
                 password: this.state.password,
                 name: this.state.name,
                 email: this.state.email,
-                type: this.state.value,
+                type: "student",
                 school: this.state.school
             })
-        }).then(res => res.json()).then((data) => { 
-            console.log(data); //if it makes it here, it was succesful
+        }).then(res => res.text()).then((data) => { 
+          //  console.log(data); //if it makes it her, it was succesful
             window.location.replace('/login'); //redirect to login page 
             this.setState({response: data})
         }).catch(console.log);
