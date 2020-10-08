@@ -40,7 +40,7 @@ export default class Routes extends React.Component {
                           <Menu attached="top" size="huge">
                               <Menu.Item
                                   as={Link}
-                                  replace={false}
+                                  //replace={false}
                                   to={{pathname: '/', state: {}}} //where we can pass values into state (access as this.props.state.____)
                                   name={"MainPage"}
                                   content="Home"
@@ -49,7 +49,7 @@ export default class Routes extends React.Component {
                               />
                               <Menu.Item
                                   as={Link}
-                                  replace={false}
+                                  //replace={false}
                                   to={{pathname: '/register', state: {}}} //where we can pass values into state (access as this.props.state.____)
                                   name={"Register"}
                                   content="Register"
@@ -58,7 +58,7 @@ export default class Routes extends React.Component {
                               />
                               <Menu.Item
                                   as={Link}
-                                  replace={false}
+                                  //replace={false}
                                   to={{pathname: '/login', state: {}}} //where we can pass values into state (access as this.props.state.____)
                                   name={"Login"}
                                   content="Login"
@@ -66,7 +66,7 @@ export default class Routes extends React.Component {
                                   active={activeItem === 'Login'}
                               />
                               <Menu.Item
-                                replace={false}
+                                //replace={false}
                                 name={"Logout"}
                                 content="Logout"
                                 onClick={this.handleLogout}

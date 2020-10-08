@@ -5,12 +5,13 @@ import {Link} from "react-router-dom";
 import Register from './Register';
 
 
-export class ClassCard extends React.Component{
+export default class ClassCard extends React.Component{
 
     constructor(props){
         super(props);
         this.state = {
-
+            className: '',
+            classDesc: ''
         }
         
     }
@@ -27,14 +28,15 @@ export class ClassCard extends React.Component{
 
         return(
             <div>
+                
                 <Card style={{width: "500px"}} centered >
                     <Card.Content>
                         <Header as="h4" textAlign="left" dividing>
                             <div className="left aligned">
                                 <Header.Content>
-                                    <Link to={Register}> {this.state.className} </Link>
+                                    {this.props.className}
                                     <div className="meta">
-                                        <p style={{fontSize: "75%"}} data-testid={"Class Description"}>({this.state.classDesc})</p>
+                                        <p style={{fontSize: "75%"}} data-testid={"Class Description"}>({this.props.classDesc})</p>
                                     </div>
                                 </Header.Content>
 

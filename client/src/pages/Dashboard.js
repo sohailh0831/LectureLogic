@@ -11,22 +11,22 @@ class Dashboard extends React.Component {
             name: '',
             userId: '',
             response: '',
-            classList: '',
-            newClassDesc: '',
-            isInstructor: ''
+            classList: [],
+            newClassDesc: ''
         };
         this.handleAddClass = this.handleAddClass.bind(this);
         this.getClassList = this.getClassList.bind(this);
 
     }
 
-    componentDidMount() { // this is function called before render() ... use it to fetch any info u need
+    async componentDidMount() { // this is function called before render() ... use it to fetch any info u need
         // Simple GET request using fetch
         //console.log(localStorage.getItem("authenticated"))
         if(localStorage.getItem("authenticated") !== "authenticated"){
             window.location.replace('/login'); //redirects to login if not already logged in
         }
-        fetch('http://localhost:9000/dashboard' ,{
+        let tmpId;
+        await fetch('http://localhost:9000/dashboard' ,{
             method: 'GET',
             credentials: "include",
             headers: {
@@ -35,23 +35,27 @@ class Dashboard extends React.Component {
                 'Access-Control-Allow-Credentials': true,
             }
         }).then(response => response.json())
-            .then(data => this.setState({ username: data.username , name: data.name, response: data, userId: data.id  })); // here's how u set variables u want to use later
-        
-        if (this.state.response.type === '1') { //if user is a student
-            this.setState({isInstructor: false, popUpMessage: 'Join a Class'});
-        }
-        else { //else user is instructor
-            this.setState({isInstructor: true, popUpMessage: 'Create New Class'});
-        }
+            .then(data => {
+                this.setState({ username: data.username , name: data.name, response: data, userId: data.id  })
+                console.log(data);
+                tmpId = data.id;
+            }); // here's how u set variables u want to use later
+    
+        this.getClassList();
     }
 
 
-
     render() {
-        if (this.state.popUpMessage !== undefined) {
-            this.getClassList();
+        /* decided what popup message to present */
+        let popUpMessage;
+        if (this.state.response.type === '1') { //if user is a student
+            popUpMessage = 'Join a Class';
         }
-        //console.log(this.state.isInstructor);
+        else { //else user is instructor
+            popUpMessage = 'Create New Class';
+        }
+
+        console.log(this.state.classList);
 
         return (
             <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle'>
@@ -63,17 +67,26 @@ class Dashboard extends React.Component {
                                 Dashboard Temp Header
                             </Header>
 
-                            <Popup content={this.state.popUpMessage} trigger={<Button icon='add' color='purple' onClick={this.handleAddClass} />} />
-                            
+                            <Popup content={popUpMessage} trigger={<Button icon='add' color='purple' onClick={this.handleAddClass} />} />
+
                         </Segment>
+
+                        {/* Class Card */}
+                        <Grid.Column style={{width: "auto"}}>
+                            {this.state.classList.map((classList, index) => {
+                                    return(<ClassCard className={this.state.classList[index].name} classDesc={this.state.classList[index].description} />)
+                                }
+                            )}
+                        </Grid.Column>
 
                     </Form>
                 </Grid.Column>
             </Grid>
 
 
-            //<ClassCard> {this.state.classList, this.state.classDescList} </ClassCard> -- ideally this works first shot but honestly prolly not lol
         ) //End return(...)
+            //return(<ClassCard className={this.state.classList.name} classDesc={this.state.description} />);// -- ideally this works first shot but honestly prolly not lol
+        
     } //End redner{}(...)
 
     async handleAddClass() { //absolutely doesnt work dont try it and dont fuck with it
@@ -114,7 +127,7 @@ class Dashboard extends React.Component {
             }).then(response => response.json())
             .then(data => {
                 console.log(data);
-                this.setState({classList: data})
+                this.setState({classList: data, listReceived: true})
             }).catch(console.log);
             //parse classlist
         }
@@ -130,7 +143,7 @@ class Dashboard extends React.Component {
                 }
             }).then(response => response.json())
             .then(data => {
-                console.log(data);
+                //console.log(data);
                 this.setState({classList: data})
             }).catch(console.log);
             //parse classlist
