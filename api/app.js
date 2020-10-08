@@ -10,7 +10,7 @@ var testAPIRouter = require('./routes/testAPI');
 var authRouter = require('./routes/userend');
 const dotenv = require('dotenv')
 var expressValidator = require('express-validator');
-var nickTestRouter = require('./routes/nickTestAPI.js')
+var classRouter = require('./routes/classAPI.js')
 
 dotenv.config();
 
@@ -58,7 +58,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/testAPI',testAPIRouter);
 app.use('/',authRouter);
-app.use('/nick', nickTestRouter);
+app.use('/class', classRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

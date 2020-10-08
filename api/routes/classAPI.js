@@ -5,8 +5,9 @@ const dotenv = require('dotenv').config();
 const mysql = require("mysql");
 const { addStudentToClass } = require("../store/class");
 const { classList } = require("../store/class");
-const { addClass } = require("../store/class");
+const { addClass, getStudentClasses } = require("../store/class");
 const { officialSchools, instructorSchools } = require("../store/school");
+const AuthenticationFunctions = require('../Authentication.js');
 
 let dbInfo = {
     connectionLimit: 100,
@@ -21,7 +22,7 @@ let dbInfo = {
 /* --- TEST: correct input, one of missing required things/params --- */
 
 /* --- Function allows teacher to create a class --- */
-router.post('/addClass', async function(req, res, next) {
+router.post('/addClass', AuthenticationFunctions.ensureAuthenticated,async function(req, res, next) {
     let results = await addClass(req, res);
     
     if (results) {
@@ -52,7 +53,7 @@ router.get('/classList', async function(req, res, next) {
 
 /* --- getting schools instructors have registered for --- */
 /* --- to be used to populate school list for student reg- */
-router.get('/instructorSchools', async function(req, res, next) {
+router.get('/instructorSchools', AuthenticationFunctions.ensureAuthenticated,async function(req, res, next) {
     let results = await instructorSchools(req, res);
 
     if (results) {
@@ -84,7 +85,7 @@ router.get('/officialSchools', async function(req, res, next) {
 
 /* --- Adds a student to a class --- */
 /* --- Updates class's student list and user's class list --- */
-router.post('/addStudentToClass', async function(req, res, next) {
+router.post('/addStudentToClass', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
     let results = await addStudentToClass(req, res);
 
     if (results) {
@@ -97,5 +98,19 @@ router.post('/addStudentToClass', async function(req, res, next) {
         return res.status(400).json({status:400, message: "error"});
     }
 });
+
+router.get('/studentClasses', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+    let results = await getStudentClasses(req, res);
+
+    if (results) {
+        req.flash('success', 'Successfully got student classes.');
+        console.log("IN RESULTS");
+        return res.status(200).send(results);
+    } else {
+        req.flash('error', 'Something went wrong. Try again.');
+        console.log("IN NO RESULTS");
+        return res.status(400).json({status:400, message: "error"});
+    }
+})
 
 module.exports = router;

@@ -3,6 +3,11 @@ const flash = require('connect-flash');
 const uuid = require('uuid');
 const { isNull } = require("lodash");
 const mysql = require("mysql");
+const dotenv = require('dotenv').config();
+var expressValidator = require('express-validator');
+var app = express();
+app.use(expressValidator());
+var app = express.Router();
 
 let dbInfo = {
     connectionLimit: 100,
@@ -19,16 +24,19 @@ let dbInfo = {
 function addClass(req, res) {
     return new Promise(resolve => {
         
-        //let student_list = req.body.student_list;
-        req.checkBody('name', 'Name field is required.').notEmpty();
-        req.checkBody('description', 'Description field is required.').notEmpty();
-        req.checkBody('instructor_id', 'instructor_id field is required.').notEmpty();
-        
-        if (req.validationErrors()) {
-            resolve();
-            return;
-        }
+        try{
+            req.checkBody('name', 'Name field is required.').notEmpty();
+            req.checkBody('description', 'Description field is required.').notEmpty();
+            req.checkBody('instructor_id', 'instructor_id field is required.').notEmpty();
+            
+            if (req.validationErrors()) {
+                resolve();
+                return;
+            }
+        } catch (error) {
 
+        }
+        
         let name = req.body.name;
         let description = req.body.description;
         let instructor_id = req.body.instructor_id;
@@ -44,7 +52,6 @@ function addClass(req, res) {
             
             console.log(`${req.body.name} successfully created.`);
             con.end();
-            req.flash('success', 'Successfully created class.');
             resolve(results);
         });
     });
@@ -88,7 +95,7 @@ function addStudentToClass(req, res) {
             if (error) {
                 console.log(error.stack);
                 con.end();
-                rres.status(400).json({status:400, message: "Query error finding student_list from class."});
+                res.status(400).json({status:400, message: "Query error finding student_list from class."});
                 //resolve();
                 return;
             }
@@ -186,4 +193,66 @@ function addClassToStudent(studentId, classId, req, res) {
     });
 }
 
-module.exports = {addStudentToClass, classList, addClass}
+function getStudentClasses(req, res) {
+    return new Promise(resolve => {
+        //console.log("IN getstudetnclasses: "+req.body);
+        try{
+            req.checkBody('student_id', 'student_id field is required.').notEmpty();
+            
+            if (req.validationErrors()) {
+                console.log("IN checkbody err");
+                res.status(400).json({status:400, message: "User_id not in body."})
+                resolve();
+                return;
+            }
+        } catch (error) {
+            console.log("ERROR");
+        }
+
+        let con = mysql.createConnection(dbInfo);
+        con.query(`select class_list from user where id = ${mysql.escape(req.body.student_id)}`, (error, results, fields) => {
+            if (error) {
+                console.log(error.stack);
+                con.end();
+                res.status(400).json({status:400, message: "Error getting class_list from user."});
+                //resolve();
+                return;
+            }
+                   
+            if ( results[0] === undefined ) {
+                 res.status(400).json({status:400, message: "Error user_id not found."});
+                 resolve();
+                 return;
+            }
+            
+            if( results[0].class_list == "" ) {
+                 res.status(400).json({status:400, message: "Error user_id not enrolled in no classes."});
+                 resolve();
+                 return;
+            }
+
+            var listStud = results[0].class_list;
+            listStud = listStud.toString().substring(1, listStud.length-1);
+            listStud = "("+listStud+")";
+            console.log("LIST " + listStud);
+            
+            con.query(`select * from class where id in ${listStud}`, (error2, results2, fields2) => {
+                    if (error2) {
+                        console.log(error2.stack);
+                        con.end();
+                        res.status(400).json({status:400, message: "Update to user failed."});
+                        return;
+                    }
+
+                    console.log("\nResults2: ");
+                    console.log(results2);
+                    console.log(`${req.body.student_id} successfully added.`);
+                    con.end();
+                    resolve(results2);
+            });
+
+        });
+    });
+}
+
+module.exports = {addStudentToClass, classList, addClass, getStudentClasses}

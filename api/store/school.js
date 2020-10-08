@@ -3,6 +3,7 @@ const flash = require('connect-flash');
 const uuid = require('uuid');
 const { isNull } = require("lodash");
 const mysql = require("mysql");
+const dotenv = require('dotenv').config();
 
 let dbInfo = {
     connectionLimit: 100,
