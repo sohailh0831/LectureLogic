@@ -1,27 +1,33 @@
 import React from 'react'
-import { Button, Form, Grid, Header, Segment, Modal, Icon, Message } from 'semantic-ui-react'
+import { Button, Form, Grid, Header, Segment, Modal, Icon, Message, Popup } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 import { Redirect } from "react-router-dom";
+import ClassCard from './ClassCard';
 
 class Dashboard extends React.Component {
     constructor(props) {
         super(props);
-        this.handleLogout = this.handleLogout.bind(this);
         this.state = {
             username: '',
-            password: '',
-            email_reset: '',
+            name: '',
+            userId: '',
             response: '',
+            classList: '',
+            newClassDesc: '',
+            isInstructor: ''
         };
+        this.handleAddClass = this.handleAddClass.bind(this);
+        this.getClassList = this.getClassList.bind(this);
+
     }
 
-    componentDidMount() { // this is function called before render() ... use it to fetch any info u need
+    async componentDidMount() { // this is function called before render() ... use it to fetch any info u need
         // Simple GET request using fetch
         //console.log(localStorage.getItem("authenticated"))
         if(localStorage.getItem("authenticated") != "authenticated"){
             window.location.replace('/login'); //redirects to login if not already logged in
         }
-        fetch('http://localhost:9000/dashboard' ,{
+        await fetch('http://localhost:9000/dashboard' ,{
             method: 'GET',
             credentials: "include",
             headers: {
@@ -30,47 +36,72 @@ class Dashboard extends React.Component {
                 'Access-Control-Allow-Credentials': true,
             }
         }).then(response => response.json())
-            .then(data => this.setState({ username: data.username , name: data.name  })); // here's how u set variables u want to use later
+            .then(data => this.setState({ username: data.username , name: data.name, response: data, userId: data.id  })); // here's how u set variables u want to use later
+        
+        if (this.state.response.type == '1') {
+            this.setState({isInstructor: false});
+        }
+        else {
+            this.setState({isInstructor: true});
+        }
     }
 
 
 
     render() {
+        console.log(this.state.response);
+        //this.getClassList();
+        console.log(this.state.isInstructor);
+
         return (
             <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle'>
                 <Grid.Column style={{maxWidth: 450}}>
-
-                    <Header as='h2' color='grey' textAlign='center'>
-                        Welcome {this.state.name}
-                    </Header>
-                    <p>{this.state.testResponse}</p>
                     <Form size='large'>
-                        <Segment stacked>
-                            <Button onClick={this.handleLogout} color='purple' fluid size='large'>
-                                Logout
-                            </Button>         
+
+                        <Segment stacked textAlign="center" verticalAlign='middle'>
+                            <Header as = 'h2' color = 'grey' textAlign = 'center'>
+                                Dashboard Temp Header
+                            </Header>
+
+                            {/* <Button color='purple' icon='add' popup={'Add a New Class'} size='large' onClick={this.handleAddClass} /> */}
+                            <Segment hidden={this.state.isInstructor}> 
+                                <Popup content='Add a Class' trigger={<Button icon='add' color='purple' onClick={this.handleAddClass} />} />
+                            </Segment>
                         </Segment>
+
                     </Form>
                 </Grid.Column>
             </Grid>
-        ) //End Return
-    } //End Render
 
 
-    //When the user types in stuff in the username box, the username variable is updated
-    async handleUserChange(event) {
-        const value = event.target.value;
-        await this.setState({username: value});
-    };
+            //<ClassCard> {this.state.classList, this.state.classDescList} </ClassCard> -- ideally this works first shot but honestly prolly not lol
+        ) //End return(...)
+    } //End redner{}(...)
 
-    //When the user types in stuff in the password box, the password variable is updated
-    async handlePasswordChange(event) {
-        const value = event.target.value;
-        await this.setState({password: value});
-    };
+    async handleAddClass() { //absolutely doesnt work dont try it and dont fuck with it
+        console.log("Adding a Class");
+        await fetch("http://localhost:9000/class/addClass", {
+            method: 'POST',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            },
+            body: JSON.stringify({
+                name: this.state.name,
+                description: this.state.addClassDesc,
+                instrucor_id: this.state.userId,
+            })
+        }).then(res => res.json()).then((data) => { 
+            console.log(data);
+            this.setState({response: data})
+        }).catch(console.log)
+    }
 
-    async handleLogout() {
-        await fetch("http://localhost:9000/logout", {
+    async getClassList() { //dont fuck with this... doesnt work
+        console.log("Getting classList");
+        await fetch('http://localhost:9000/class/classlist' ,{
             method: 'GET',
             credentials: "include",
             headers: {
@@ -78,22 +109,14 @@ class Dashboard extends React.Component {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Credentials': true,
             }
-        }).then(res => res.text()).then((data) => { 
-           // console.log(data); //if it makes it here, it was succesful
-            localStorage.setItem("authenticated", "false");
-                window.location.replace('/login');
-            // if(data == "OK"){ //successfully logged in
-            //     localStorage.setItem("authenticated", "false");
-            //     window.location.replace('/login');
-            // }
-            // else{
-            //     localStorage.setItem("authenticated", "false");
-            //     window.location.replace('/login');
-            // }
-            this.setState({response: data})
-        }).catch(console.log)
+        }).then(response => response.json())
+        .then(data => {
+            console.log(data);
+            this.setState({classList: data})
+        }).catch(console.log);
+        //parse classlist
     }
-    
-}
 
-export default Dashboard
+
+    
+} export default Dashboard

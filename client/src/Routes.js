@@ -23,6 +23,7 @@ export default class Routes extends React.Component {
     constructor(props) {
       super(props);
       this.handlePageJump = this.handlePageJump.bind(this);
+      this.handleLogout = this.handleLogout.bind(this);
 
       this.state = {
         menuVisible: true,
@@ -66,6 +67,13 @@ export default class Routes extends React.Component {
                                   onClick={this.handlePageJump}
                                   active={activeItem === 'Login'}
                               />
+                              <Menu.Item
+                                replace={false}
+                                name={"Logout"}
+                                content="Logout"
+                                onClick={this.handleLogout}
+                                active={activeItem === 'Logout'}
+                              />
                           </Menu>
 
                           {/* NEW PAGES ADD PATHNAMES HERE */}
@@ -88,6 +96,28 @@ export default class Routes extends React.Component {
 
     handlePageJump(e, { name }) {
       this.setState({activeItem: name})
+    }
+
+    async handleLogout() {
+      if (localStorage.getItem('authenticated') == 'authenticated'){ //make sure that
+        await fetch("http://localhost:9000/logout", {
+            method: 'GET',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            }
+        }).then(res => res.text()).then((data) => { 
+            localStorage.setItem("authenticated", "false");
+            localStorage.clear(); //clears local storage
+            window.location.replace('/login');
+            this.setState({response: data})
+        }).catch(console.log)
+      }
+      else {
+        console.log("No user logged in");
+      }
     }
 
 
