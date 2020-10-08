@@ -139,70 +139,67 @@ describe('Server Class', async function () {
     });
   });
 
-//   describe('Server Class', async function () {
-//     describe('test bad addClass', async function() {
-//       it('addClass missing instructor_id Response Status Should be 400', async function () {
-//         try {  
-//         let result = await axios({
-//             method: 'post',
-//             url: 'http://127.0.0.1:9000/class/addClass',
-//             data: {
-//                 name: 'CLASS2',
-//                 description: 'This is the unit test class'
-//                 //instructor_id: 'sffsaf'
-//             }
-//           });
-//         } catch (error) {
-//           assert.equal(error.response.status, 400);
-//         }
-//       });
-//       it('addClass missing description Response Status Should be 400', async function () {
-//         try {  
-//         let result = await axios({
-//             method: 'post',
-//             url: 'http://127.0.0.1:9000/class/addClass',
-//             data: {
-//                 name: 'CLASS2',
-//                 //description: 'This is the unit test class'
-//                 instructor_id: 'sffsaf'
-//             }
-//           });
-//         } catch (error) {
-//           assert.equal(error.response.status, 400);
-//         }
-//       });
-//       it('addClass missing name Response Status Should be 400', async function () {
-//         try {  
-//         let result = await axios({
-//             method: 'post',
-//             url: 'http://127.0.0.1:9000/class/addClass',
-//             data: {
-//                 //name: 'CLASS2',
-//                 description: 'This is the unit test class',
-//                 instructor_id: 'sffsaf'
-//             }
-//           });
-//         } catch (error) {
-//           assert.equal(error.response.status, 400);
-//         }
-//       });
-//       it('addClass wrong data type Response Status Should be 400', async function () {
-//         try {  
-//         let result = await axios({
-//             method: 'post',
-//             url: 'http://127.0.0.1:9000/class/addClass',
-//             data: {
-//                 name: 10,
-//                 description: 'This is the unit test class'
-//                 //instructor_id: 'sffsaf'
-//             }
-//           });
-//         } catch (error) {
-//           assert.equal(error.response.status, 400);
-//         }
-//       });
-//     });
-//   });
+  describe('Server Class', async function () {
+    describe('test bad addClass', async function() {
+      it('addClass missing instructor_id Response Status Should be 400', async function () {
+        try {  
+        let req = {body: {name: 'CLASS2', description: 'This is the unit test class'} };
+        let res;
+        let result = await classList(req, res);
+        } catch (error) {
+          assert.equal(error.response.status, 400);
+        }
+      });
+      it('addClass missing description Response Status Should be 400', async function () {
+        try {  
+        // let result = await axios({
+        //     method: 'post',
+        //     url: 'http://127.0.0.1:9000/class/addClass',
+        //     data: {
+        //         name: 'CLASS2',
+        //         //description: 'This is the unit test class'
+        //         instructor_id: 'sffsaf'
+        //     }
+        //   });
+        let req = {body: {name: 'CLASS2', description: 'This is the unit test class'} };
+        let res;
+        let result = await classList(req, res);
+        } catch (error) {
+          assert.equal(error.response.status, 400);
+        }
+      });
+    //   it('addClass missing name Response Status Should be 400', async function () {
+    //     try {  
+    //     let result = await axios({
+    //         method: 'post',
+    //         url: 'http://127.0.0.1:9000/class/addClass',
+    //         data: {
+    //             //name: 'CLASS2',
+    //             description: 'This is the unit test class',
+    //             instructor_id: 'sffsaf'
+    //         }
+    //       });
+    //     } catch (error) {
+    //       assert.equal(error.response.status, 400);
+    //     }
+    //   });
+    //   it('addClass wrong data type Response Status Should be 400', async function () {
+    //     try {  
+    //     let result = await axios({
+    //         method: 'post',
+    //         url: 'http://127.0.0.1:9000/class/addClass',
+    //         data: {
+    //             name: 10,
+    //             description: 'This is the unit test class'
+    //             //instructor_id: 'sffsaf'
+    //         }
+    //       });
+    //     } catch (error) {
+    //       assert.equal(error.response.status, 400);
+    //     }
+    //   });
+     });
+  });
 
 
 
