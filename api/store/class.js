@@ -79,14 +79,17 @@ function classList(req, res) {
 /* --- Updates class's student list and user's class list --- */
 function addStudentToClass(req, res) {
     return new Promise(resolve => {
-        req.checkBody('studentId', 'studentId field is required.').notEmpty();
-        req.checkBody('classId', 'classId field is required.').notEmpty();
+        try{
+            req.checkBody('studentId', 'studentId field is required.').notEmpty();
+            req.checkBody('classId', 'classId field is required.').notEmpty();
 
-        if (req.validationErrors()) {
-            resolve();
-            return;
+            if (req.validationErrors()) {
+                resolve();
+                return;
+            }
+        } catch (error) {
+            console.log("ERROR in checkbody");
         }
-    
         let studentId = req.body.studentId;
         let classId = req.body.classId;
 
@@ -95,8 +98,8 @@ function addStudentToClass(req, res) {
             if (error) {
                 console.log(error.stack);
                 con.end();
-                res.status(400).json({status:400, message: "Query error finding student_list from class."});
-                //resolve();
+                //res.status(400).json({status:400, message: "Query error finding student_list from class."});
+                resolve();
                 return;
             }
             
@@ -111,8 +114,8 @@ function addStudentToClass(req, res) {
                 console.log("ALREADY CONTAINS IT");
                 con.end();
                 
-                res.status(400).json({status:400, message: "Student already enrolled in class."});
-                //resolve("Student already part of class");
+                //res.status(400).json({status:400, message: "Student already enrolled in class."});
+                resolve();
                 return;
             } else {
                 listStud.push(studentId.toString());
@@ -123,8 +126,8 @@ function addStudentToClass(req, res) {
                     if (error2) {
                         console.log(error2.stack);
                         con.end();
-                        res.status(400).json({status:400, message: "Update to class failed."});
-                        //resolve();
+                        //res.status(400).json({status:400, message: "Update to class failed."});
+                        resolve();
                         return;
                     }
 
@@ -153,8 +156,8 @@ function addClassToStudent(studentId, classId, req, res) {
             if (error) {
                 console.log(error.stack);
                 con.end();
-                res.status(400).json({status:400, message: "Error getting class_list from user."});
-                //resolve();
+                //res.status(400).json({status:400, message: "Error getting class_list from user."});
+                resolve();
                 return;
             }
             
@@ -176,7 +179,8 @@ function addClassToStudent(studentId, classId, req, res) {
                     if (error2) {
                         console.log(error2.stack);
                         con.end();
-                        res.status(400).json({status:400, message: "Update to user failed."});
+                        //res.status(400).json({status:400, message: "Update to user failed."});
+                        resolve();
                         return;
                     }
 
@@ -197,20 +201,18 @@ function getInstructorClasses(req, res) {
     return new Promise(resolve => {
         console.log("IN INSTRUCTOR CLASSES: "+req);
         try{
-            req.checkBody('user_id', 'user_id field is required.').notEmpty();
             
-            if (req.validationErrors()) {
-                console.log("IN checkbody err");
-                res.status(400).json({status:400, message: "User_id not in body."})
+            if ( isNull(req.query.user_id) ) {
+                console.log("NO USER ID SPECIFIED");
                 resolve();
                 return;
-            }
+            } 
         } catch (error) {
             console.log("ERROR");
         }
 
         let con = mysql.createConnection(dbInfo);
-        con.query(`select * from class where instructor_id = ${mysql.escape(req.body.user_id)}`, (error, results, fields) => {
+        con.query(`select * from class where instructor_id = ${mysql.escape(req.query.user_id)}`, (error, results, fields) => {
             if (error) {
                 console.log(error.stack);
                 con.end();
@@ -236,36 +238,33 @@ function getStudentClasses(req, res) {
     return new Promise(resolve => {
         //console.log("IN getstudetnclasses: "+req.body);
         try{
-            req.checkBody('user_id', 'user_id field is required.').notEmpty();
-            
-            if (req.validationErrors()) {
-                console.log("IN checkbody err");
-                res.status(400).json({status:400, message: "User_id not in body."})
+            if ( isNull(req.query.user_id) ) {
+                console.log("NO USER ID SPECIFIED");
                 resolve();
                 return;
-            }
+            } 
         } catch (error) {
             console.log("ERROR");
         }
 
         let con = mysql.createConnection(dbInfo);
-        con.query(`select class_list from user where id = ${mysql.escape(req.body.user_id)}`, (error, results, fields) => {
+        con.query(`select class_list from user where id = ${mysql.escape(req.query.user_id)}`, (error, results, fields) => {
             if (error) {
                 console.log(error.stack);
                 con.end();
-                res.status(400).json({status:400, message: "Error getting class_list from user."});
+                //res.status(400).json({status:400, message: "Error getting class_list from user."});
                 //resolve();
                 return;
             }
                    
             if ( results[0] === undefined ) {
-                 res.status(400).json({status:400, message: "Error user_id not found."});
+                 //res.status(400).json({status:400, message: "Error user_id not found."});
                  resolve();
                  return;
             }
             
             if( results[0].class_list == "" ) {
-                 res.status(400).json({status:400, message: "Error user_id not enrolled in no classes."});
+                 //res.status(400).json({status:400, message: "Error user_id not enrolled in no classes."});
                  resolve();
                  return;
             }
@@ -285,7 +284,7 @@ function getStudentClasses(req, res) {
 
                     console.log("\nResults2: ");
                     console.log(results2);
-                    console.log(`${req.body.user_id} successfully added.`);
+                    console.log(`${req.query.user_id} successfully added.`);
                     con.end();
                     resolve(results2);
             });
