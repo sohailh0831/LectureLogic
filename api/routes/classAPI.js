@@ -5,7 +5,7 @@ const dotenv = require('dotenv').config();
 const mysql = require("mysql");
 const { addStudentToClass } = require("../store/class");
 const { classList } = require("../store/class");
-const { addClass, getStudentClasses } = require("../store/class");
+const { addClass, getStudentClasses, getInstructorClasses } = require("../store/class");
 const { officialSchools, instructorSchools } = require("../store/school");
 const AuthenticationFunctions = require('../Authentication.js');
 
@@ -111,6 +111,20 @@ router.get('/studentClasses', AuthenticationFunctions.ensureAuthenticated, async
         console.log("IN NO RESULTS");
         return res.status(400).json({status:400, message: "error"});
     }
-})
+});
+
+router.get('/instructorClasses', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+    let results = await getInstructorClasses(req, res);
+
+    if (results) {
+        req.flash('success', 'Successfully got instructor classes.');
+        console.log("IN RESULTS");
+        return res.status(200).send(results);
+    } else {
+        req.flash('error', 'Something went wrong. Try again.');
+        console.log("IN NO RESULTS");
+        return res.status(400).json({status:400, message: "error"});
+    }
+});
 
 module.exports = router;
