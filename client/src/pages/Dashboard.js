@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Form, Grid, Header, Segment, Popup } from 'semantic-ui-react'
+import { Button, Form, Grid, Header, Segment, Popup, Modal } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 import ClassCard from './ClassCard';
 
@@ -12,10 +12,15 @@ class Dashboard extends React.Component {
             userId: '',
             response: '',
             classList: [],
-            newClassDesc: ''
+            newClassDesc: '',
+            type: '',
+            listReceived: false
         };
         this.handleAddClass = this.handleAddClass.bind(this);
         this.getClassList = this.getClassList.bind(this);
+        this.handleClassNameChange = this.handleClassNameChange.bind(this);
+        this.handleClassDescChange = this.handleClassDescChange.bind(this);
+        
 
     }
 
@@ -36,13 +41,13 @@ class Dashboard extends React.Component {
             }
         }).then(response => response.json())
             .then(data => {
-                this.setState({ username: data.username , name: data.name, response: data, userId: data.id  })
-                console.log(data);
-                tmpId = data.id;
+                this.setState({ username: data.username , name: data.name, response: data, userId: data.id, type: data.type })
             }); // here's how u set variables u want to use later
     
         this.getClassList();
     }
+
+    compo
 
 
     render() {
@@ -64,10 +69,31 @@ class Dashboard extends React.Component {
 
                         <Segment stacked textAlign="center" verticalAlign='middle'>
                             <Header as = 'h2' color = 'grey' textAlign = 'center'>
-                                Dashboard Temp Header
+                                {popUpMessage}
                             </Header>
 
-                            <Popup content={popUpMessage} trigger={<Button icon='add' color='purple' onClick={this.handleAddClass} />} />
+                            <Modal
+                                trigger={<Button icon='add' color='purple' ></Button>}
+                                header='Add New Class'
+                                content={
+                                    <Form>
+                                        <Form.Input
+                                            placeholder='Class Name'
+                                            required={true}
+                                            value={this.state.className}
+                                            onChange={this.handleClassNameChange}
+                                        />
+                                        <Form.Input
+                                            placeholder='Class Description'
+                                            required={true}
+                                            value={this.state.classDesc}
+                                            onChange={this.handleClassDescChange}
+                                        />
+                                    </Form>
+                                }
+                                actions={['Close', <Button color='purple' onClick={this.handleAddClass}> done</Button>]}
+                            />
+                            
 
                         </Segment>
 
@@ -89,32 +115,26 @@ class Dashboard extends React.Component {
         
     } //End redner{}(...)
 
-    async handleAddClass() { //absolutely doesnt work dont try it and dont fuck with it
-        console.log("Adding a Class");
-        await fetch("http://localhost:9000/class/addClass", {
-            method: 'POST',
-            credentials: "include",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Credentials': true,
-            },
-            body: JSON.stringify({
-                name: this.state.name,
-                description: this.state.addClassDesc,
-                instrucor_id: this.state.userId,
-            })
-        }).then(res => res.json()).then((data) => { 
-            console.log(data);
-            this.setState({response: data})
-        }).catch(console.log)
-    } /* End handleAddClass(...) */
 
-    async getClassList() { //dont fuck with this... doesnt work
-        console.log("Getting Student ClassList");
-        if (this.state.type === '1') { //----------IF STUDENT----------
-            await fetch('http://localhost:9000/class/studentClasses?user_id=' + this.state.userId ,{
-                method: 'GET',
+
+
+
+    async handleClassNameChange(event){
+        const value = event.target.value;
+        await this.setState({className: value});
+    }
+    async handleClassDescChange(event){
+        const value = event.target.value;
+        await this.setState({classDesc: value});
+    }
+
+
+
+    async handleAddClass() {
+        if (this.state.type === '0') {
+            console.log("Instructor adding class");
+            await fetch("http://localhost:9000/class/addClass", {
+                method: 'POST',
                 credentials: "include",
                 headers: {
                     'Accept': 'application/json',
@@ -122,31 +142,63 @@ class Dashboard extends React.Component {
                     'Access-Control-Allow-Credentials': true,
                 },
                 body: JSON.stringify({
-                    id: this.state.userId
+                    name: this.state.className,
+                    description: this.state.classDesc,
+                    instructor_id: this.state.userId,
                 })
-            }).then(response => response.json())
-            .then(data => {
+            }).then(res => res.json()).then((data) => { 
                 console.log(data);
-                this.setState({classList: data, listReceived: true})
-            }).catch(console.log);
-            //parse classlist
+                this.setState({response: data})
+                window.location.replace('/dashboard');
+            }).catch(console.log)
         }
-        else{ //----------IF INSTRUCTOR----------
-            console.log("Getting Instructor Classlist")
-            await fetch('http://localhost:9000/class/instructorClasses?user_id=' + this.state.userId ,{
-                method: 'GET',
-                credentials: "include",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json',
-                    'Access-Control-Allow-Credentials': true,
-                }
-            }).then(response => response.json())
-            .then(data => {
-                //console.log(data);
-                this.setState({classList: data})
-            }).catch(console.log);
-            //parse classlist
+        else {
+            //JOE PLACE STUDENT JOINING CLASS HERE
+        }
+    } /* End handleAddClass(...) */
+
+
+
+
+
+
+
+
+
+    async getClassList() { //dont fuck with this... doesnt work
+        if (!this.state.listReceived) {
+            if (this.state.type === '1') { //----------IF STUDENT----------
+                await fetch('http://localhost:9000/class/studentClasses?user_id=' + this.state.userId ,{
+                    method: 'GET',
+                    credentials: "include",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Credentials': true,
+                    },
+                    body: JSON.stringify({
+                        id: this.state.userId
+                    })
+                }).then(response => response.json())
+                .then(data => {
+                    this.setState({classList: data, listReceived: true})
+                }).catch(console.log);
+            }
+            else{ //----------IF INSTRUCTOR----------
+                console.log("Getting Instructor Classlist")
+                await fetch('http://localhost:9000/class/instructorClasses?user_id=' + this.state.userId ,{
+                    method: 'GET',
+                    credentials: "include",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Credentials': true,
+                    }
+                }).then(response => response.json())
+                .then(data => {
+                    this.setState({classList: data, listReceived: true})
+                }).catch(console.log);
+            }
         }
     } /* End getClassList(...) */
 
