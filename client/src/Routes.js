@@ -1,19 +1,18 @@
-import React, { Component } from "react";
-import { BrowserRouter, Route, Switch, Grid, Redirect } from "react-router-dom";
+import React from "react";
+import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 import {Link} from 'react-router-dom';
 import {GlobalStyles} from './config/global';
 
 import {
-  Menu,
-  Form
+  Menu
 } from "semantic-ui-react"
 
 import Register from './pages/Register';
 import Login from './pages/Login';
-import MainPage from './pages/MainPage';
 import errorPage from './pages/errorPage';
 import Dashboard from './pages/Dashboard'
 import ChangePassword from './pages/ChangePassword'
+import LectureView from './pages/LectureView.js'
 
 
 
@@ -23,6 +22,7 @@ export default class Routes extends React.Component {
     constructor(props) {
       super(props);
       this.handlePageJump = this.handlePageJump.bind(this);
+      this.handleLogout = this.handleLogout.bind(this);
 
       this.state = {
         menuVisible: true,
@@ -41,7 +41,7 @@ export default class Routes extends React.Component {
                           <Menu attached="top" size="huge">
                               <Menu.Item
                                   as={Link}
-                                  replace={false}
+                                  //replace={false}
                                   to={{pathname: '/', state: {}}} //where we can pass values into state (access as this.props.state.____)
                                   name={"MainPage"}
                                   content="Home"
@@ -50,7 +50,7 @@ export default class Routes extends React.Component {
                               />
                               <Menu.Item
                                   as={Link}
-                                  replace={false}
+                                  //replace={false}
                                   to={{pathname: '/register', state: {}}} //where we can pass values into state (access as this.props.state.____)
                                   name={"Register"}
                                   content="Register"
@@ -59,12 +59,19 @@ export default class Routes extends React.Component {
                               />
                               <Menu.Item
                                   as={Link}
-                                  replace={false}
+                                  //replace={false}
                                   to={{pathname: '/login', state: {}}} //where we can pass values into state (access as this.props.state.____)
                                   name={"Login"}
                                   content="Login"
                                   onClick={this.handlePageJump}
                                   active={activeItem === 'Login'}
+                              />
+                              <Menu.Item
+                                //replace={false}
+                                name={"Logout"}
+                                content="Logout"
+                                onClick={this.handleLogout}
+                                active={activeItem === 'Logout'}
                               />
                           </Menu>
 
@@ -76,6 +83,7 @@ export default class Routes extends React.Component {
                             <Route exaxt path ="/register" component ={Register}/>
                             <Route exact path ="/dashboard" component ={Dashboard}/>
                             <Route exact path ="/changePassword" component ={ChangePassword}/>
+                            <Route exact path ="/lectureView" component={LectureView}/>
                             <Redirect to="/404" />
                           </Switch>
 
@@ -88,6 +96,28 @@ export default class Routes extends React.Component {
 
     handlePageJump(e, { name }) {
       this.setState({activeItem: name})
+    }
+
+    async handleLogout() {
+      if (localStorage.getItem('authenticated') === 'authenticated'){ //make sure that
+        await fetch("http://localhost:9000/logout", {
+            method: 'GET',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            }
+        }).then(res => res.text()).then((data) => { 
+            localStorage.setItem("authenticated", "false");
+            localStorage.clear(); //clears local storage
+            window.location.replace('/login');
+            this.setState({response: data})
+        }).catch(console.log)
+      }
+      else {
+        console.log("No user logged in");
+      }
     }
 
 

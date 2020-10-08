@@ -1,9 +1,7 @@
 /* Register.jsx -- Handles registering a new user */
 import React from "react";
-import {Button, Form, Grid, Message, Segment, Icon, Header, Label, Radio, FormField} from "semantic-ui-react";
+import {Button, Form, Grid, Segment, Header, Radio, FormField} from "semantic-ui-react";
 import 'semantic-ui-css/semantic.min.css'
-import { Redirect } from "react-router-dom";
-
 
 export default class Register extends React.Component {
     constructor(props) {
@@ -40,100 +38,102 @@ export default class Register extends React.Component {
 
     //Main render method that is called on load or when the component's state changes
     render() { 
-        if(localStorage.getItem("authenticated") == "authenticated"){
+        if(localStorage.getItem("authenticated") === "authenticated"){
             window.location.replace('/dashboard'); //redirects to dashboard if already logged in
         }
         return(
             <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle'>
-                <Form size='large'>
-                    <Segment stacked textAlign="center" verticalAlign='middle'>
-                        <Header as = 'h2' color = 'grey' textAlign = 'center'>
-                            Register for an Account
-                        </Header>
+                <Grid.Column style={{maxWidth: 450}}>
+                    <Form size='large'>
+                        <Segment stacked textAlign="center" verticalAlign='middle'>
+                            <Header as = 'h2' color = 'grey' textAlign = 'center'>
+                                Register for an Account
+                            </Header>
 
-                        {/* Need student/instructor  */}
+                            {/* Need student/instructor  */}
 
-                        {/* Email Input */}
-                        <Form.Input
-                            placeholder='Email'
-                            required={true}
-                            value={this.state.email}
-                            onChange={this.handleEmailChange}
-                        />
-
-                        {/* Name Input */}
-                        <Form.Input
-                            placeholder='Name'
-                            required={true}
-                            value={this.state.name}
-                            onChange={this.handleNameChange}
-                        />
-
-                        {/* Phone Input */}
-                        <Form.Input
-                            placeholder='Phone Number: 999-999-9999'
-                            type='tel' pattern='[0-9]{3}-[0-9]{3}-[0-9]{4}'
-                            required={true}
-                            value={this.state.phone}
-                            onChange={this.handlePhoneChange}
-                        />
-
-                        {/* Username Input */}
-                        <Form.Input
-                            placeholder='Username'
-                            required={true}
-                            value={this.state.username}
-                            onChange={this.handleUsernameChange}
-                        />
-
-                        {/* Password Input */}
-                        <Form.Input
-                            placeholder='Password'
-                            required={true}
-                            type='password'
-                            value={this.state.password}
-                            onChange={this.handlePasswordChange}
-                        />
-
-                        {/* Confirm Password Input -- Look at making sure passwords match*/}
-                        <Form.Input
-                            placeholder='Confirm Password'
-                            required={true}
-                            type='password'               //'match[password]'
-                            value={this.state.confirmPassword}
-                            onChange={this.handleConfirmPasswordChange}
-                        />
-
-                        {/* Student/Instructor Radio Input */}
-                        <FormField>
-                            Register as: <b>{this.state.value}</b>
-                        </FormField>
-                        <FormField>
-                            <Radio
-                             label='Student'
-                                name='radioGroup'
-                                value='Student'
-                                checked={this.state.value === "Student"}
-                                onChange={this.handleStudentChange}
+                            {/* Email Input */}
+                            <Form.Input
+                                placeholder='Email'
+                                required={true}
+                                value={this.state.email}
+                                onChange={this.handleEmailChange}
                             />
-                            <Radio
-                                label='Instructor'
-                                name='radioGroup'
-                                value='Instructor'
-                                checked={this.state.value === "Instructor"}
-                                onChange={this.handleStudentChange}
+
+                            {/* Name Input */}
+                            <Form.Input
+                                placeholder='Name'
+                                required={true}
+                                value={this.state.name}
+                                onChange={this.handleNameChange}
                             />
-                        </FormField>
 
-                        <br/>
+                            {/* Phone Input */}
+                            <Form.Input
+                                placeholder='Phone Number: 999-999-9999'
+                                type='tel' pattern='[0-9]{3}-[0-9]{3}-[0-9]{4}'
+                                required={true}
+                                value={this.state.phone}
+                                onChange={this.handlePhoneChange}
+                            />
 
-                        {/* Register Button */}
-                        <Button color='purple' fluid size='large' active={this.state.enabled} onClick={this.handleRegister}>
-                            Register
-                        </Button>
+                            {/* Username Input */}
+                            <Form.Input
+                                placeholder='Username'
+                                required={true}
+                                value={this.state.username}
+                                onChange={this.handleUsernameChange}
+                            />
 
-                    </Segment>
-                </Form>
+                            {/* Password Input */}
+                            <Form.Input
+                                placeholder='Password'
+                                required={true}
+                                type='password'
+                                value={this.state.password}
+                                onChange={this.handlePasswordChange}
+                            />
+
+                            {/* Confirm Password Input -- Look at making sure passwords match*/}
+                            <Form.Input
+                                placeholder='Confirm Password'
+                                required={true}
+                                type='password'               //'match[password]'
+                                value={this.state.confirmPassword}
+                                onChange={this.handleConfirmPasswordChange}
+                            />
+
+                            {/* Student/Instructor Radio Input */}
+                            <FormField>
+                                Register as: <b>{this.state.value}</b>
+                            </FormField>
+                            <FormField>
+                                <Radio
+                                label='Student'
+                                    name='radioGroup'
+                                    value='Student'
+                                    checked={this.state.value === "Student"}
+                                    onChange={this.handleStudentChange}
+                                />
+                                <Radio
+                                    label='Instructor'
+                                    name='radioGroup'
+                                    value='Instructor'
+                                    checked={this.state.value === "Instructor"}
+                                    onChange={this.handleStudentChange}
+                                />
+                            </FormField>
+
+                            <br/>
+
+                            {/* Register Button */}
+                            <Button color='purple' fluid size='large' active={this.state.enabled} onClick={this.handleRegister}>
+                                Register
+                            </Button>
+
+                        </Segment>
+                    </Form>
+                </Grid.Column>
         </Grid>
         ) /*End return(...) */
     } /* End render(){...} */

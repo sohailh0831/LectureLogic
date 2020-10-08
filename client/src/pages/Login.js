@@ -1,7 +1,6 @@
 import React from 'react'
-import { Button, Form, Grid, Header, Segment, Modal, Icon, Message } from 'semantic-ui-react'
+import { Button, Form, Grid, Header, Segment} from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
-import { Redirect } from "react-router-dom";
 
 export default class Login extends React.Component {
     constructor(props) {
@@ -20,7 +19,7 @@ export default class Login extends React.Component {
 
     render() {
         //console.log("local in login: " + localStorage.getItem("authenticated"))
-        if(localStorage.getItem("authenticated") == "authenticated"){
+        if(localStorage.getItem("authenticated") === "authenticated"){
                window.location.replace('/dashboard'); //redirects to dashboard if already logged in
         }
         const errorStatus = this.state.loginError;
@@ -100,7 +99,7 @@ export default class Login extends React.Component {
                 password: this.state.password,
             })
         }).then(res => res.json()).then((data) => { 
-            if(data == "OK"){ //successfully logged in
+            if(data === "OK"){ //successfully logged in
                 localStorage.setItem("authenticated", "authenticated");
             }
             else{
