@@ -193,6 +193,45 @@ function addClassToStudent(studentId, classId, req, res) {
     });
 }
 
+function getInstructorClasses(req, res) {
+    return new Promise(resolve => {
+        console.log("IN INSTRUCTOR CLASSES: "+req);
+        try{
+            req.checkBody('user_id', 'user_id field is required.').notEmpty();
+            
+            if (req.validationErrors()) {
+                console.log("IN checkbody err");
+                res.status(400).json({status:400, message: "User_id not in body."})
+                resolve();
+                return;
+            }
+        } catch (error) {
+            console.log("ERROR");
+        }
+
+        let con = mysql.createConnection(dbInfo);
+        con.query(`select * from class where instructor_id = ${mysql.escape(req.body.user_id)}`, (error, results, fields) => {
+            if (error) {
+                console.log(error.stack);
+                con.end();
+                res.status(400).json({status:400, message: "Error getting class_list from user."});
+                //resolve();
+                return;
+            }
+                   
+            if ( results[0] === undefined ) {
+                 res.status(400).json({status:400, message: "Error user_id not found or instructor has no classes."});
+                 resolve();
+                 return;
+            }
+
+            resolve(results);
+            return;
+        });
+
+    });
+}
+
 function getStudentClasses(req, res) {
     return new Promise(resolve => {
         //console.log("IN getstudetnclasses: "+req.body);
@@ -255,4 +294,4 @@ function getStudentClasses(req, res) {
     });
 }
 
-module.exports = {addStudentToClass, classList, addClass, getStudentClasses}
+module.exports = {addStudentToClass, classList, addClass, getStudentClasses, getInstructorClasses}
