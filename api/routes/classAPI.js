@@ -99,7 +99,7 @@ router.post('/addStudentToClass', AuthenticationFunctions.ensureAuthenticated, a
     }
 });
 
-router.get('/studentClasses', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+router.get('/studentClasses/:userId', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
     let results = await getStudentClasses(req, res);
 
     if (results) {
@@ -114,6 +114,7 @@ router.get('/studentClasses', AuthenticationFunctions.ensureAuthenticated, async
 });
 
 router.get('/instructorClasses', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+    console.log("USERID: "+req.query.userId);
     let results = await getInstructorClasses(req, res);
 
     if (results) {
