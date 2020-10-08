@@ -4,7 +4,7 @@ const {assert} = require('chai');
 var axios = require('axios');
 const { get, noConflict } = require('lodash');
 var authCookie;
-const { classList, addStudentToClass } = require("../../store/class");
+const { classList, addStudentToClass, getInstructorClasses } = require("../../store/class");
 const nock = require('nock');
 const fetch = require("node-fetch");
 const { instructorSchools } = require('../../store/school');
@@ -185,68 +185,48 @@ describe('Server Class', async function () {
   describe('Server Class', async function () {
     describe('test good addStudentToClass', async function() {
       it('addStudentToClass Response Status Should be 200', async function () {
-        //   let result = await axios({
-        //     method: 'post',
-        //     url: 'http://127.0.0.1:9000/class/addStudentToClass',
-        //     data: {
-        //         studentId: "26968e0c-3ae2-4dd7-aa08-4a1388470f27",
-        //         classId: 3
-        //     }
-        //   });
+        
             let req = {body: {studentId: "26968e0c-3ae2-4dd7-aa08-4a1388470f27", classId: 3} };
             let res = { status: ""};
             let result = await addStudentToClass(req, res);
-            console.log(result);
+            
             assert.isNotNull(result, "not null");
-            //assert.equal(result.data.message, "success");
       });
     });
   });
 
-// describe('Server Class', async function () {
-//     describe('test bad addStudentToClass', async function() {
-//       it('addStudentToClass where student already enrolled in class. Response Status Should be 400', async function () {
-//         try{
-//             let result = await axios({
-//                 method: 'post',
-//                 url: 'http://127.0.0.1:9000/class/addStudentToClass',
-//                 data: {
-//                     studentId: "26968e0c-3ae2-4dd7-aa08-4a1388470f27",
-//                     classId: 3
-//                 }
-//             });
-//         } catch (error) {
-//             assert.equal(error.response.status, 400);
-//         }
+describe('Server Class', async function () {
+    describe('test bad addStudentToClass', async function() {
+      it('addStudentToClass where student already enrolled in class. Response Status Should be 400', async function () {
+        try{
+            let req = {body: {studentId: "26968e0c-3ae2-4dd7-aa08-4a1388470f27", classId: 3} };
+            let res = { status: ""};
+            let result = await addStudentToClass(req, res);
+
+        } catch (error) {
+            assert.equal(error.response.status, 400);
+        }
           
-//       });
+      });
 
-//       it('addStudentToClass with classId parameter missing. Response Status Should be 400', async function () {
-//           try{
-//               let result = await axios({
-//                   method: 'post',
-//                   url: 'http://127.0.0.1:9000/class/addStudentToClass',
-//                   data: {
-//                       studentId: "26968e0c-3ae2-4dd7-aa08-4a1388470f27"
-//                   }
-//               });
-//           } catch (error) {
-//               assert.equal(error.response.status, 400);
-//           }
-//         });
-//         it('addStudentToClass with studentId parameter missing. Response Status Should be 400', async function () {
-//               try{
-//                   let result = await axios({
-//                       method: 'post',
-//                       url: 'http://127.0.0.1:9000/class/addStudentToClass',
-//                       data: {
-//                           classId: 3
-//                       }
-//                   });
-//               } catch (error) {
-//                   assert.equal(error.response.status, 400);
-//               }
-//         });
+      it('addStudentToClass with classId parameter missing. Response Status Should be 400', async function () {
+           try{
+            let req = {body: {studentId: "26968e0c-3ae2-4dd7-aa08-4a1388470f27"} };
+            let res = { status: ""};
+            let result = await addStudentToClass(req, res);
+          } catch (error) {
+              assert.equal(error.response.status, 400);
+          }
+        });
+        it('addStudentToClass with studentId parameter missing. Response Status Should be 400', async function () {
+            try{
+                let req = {body: {classId: 3} };
+                let res = { status: ""};
+                let result = await addStudentToClass(req, res);
+              } catch (error) {
+                  assert.equal(error.response.status, 400);
+              }
+         });
 
-//     });
-// });  
+    });
+}); 

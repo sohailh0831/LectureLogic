@@ -32,7 +32,7 @@ router.post('/addClass', AuthenticationFunctions.ensureAuthenticated,async funct
     } else {
         req.flash('error', 'Failed to add class.');
         console.log("IN NO RESULTS");
-        return res.status(400).json({status:400, message: "error"});
+        return res.status(400).send(results);//son({status:400, message: "error"});
     }
 });
 
@@ -47,7 +47,7 @@ router.get('/classList', async function(req, res, next) {
     } else {
         req.flash('error', 'Failed to get class list.');
         console.log("IN NO RESULTS");
-        return res.status(400).json({status:400, message: "error"});
+        return res.status(400).send(results);//json({status:400, message: "error"});
     }
 });
 
@@ -63,7 +63,7 @@ router.get('/instructorSchools', AuthenticationFunctions.ensureAuthenticated,asy
     } else {
         req.flash('error', 'Failed to get instructor school list.');
         console.log("IN NO RESULTS");
-        return res.status(400).json({status:400, message: "error"});
+        return res.status(400).send(results);//json({status:400, message: "error"});
     }
 });
 
@@ -79,7 +79,7 @@ router.get('/officialSchools', async function(req, res, next) {
     } else {
         req.flash('error', 'Failed to get official school list.');
         console.log("IN NO RESULTS");
-        return res.status(400).json({status:400, message: "error"});
+        return res.status(400).send(results);//json({status:400, message: "error"});
     }
 });
 
@@ -95,7 +95,7 @@ router.post('/addStudentToClass', AuthenticationFunctions.ensureAuthenticated, a
     } else {
         req.flash('error', 'Something went wrong. Try again.');
         console.log("IN NO RESULTS");
-        return res.status(400).json({status:400, message: "error"});
+        return res.status(400).send(results);//json({status:400, message: "error"});
     }
 });
 
@@ -109,7 +109,7 @@ router.get('/studentClasses/:userId', AuthenticationFunctions.ensureAuthenticate
     } else {
         req.flash('error', 'Something went wrong. Try again.');
         console.log("IN NO RESULTS");
-        return res.status(400).json({status:400, message: "error"});
+        return res.status(400).send(results);//json({status:400, message: "error"});
     }
 });
 
@@ -124,7 +124,7 @@ router.get('/instructorClasses', AuthenticationFunctions.ensureAuthenticated, as
     } else {
         req.flash('error', 'Something went wrong. Try again.');
         console.log("IN NO RESULTS");
-        return res.status(400).json({status:400, message: "error"});
+        return res.status(400).send(results);//.json({status:400, message: "error"});
     }
 });
 
