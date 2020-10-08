@@ -84,11 +84,14 @@ function addStudentToClass(req, res) {
             req.checkBody('classId', 'classId field is required.').notEmpty();
 
             if (req.validationErrors()) {
+                console.log("Validation error");
                 resolve();
                 return;
             }
         } catch (error) {
-            console.log("ERROR in checkbody");
+            //console.log("ERROR in checkbody");
+            resolve();
+            return;
         }
         let studentId = req.body.studentId;
         let classId = req.body.classId;
@@ -103,7 +106,10 @@ function addStudentToClass(req, res) {
                 return;
             }
             
-
+            if ( results[0] === undefined ) {
+                resolve();
+                return;
+            }
             if ( isNull(results[0].student_list) ) {
                 results[0].student_list = `[ "${mysql.escape(studentId)}" ]`;
             }
@@ -216,13 +222,13 @@ function getInstructorClasses(req, res) {
             if (error) {
                 console.log(error.stack);
                 con.end();
-                res.status(400).json({status:400, message: "Error getting class_list from user."});
+                //res.status(400).json({status:400, message: "Error getting class_list from user."});
                 //resolve();
                 return;
             }
                    
             if ( results[0] === undefined ) {
-                 res.status(400).json({status:400, message: "Error user_id not found or instructor has no classes."});
+                 //res.status(400).json({status:400, message: "Error user_id not found or instructor has no classes."});
                  resolve();
                  return;
             }
