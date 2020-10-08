@@ -197,7 +197,7 @@ function getStudentClasses(req, res) {
     return new Promise(resolve => {
         //console.log("IN getstudetnclasses: "+req.body);
         try{
-            req.checkBody('student_id', 'student_id field is required.').notEmpty();
+            req.checkBody('user_id', 'user_id field is required.').notEmpty();
             
             if (req.validationErrors()) {
                 console.log("IN checkbody err");
@@ -210,7 +210,7 @@ function getStudentClasses(req, res) {
         }
 
         let con = mysql.createConnection(dbInfo);
-        con.query(`select class_list from user where id = ${mysql.escape(req.body.student_id)}`, (error, results, fields) => {
+        con.query(`select class_list from user where id = ${mysql.escape(req.body.user_id)}`, (error, results, fields) => {
             if (error) {
                 console.log(error.stack);
                 con.end();
@@ -246,7 +246,7 @@ function getStudentClasses(req, res) {
 
                     console.log("\nResults2: ");
                     console.log(results2);
-                    console.log(`${req.body.student_id} successfully added.`);
+                    console.log(`${req.body.user_id} successfully added.`);
                     con.end();
                     resolve(results2);
             });
