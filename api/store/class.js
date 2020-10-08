@@ -229,10 +229,11 @@ function getInstructorClasses(req, res) {
                    
             if ( results[0] === undefined ) {
                  //res.status(400).json({status:400, message: "Error user_id not found or instructor has no classes."});
+                 con.end()
                  resolve();
                  return;
             }
-
+            con.end();
             resolve(results);
             return;
         });
@@ -265,12 +266,14 @@ function getStudentClasses(req, res) {
                    
             if ( results[0] === undefined ) {
                  //res.status(400).json({status:400, message: "Error user_id not found."});
+                 con.end();
                  resolve();
                  return;
             }
             
             if( results[0].class_list == "" ) {
                  //res.status(400).json({status:400, message: "Error user_id not enrolled in no classes."});
+                 con.end();
                  resolve();
                  return;
             }
