@@ -12,6 +12,7 @@ import Login from './pages/Login';
 import errorPage from './pages/errorPage';
 import Dashboard from './pages/Dashboard'
 import ChangePassword from './pages/ChangePassword'
+import LectureView from './pages/LectureView.js'
 
 
 
@@ -82,6 +83,7 @@ export default class Routes extends React.Component {
                             <Route exaxt path ="/register" component ={Register}/>
                             <Route exact path ="/dashboard" component ={Dashboard}/>
                             <Route exact path ="/changePassword" component ={ChangePassword}/>
+                            <Route exact path ="/lectureView" component={LectureView}/>
                             <Redirect to="/404" />
                           </Switch>
 
