@@ -1,7 +1,6 @@
 import React from 'react'
-import { Button, Form, Grid, Header, Segment, Modal, Icon, Message } from 'semantic-ui-react'
+import { Button, Form, Grid, Header, Segment} from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
-import { Redirect } from "react-router-dom";
 
 export default class ChangePassword extends React.Component {
     constructor(props) {
@@ -20,7 +19,7 @@ export default class ChangePassword extends React.Component {
     }
 
     render() {
-        if(localStorage.getItem("authenticated") != "authenticated"){
+        if(localStorage.getItem("authenticated") !== "authenticated"){
                window.location.replace('/login'); 
         }
         const errorStatus = this.state.loginError;
@@ -114,7 +113,7 @@ export default class ChangePassword extends React.Component {
                 reNewPassword: this.state.reNewPassword
             })
         }).then(res => res.json()).then((data) => { 
-            if(data == "OK"){ //successfully logged in
+            if(data === "OK"){ //successfully logged in
                 localStorage.setItem("authenticated", "authenticated");
                 console.log("successfully changed password")
                 window.location.replace('/');

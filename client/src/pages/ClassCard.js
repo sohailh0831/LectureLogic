@@ -1,5 +1,5 @@
 import React from "react";
-import {Button, Card, CardContent, Grid, GridRow, Header, Icon, Image, Modal, Segment} from "semantic-ui-react";
+import {Card, CardContent, Header} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 
 import Register from './Register';

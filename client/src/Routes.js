@@ -1,16 +1,14 @@
-import React, { Component } from "react";
-import { BrowserRouter, Route, Switch, Grid, Redirect } from "react-router-dom";
+import React from "react";
+import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
 import {Link} from 'react-router-dom';
 import {GlobalStyles} from './config/global';
 
 import {
-  Menu,
-  Form
+  Menu
 } from "semantic-ui-react"
 
 import Register from './pages/Register';
 import Login from './pages/Login';
-import MainPage from './pages/MainPage';
 import errorPage from './pages/errorPage';
 import Dashboard from './pages/Dashboard'
 import ChangePassword from './pages/ChangePassword'
@@ -99,7 +97,7 @@ export default class Routes extends React.Component {
     }
 
     async handleLogout() {
-      if (localStorage.getItem('authenticated') == 'authenticated'){ //make sure that
+      if (localStorage.getItem('authenticated') === 'authenticated'){ //make sure that
         await fetch("http://localhost:9000/logout", {
             method: 'GET',
             credentials: "include",

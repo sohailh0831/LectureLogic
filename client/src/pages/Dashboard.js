@@ -1,7 +1,6 @@
 import React from 'react'
-import { Button, Form, Grid, Header, Segment, Modal, Icon, Message, Popup } from 'semantic-ui-react'
+import { Button, Form, Grid, Header, Segment, Popup } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
-import { Redirect } from "react-router-dom";
 import ClassCard from './ClassCard';
 
 class Dashboard extends React.Component {
@@ -21,13 +20,13 @@ class Dashboard extends React.Component {
 
     }
 
-    async componentDidMount() { // this is function called before render() ... use it to fetch any info u need
+    componentDidMount() { // this is function called before render() ... use it to fetch any info u need
         // Simple GET request using fetch
         //console.log(localStorage.getItem("authenticated"))
-        if(localStorage.getItem("authenticated") != "authenticated"){
+        if(localStorage.getItem("authenticated") !== "authenticated"){
             window.location.replace('/login'); //redirects to login if not already logged in
         }
-        await fetch('http://localhost:9000/dashboard' ,{
+        fetch('http://localhost:9000/dashboard' ,{
             method: 'GET',
             credentials: "include",
             headers: {
@@ -38,20 +37,21 @@ class Dashboard extends React.Component {
         }).then(response => response.json())
             .then(data => this.setState({ username: data.username , name: data.name, response: data, userId: data.id  })); // here's how u set variables u want to use later
         
-        if (this.state.response.type == '1') {
-            this.setState({isInstructor: false});
+        if (this.state.response.type === '1') { //if user is a student
+            this.setState({isInstructor: false, popUpMessage: 'Join a Class'});
         }
-        else {
-            this.setState({isInstructor: true});
+        else { //else user is instructor
+            this.setState({isInstructor: true, popUpMessage: 'Create New Class'});
         }
     }
 
 
 
     render() {
-        console.log(this.state.response);
-        //this.getClassList();
-        console.log(this.state.isInstructor);
+        if (this.state.popUpMessage !== undefined) {
+            this.getClassList();
+        }
+        //console.log(this.state.isInstructor);
 
         return (
             <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle'>
@@ -63,10 +63,8 @@ class Dashboard extends React.Component {
                                 Dashboard Temp Header
                             </Header>
 
-                            {/* <Button color='purple' icon='add' popup={'Add a New Class'} size='large' onClick={this.handleAddClass} /> */}
-                            <Segment hidden={this.state.isInstructor}> 
-                                <Popup content='Add a Class' trigger={<Button icon='add' color='purple' onClick={this.handleAddClass} />} />
-                            </Segment>
+                            <Popup content={this.state.popUpMessage} trigger={<Button icon='add' color='purple' onClick={this.handleAddClass} />} />
+                            
                         </Segment>
 
                     </Form>
@@ -97,25 +95,47 @@ class Dashboard extends React.Component {
             console.log(data);
             this.setState({response: data})
         }).catch(console.log)
-    }
+    } /* End handleAddClass(...) */
 
     async getClassList() { //dont fuck with this... doesnt work
-        console.log("Getting classList");
-        await fetch('http://localhost:9000/class/classlist' ,{
-            method: 'GET',
-            credentials: "include",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Credentials': true,
-            }
-        }).then(response => response.json())
-        .then(data => {
-            console.log(data);
-            this.setState({classList: data})
-        }).catch(console.log);
-        //parse classlist
-    }
+        console.log("Getting Student ClassList");
+        if (this.state.type === '1') { //----------IF STUDENT----------
+            await fetch('http://localhost:9000/class/studentClasses?user_id=' + this.state.userId ,{
+                method: 'GET',
+                credentials: "include",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Credentials': true,
+                },
+                body: JSON.stringify({
+                    id: this.state.userId
+                })
+            }).then(response => response.json())
+            .then(data => {
+                console.log(data);
+                this.setState({classList: data})
+            }).catch(console.log);
+            //parse classlist
+        }
+        else{ //----------IF INSTRUCTOR----------
+            console.log("Getting Instructor Classlist")
+            await fetch('http://localhost:9000/class/instructorClasses?user_id=' + this.state.userId ,{
+                method: 'GET',
+                credentials: "include",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Credentials': true,
+                }
+            }).then(response => response.json())
+            .then(data => {
+                console.log(data);
+                this.setState({classList: data})
+            }).catch(console.log);
+            //parse classlist
+        }
+    } /* End getClassList(...) */
 
 
     

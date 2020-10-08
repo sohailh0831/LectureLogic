@@ -1,9 +1,7 @@
 /* Register.jsx -- Handles registering a new user */
 import React from "react";
-import {Button, Form, Grid, Message, Segment, Icon, Header, Label, Radio, FormField} from "semantic-ui-react";
+import {Button, Form, Grid, Segment, Header, Radio, FormField} from "semantic-ui-react";
 import 'semantic-ui-css/semantic.min.css'
-import { Redirect } from "react-router-dom";
-
 
 export default class Register extends React.Component {
     constructor(props) {
@@ -40,7 +38,7 @@ export default class Register extends React.Component {
 
     //Main render method that is called on load or when the component's state changes
     render() { 
-        if(localStorage.getItem("authenticated") == "authenticated"){
+        if(localStorage.getItem("authenticated") === "authenticated"){
             window.location.replace('/dashboard'); //redirects to dashboard if already logged in
         }
         return(
