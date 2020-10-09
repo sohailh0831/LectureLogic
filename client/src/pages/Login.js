@@ -106,6 +106,7 @@ export default class Login extends React.Component {
            //window.location.replace('/login'); // need to flash that authentication failed
            this.setState.loginError = true;
            localStorage.setItem("authenticated", "not");
+           console.log("failed login");
             }
             this.setState({response: data})
         }).catch(console.log)
