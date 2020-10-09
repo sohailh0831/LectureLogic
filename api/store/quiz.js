@@ -21,6 +21,7 @@ let dbInfo = {
 
 function updateConfidence(req, res) {
     return new Promise(resolve => {
+        console.log(req.user, req.body)
         try{
             req.checkBody('quizId', 'quizId field is required.').notEmpty();
             req.checkBody('val', 'val field is required.').notEmpty();
@@ -30,7 +31,7 @@ function updateConfidence(req, res) {
         }
 
         let con = mysql.createConnection(dbInfo);
-        con.query(`select confidence from quiz where uuid = ${req.user.uuid}, quizId = ${req.body.quizId}`, (error, results, fields) => { 
+        con.query(`select confidence from quiz WHERE uuid = '${req.user.id}' AND id = ${req.body.quizId}`, (error, results, fields) => { 
             if (error) {
                 console.log(error.stack);
                 con.end();
@@ -39,9 +40,10 @@ function updateConfidence(req, res) {
                 return;
             } 
             if (results.length === 1) {
+                console.log('hitting')
                 let confidence = JSON.parse(results[0]).confidence;
                 confidence[req.body.question] = req.body.val;
-                con.query(`update quiz set confidence where uuid = ${req.user.uuid}, quizId = ${req.body.quizId}`, async (error1, results1, fields1) => { 
+                con.query(`update quiz set confidence WHERE uuid = '${req.user.id}' AND id = ${req.body.quizId}`, async (error1, results1, fields1) => { 
                     if (error1) {
                         console.log(error1.stack);
                         con.end();
@@ -49,7 +51,7 @@ function updateConfidence(req, res) {
                         resolve();
                         return;
                     } 
-                    if (results1.length === 1){
+                    if (results1){
                         con.end();
                         resolve("OK");
                         return;
@@ -60,6 +62,7 @@ function updateConfidence(req, res) {
                         return;
                     }
                 });
+                resolve();
                 return;
             }
             con.end();
