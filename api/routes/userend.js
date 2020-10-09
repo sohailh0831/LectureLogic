@@ -244,7 +244,7 @@ router.post('/reqestClass', AuthenticationFunctions.ensureAuthenticated, async f
   }
 });
 
-router.get('/reqestClass', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+router.get('/requests', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
   let results = await getStudentRequests(req, res);
   if (results) {
     req.flash('success', 'Successfully updated.');
