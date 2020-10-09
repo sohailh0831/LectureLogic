@@ -35,11 +35,36 @@ class LectureView extends React.Component {
       //  return () => clearInterval(interval);
     }
 
-    async sendSliderData() {
-        const interval = setInterval(() => {
+    async sendSliderData(e) {
+        const interval = setInterval( async () => {
             if ( this.state.changeFlag ) {
                 console.log("SENDING SLIDER DATA");
                 this.setState({changeFlag: false});
+                await fetch("http://localhost:9000/confidence", {
+            method: 'PUT',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            },
+            body: JSON.stringify({
+                quizId: 0,
+                question: 1,
+                val: this.state.sliderData
+            })
+        }).then(res => res.json()).then((data) => {
+            console.log(data) 
+            if(data === "OK"){ //successfully logged in
+                localStorage.setItem("authenticated", "authenticated");
+                console.log("successfully changed email")
+                window.location.replace('/');            }
+            else{
+           //window.location.replace('/login'); // need to flash that authentication failed
+           console.log("email change fail")
+            }
+            this.setState({response: data})
+        }).catch(console.log)
             }
             
         }, 30000);
