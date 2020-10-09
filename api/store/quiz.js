@@ -19,7 +19,7 @@ let dbInfo = {
     multipleStatements: true
   };
 
-  async function updateConfidence(req, res) {
+function updateConfidence(req, res) {
     return new Promise(resolve => {
         try{
             req.checkBody('quizId', 'quizId field is required.').notEmpty();
@@ -30,39 +30,44 @@ let dbInfo = {
         }
 
         let con = mysql.createConnection(dbInfo);
-        await con.query(`select confidence from quiz where uuid = ${req.user.uuid}, quizId = ${req.body.quizId}`, async (error, results, fields) => { 
+        con.query(`select confidence from quiz where uuid = ${req.user.uuid}, quizId = ${req.body.quizId}`, (error, results, fields) => { 
             if (error) {
                 console.log(error.stack);
                 con.end();
                 res.status(400).json({status:400, message: "Update to request list failed."});
+                resolve();
                 return;
             } 
             if (results.length === 1) {
                 let confidence = JSON.parse(results[0]).confidence;
                 confidence[req.body.question] = req.body.val;
-                await con.query(`update quiz set confidence where uuid = ${req.user.uuid}, quizId = ${req.body.quizId}`, async (error1, results1, fields1) => { 
+                con.query(`update quiz set confidence where uuid = ${req.user.uuid}, quizId = ${req.body.quizId}`, async (error1, results1, fields1) => { 
                     if (error1) {
                         console.log(error1.stack);
                         con.end();
                         res.status(400).json({status:400, message: "Update to request list failed."});
+                        resolve();
                         return;
                     } 
                     if (results1.length === 1){
                         con.end();
-                        return results1;
+                        resolve("OK");
+                        return;
                     } else {
                         con.end();
                         res.status(400).json({status:400, message: "Class does not exist."});
+                        resolve();
                         return;
                     }
                 });
                 return;
             }
             con.end();
-            return results;
+            resolve(results);
+            return;
         });
     });
 }
 
 
-module.exports = {addStudentToClass, classList, addClass, getStudentClasses, getInstructorClasses, addStudentRequest, getStudentRequests}
+module.exports = {updateConfidence}
