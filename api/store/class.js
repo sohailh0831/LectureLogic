@@ -364,8 +364,8 @@ function addStudentRequest(req, res) {
             }
 
             con.end();
-            resolve();
-            return results;
+            resolve(results);
+            return;
         });
     });
 }
@@ -400,6 +400,7 @@ async function getStudentRequests(req, res) {
                     requestlist = JSON.parse(requestlist);
                 }
                 resolve(requestlist);
+                return;
             } else {
                 con.end();
                 res.status(400).json({status:400, message: "Class does not exist."});
