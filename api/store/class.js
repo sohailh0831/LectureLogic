@@ -1,7 +1,7 @@
 var express = require('express');
 const flash = require('connect-flash');
 const uuid = require('uuid');
-const { isNull } = require("lodash");
+const { isNull, result } = require("lodash");
 const mysql = require("mysql");
 const dotenv = require('dotenv').config();
 var expressValidator = require('express-validator');
@@ -80,9 +80,11 @@ function classList(req, res) {
 function addStudentToClass(req, res) {
     return new Promise(resolve => {
         try{
-            req.checkBody('studentId', 'studentId field is required.').notEmpty();
-            req.checkBody('classId', 'classId field is required.').notEmpty();
-
+            req.checkBody('email', 'studentId field is required.').notEmpty();
+            if ( isNull(req.query.classId) ) {
+                console.log("NO CLASS ID SPECIFIED");
+                return;
+            } 
             if (req.validationErrors()) {
                 console.log("Validation error");
                 resolve();
@@ -93,8 +95,8 @@ function addStudentToClass(req, res) {
             resolve();
             return;
         }
-        let studentId = req.body.studentId;
-        let classId = req.body.classId;
+        let email = req.body.email;
+        let classId = req.query.classId;
 
         let con = mysql.createConnection(dbInfo);
         con.query(`select student_list from class where id = ${mysql.escape(classId)}`, (error, results, fields) => {
@@ -111,12 +113,12 @@ function addStudentToClass(req, res) {
                 return;
             }
             if ( isNull(results[0].student_list) ) {
-                results[0].student_list = `[ "${mysql.escape(studentId)}" ]`;
+                results[0].student_list = `[ "${mysql.escape(email)}" ]`;
             }
 
-            var listStud = JSON.parse(results[0].student_list);
+            var listStud = JSON.parse(results[0].email);
             
-            if ( listStud.includes(studentId.toString()) ) {
+            if ( listStud.includes(email.toString()) ) {
                 console.log("ALREADY CONTAINS IT");
                 con.end();
                 
@@ -124,7 +126,7 @@ function addStudentToClass(req, res) {
                 resolve();
                 return;
             } else {
-                listStud.push(studentId.toString());
+                listStud.push(email.toString());
                 console.log("UPDATED LIST: "+listStud);
             }
 
@@ -140,7 +142,7 @@ function addStudentToClass(req, res) {
                     await addClassToStudent(studentId, classId, req, res);
                     
                     console.log("Results1: " + results + "\nResults2: " + results2);
-                    console.log(`${req.body.studentId} successfully added.`);
+                    console.log(`${req.body.email} successfully added.`);
                     con.end();
                     //req.flash('success', 'Successfully created class.');
                     //res.send(results2);
@@ -300,6 +302,84 @@ function getStudentClasses(req, res) {
 
         });
     });
+
+    
 }
 
-module.exports = {addStudentToClass, classList, addClass, getStudentClasses, getInstructorClasses}
+async function addStudentRequest(req, res) {
+    try{
+        if ( isNull(req.query.classId) ) {
+            console.log("NO CLASS ID SPECIFIED");
+            return;
+        } 
+    } catch (error) {
+        console.log("ERROR");
+    }
+
+    let con = mysql.createConnection(dbInfo);
+    await con.query(`select id, request_list from class where id = ${req.query.classId}`, async (error, results, fields) => {
+        if (error) {
+            console.log(error.stack);
+            con.end();
+            res.status(400).json({status:400, message: "Update to request list failed."});
+            return;
+        } 
+        if (results.length === 1){
+            let requestlist = JSON.parse(results[0]).request_list;
+            requestlist[req.user.email] = req.user.name;
+            reqlist = JSON.stringify(requestlist);
+            await con.query(`update class set user_list where id = ${req.query.classId}`, (error1, results1, fields1) => {
+                if (error1) {
+                    console.log(error1.stack);
+                    con.end();
+                    res.status(400).json({status:400, message: "Update to request list failed."});
+                    return;
+                } 
+                con.end();
+                return results1;
+            });
+        } else {
+            con.end();
+            res.status(400).json({status:400, message: "Class does not exist."});
+            return;
+        }
+
+        con.end();
+        return results;
+    });
+}
+
+async function getStudentRequests(req, res) {
+    try{
+        if ( isNull(req.query.classId) ) {
+            console.log("NO CLASS ID SPECIFIED");
+            return;
+        } 
+    } catch (error) {
+        console.log("ERROR");
+    }
+
+    let con = mysql.createConnection(dbInfo);
+    await con.query(`select id, request_list from class where id = ${req.query.classId}`, (error, results, fields) => { 
+        if (error) {
+            console.log(error.stack);
+            con.end();
+            res.status(400).json({status:400, message: "Update to request list failed."});
+            return;
+        } 
+        if (results.length === 1){
+            con.end();
+            let requestlist = JSON.parse(results[0]).request_list;
+            return requestlist;
+        } else {
+            con.end();
+            res.status(400).json({status:400, message: "Class does not exist."});
+            return;
+        }
+
+        con.end();
+        return results;
+    });
+}
+
+module.exports = {addStudentToClass, classList, addClass, getStudentClasses, getInstructorClasses, addStudentRequest, getStudentRequests}

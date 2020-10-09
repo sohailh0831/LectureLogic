@@ -6,6 +6,7 @@ const uuid = require('uuid');
 const mysql = require("mysql");
 const bcrypt = require('bcrypt');
 const { resetEmail } =  require("../store/reset");
+const { addStudentRequest, getStudentRequests } =  require("../store/class");
 //for passport
 const LocalStrategy = require('passport-local').Strategy;
 const AuthenticationFunctions = require('../Authentication.js');
@@ -221,20 +222,46 @@ router.get('/register', function(req, res, next) {
   
 
 router.get('/logout', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
+  console.log(req.user)
   req.logout();
   req.session.destroy();
   //return res.redirect('/login');
   return res.send("\"OK\"");
 });
 
-router.put('/reset-email', AuthenticationFunctions.ensureNotAuthenticated, (req, res) => {
+router.post('/reqestClass', AuthenticationFunctions.ensureAuthenticated, async (req, res) => {
+  let results = await addStudentRequest;
+  if (results) {
+    req.flash('success', 'Successfully updated.');
+    return res.send("\"OK\"");
+  }
+  else {
+      req.flash('error', 'Something Went Wrong. Try Again.');
+      return res.redirect('/login');
+  }
+});
+
+router.get('/reqestClass', AuthenticationFunctions.ensureAuthenticated, async (req, res) => {
+  let results = await getStudentRequest;
+  if (results) {
+    req.flash('success', 'Successfully updated.');
+    return res.send({status: "OK", results});
+  }
+  else {
+    req.flash('error', 'Something Went Wrong. Try Again.');
+    return res.send({status: "ERROR"});;
+}
+});
+
+
+router.put('/reset-email', AuthenticationFunctions.ensureAuthenticated, async (req, res) => {
   console.log('body',req.body)
-  let results = resetEmail(req, res);
+  let results = await resetEmail(req, res);
   
   if (results) {
     console.log(`${req.body.newEmail} successfully registered.`);
     req.flash('success', 'Successfully updated.');
-    return res.redirect('/login');
+    return res.send("\"OK\"");
   }
   else {
       req.flash('error', 'Something Went Wrong. Try Again.');

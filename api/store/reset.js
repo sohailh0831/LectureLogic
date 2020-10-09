@@ -30,9 +30,9 @@ let dbInfo = {
             }
             else{
                 if (results.length === 0){
-                    con.query(`UPDATE user SET email = ${mysql.escape(newEmail)} WHERE id=${mysql.escape(userId)}};`, (error, results1, fields) =>  {
-                        if (error) {
-                            console.log(error.stack);
+                    con.query(`UPDATE user SET email = ${mysql.escape(newEmail)} WHERE id=${mysql.escape(userId)}};`, (error1, results1, fields1) =>  {
+                        if (error1) {
+                            console.log(error1.stack);
                             con.end();
                             return;
                         }
