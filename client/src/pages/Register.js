@@ -2,6 +2,9 @@
 import React from "react";
 import {Button, Form, Grid, Segment, Header, Radio, FormField} from "semantic-ui-react";
 import 'semantic-ui-css/semantic.min.css'
+import { Dropdown } from 'semantic-ui-react'
+
+
 
 export default class Register extends React.Component {
     constructor(props) {
@@ -15,6 +18,7 @@ export default class Register extends React.Component {
         this.handlePasswordChange = this.handlePasswordChange.bind(this);
         this.handleConfirmPasswordChange = this.handleConfirmPasswordChange.bind(this);
         this.handleRegister = this.handleRegister.bind(this);
+        this.handleSchoolSelect = this.handleSchoolSelect.bind(this)
 
 
         /* 
@@ -30,17 +34,45 @@ export default class Register extends React.Component {
             password: '',
             confirmPassword: '',
             //student: true,
-            response: '' // I just set this variable to whatever is returned from the database... makes it easier then making new variables all the time
+            schoolList:[],
+            response: [''] // I just set this variable to whatever is returned from the database... makes it easier then making new variables all the time
         };
 
     } /* End constructor() */
 
+
+
+
+
+    async componentDidMount() { // this is function called before render() ... use it to fetch any info u need
+        // Simple GET request using fetch
+        //console.log(localStorage.getItem("authenticated"))
+        await fetch('http://localhost:9000/class/officialSchools' ,{
+            method: 'GET',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+            }
+        }).then(res => res.json()).then((data) => { 
+              console.log(data)
+              this.setState({schoolList: data})
+          }).catch(console.log);
+          
+    }
 
     //Main render method that is called on load or when the component's state changes
     render() { 
         if(localStorage.getItem("authenticated") === "authenticated"){
             window.location.replace('/dashboard'); //redirects to dashboard if already logged in
         }
+
+        let schoolResults = this.state.schoolList.map(obj => {
+            let rObj = {key: obj.LocationName, text: obj.LocationName, value: obj.LocationName}
+            return rObj
+         })
+
+
         return(
             <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle'>
                 <Grid.Column style={{maxWidth: 450}}>
@@ -122,6 +154,17 @@ export default class Register extends React.Component {
                                     checked={this.state.value === "Instructor"}
                                     onChange={this.handleStudentChange}
                                 />
+                             
+                            </FormField>
+                            <FormField>
+                            <Dropdown
+                                    placeholder='Select College'
+                                    fluid
+                                    search
+                                    selection
+                                    options={schoolResults}
+                                    onChange={this.handleSchoolSelect}
+                                    />
                             </FormField>
 
                             <br/>
@@ -176,7 +219,19 @@ export default class Register extends React.Component {
         await this.setState({confirmPassword: value});
         //console.log(this.state.confirmPassword);
     }
-    
+    // async handleeSchoolSelect(event) {
+    //     console.log(event.target.option);
+    //     const value = event.target.value;
+    //     await this.setState({school: value});
+    //     console.log(this.state.school);
+    // }
+
+    async handleSchoolSelect (event, data) {
+        console.log(data.value)
+        await this.setState({school: data.value});
+        console.log(this.state.school)
+      }
+
     handleStudentChange = (e, { value }) => this.setState({ value })
 
     
@@ -200,7 +255,6 @@ export default class Register extends React.Component {
                 school: this.state.school
             })
         }).then(res => res.text()).then((data) => { 
-          //  console.log(data); //if it makes it her, it was succesful
             window.location.replace('/login'); //redirect to login page 
             this.setState({response: data})
         }).catch(console.log);

@@ -2,25 +2,23 @@ import React from 'react'
 import { Button, Form, Grid, Header, Segment} from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 
-export default class Login extends React.Component {
+export default class ChangeEmail extends React.Component {
     constructor(props) {
         super(props);
-        this.handleUserChange = this.handleUserChange.bind(this);
-        this.handlePasswordChange = this.handlePasswordChange.bind(this);
-        this.handleLogin = this.handleLogin.bind(this);
+        this.handleNewEmailChange = this.handleNewEmailChange.bind(this);
+        this.handleReNewEmailChange = this.handleReNewEmailChange.bind(this);
+        this.handleChangeEmailFunction = this.handleChangeEmailFunction.bind(this);
         this.state = {
-            username: '',
-            password: '',
-            email_reset: '',
+            newEmail: '',
+            reNewEmail: '',
             response: '',
             loginError: false
         };
     }
 
     render() {
-        //console.log("local in login: " + localStorage.getItem("authenticated"))
-        if(localStorage.getItem("authenticated") === "authenticated"){
-               window.location.replace('/dashboard'); //redirects to dashboard if already logged in
+        if(localStorage.getItem("authenticated") !== "authenticated"){
+               window.location.replace('/login'); 
         }
         const errorStatus = this.state.loginError;
         //console.log(errorStatus);
@@ -29,34 +27,34 @@ export default class Login extends React.Component {
                 <Grid.Column style={{maxWidth: 450}}>
                 { errorStatus && <h1>Authentication Failed. Please Try Again</h1>}
                     <Header as='h2' color='grey' textAlign='center'>
-                        Log-in to your account
+                        Change Your Email
                     </Header>
 
                     <Form size='large'>
                         <Segment stacked>
                             <Form.Input
                                 fluid
-                                icon='user'
+                                icon='lock'
                                 iconPosition='left'
-                                placeholder='Username'
+                                placeholder='New Email'
+                                type='email'
                                 required={true}
-                                value={this.state.username}
-                                onChange={this.handleUserChange}
+                                value={this.state.newEmail}
+                                onChange={this.handleNewEmailChange}
                             />
-
                             <Form.Input
                                 fluid
                                 icon='lock'
                                 iconPosition='left'
-                                placeholder='Password'
-                                type='password'
+                                placeholder='Re-enter New Email'
+                                type='email'
                                 required={true}
-                                value={this.state.password}
-                                onChange={this.handlePasswordChange}
+                                value={this.state.reNewEmail}
+                                onChange={this.handleReNewEmailChange}
                             />
 
-                            <Button onClick={this.handleLogin} color='purple' fluid size='large'>
-                                Login
+                            <Button onClick={this.handleChangeEmailFunction} color='green' fluid size='large'>
+                                Change Email
                             </Button>
                             
                             
@@ -73,21 +71,19 @@ export default class Login extends React.Component {
 
 
     //When the user types in stuff in the username box, the username variable is updated
-    async handleUserChange(event) {
+    async handleNewEmailChange(event) {
         const value = event.target.value;
-        await this.setState({username: value});
+        await this.setState({newEmail: value});
     };
-
-    //When the user types in stuff in the password box, the password variable is updated
-    async handlePasswordChange(event) {
+    async handleReNewEmailChange(event) {
         const value = event.target.value;
-        await this.setState({password: value});
+        await this.setState({reNewEmail: value});
     };
 
     //when the "login" button is clicked
-    async handleLogin() {
-        await fetch("http://localhost:9000/login", {
-            method: 'POST',
+    async handleChangeEmailFunction() {
+        await fetch("http://localhost:9000/reset-email", {
+            method: 'PUT',
             credentials: "include",
             headers: {
                 'Accept': 'application/json',
@@ -95,23 +91,21 @@ export default class Login extends React.Component {
                 'Access-Control-Allow-Credentials': true,
             },
             body: JSON.stringify({
-                username: this.state.username,
-                password: this.state.password,
+                newEmail: this.state.newEmail,
+                reNewEmail: this.state.reNewEmail
             })
-        }).then(res => res.json()).then((data) => { 
+        }).then(res => res.json()).then((data) => {
+            console.log(data) 
             if(data === "OK"){ //successfully logged in
                 localStorage.setItem("authenticated", "authenticated");
-            }
+                console.log("successfully changed email")
+                window.location.replace('/');            }
             else{
            //window.location.replace('/login'); // need to flash that authentication failed
-           this.setState.loginError = true;
-           localStorage.setItem("authenticated", "not");
-           console.log("failed login");
+           console.log("email change fail")
             }
             this.setState({response: data})
         }).catch(console.log)
     }
     
 }
-
-//export default Login

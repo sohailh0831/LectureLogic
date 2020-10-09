@@ -14,7 +14,9 @@ class Dashboard extends React.Component {
             classList: [],
             newClassDesc: '',
             type: '',
-            listReceived: false
+            school: '',
+            listReceived: false,
+            studentList: []
         };
         this.handleAddClass = this.handleAddClass.bind(this);
         this.getClassList = this.getClassList.bind(this);
@@ -41,10 +43,12 @@ class Dashboard extends React.Component {
             }
         }).then(response => response.json())
             .then(data => {
-                this.setState({ username: data.username , name: data.name, response: data, userId: data.id, type: data.type })
+                this.setState({ username: data.username , name: data.name, response: data, userId: data.id, type: data.type, school: data.school });
+                console.log(data.class_id);
             }); // here's how u set variables u want to use later
     
         this.getClassList();
+
     }
 
     compo
@@ -62,14 +66,16 @@ class Dashboard extends React.Component {
 
         console.log(this.state.classList);
 
-        return (
+        if (this.state.response.type === '0') {
+            return (
             <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle'>
                 <Grid.Column style={{maxWidth: 450}}>
                     <Form size='large'>
 
                         <Segment stacked textAlign="center" verticalAlign='middle'>
                             <Header as = 'h2' color = 'grey' textAlign = 'center'>
-                                {popUpMessage}
+                                {/* {popUpMessage} */}
+                                {this.state.school}
                             </Header>
 
                             <Modal
@@ -100,7 +106,7 @@ class Dashboard extends React.Component {
                         {/* Class Card */}
                         <Grid.Column style={{width: "auto"}}>
                             {this.state.classList.map((classList, index) => {
-                                    return(<ClassCard className={this.state.classList[index].name} classDesc={this.state.classList[index].description} />)
+                                    return(<ClassCard classId={this.state.classList[index].id} className={this.state.classList[index].name} classDesc={this.state.classList[index].description} />)
                                 }
                             )}
                         </Grid.Column>
@@ -113,7 +119,56 @@ class Dashboard extends React.Component {
         ) //End return(...)
             //return(<ClassCard className={this.state.classList.name} classDesc={this.state.description} />);// -- ideally this works first shot but honestly prolly not lol
         
-    } //End redner{}(...)
+        } 
+        else {
+            return (
+                <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle'>
+                    <Grid.Column style={{maxWidth: 450}}>
+                        <Form size='large'>
+    
+                            <Segment stacked textAlign="center" verticalAlign='middle'>
+                                <Header as = 'h2' color = 'grey' textAlign = 'center'>
+                                    {popUpMessage}
+                                </Header>
+    
+                                <Modal
+                                    trigger={<Button icon='add' color='purple' ></Button>}
+                                    header='Enter Class ID'
+                                    content={
+                                        <Form>
+                                            <Form.Input
+                                                placeholder='Class ID'
+                                                required={true}
+                                                value={this.state.className}
+                                                onChange={this.handleClassNameChange}
+                                            />
+                                        </Form>
+                                    }
+                                    actions={['Close', <Button color='purple' onClick={this.handleAddClass}> Done</Button>]}
+                                />
+                                
+    
+                            </Segment>
+    
+                            {/* Class Card */}
+                            <Grid.Column style={{width: "auto"}}>
+                                {this.state.classList.map((classList, index) => {
+                                        return(<ClassCard classId={this.state.classList[index].id} className={this.state.classList[index].name} classDesc={this.state.classList[index].description} />)
+                                    }
+                                )}
+                            </Grid.Column>
+    
+                        </Form>
+                    </Grid.Column>
+                </Grid>
+    
+    
+            ) //End return(...)
+                //return(<ClassCard className={this.state.classList.name} classDesc={this.state.description} />);// -- ideally this works first shot but honestly prolly not lol
+            
+            
+        }
+    }//End redner{}(...)
 
 
 
@@ -154,6 +209,24 @@ class Dashboard extends React.Component {
         }
         else {
             //JOE PLACE STUDENT JOINING CLASS HERE
+            //if (this.state.type === '0') {
+                console.log("Student Adding Class");
+                await fetch(`http://localhost:9000/reqestClass?classId=${this.state.className}`, {
+                    method: 'POST',
+                    credentials: "include",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Credentials': true,
+                    },
+                    body: JSON.stringify({
+                    })
+                }).then(res => res.json()).then((data) => { 
+                    console.log(data);
+                    this.setState({response: data})
+                    window.location.replace('/dashboard');
+                }).catch(console.log)
+            //}
         }
     } /* End handleAddClass(...) */
 

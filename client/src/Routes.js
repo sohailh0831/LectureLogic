@@ -12,7 +12,9 @@ import Login from './pages/Login';
 import errorPage from './pages/errorPage';
 import Dashboard from './pages/Dashboard'
 import ChangePassword from './pages/ChangePassword'
+import ChangeEmail from './pages/ChangeEmail'
 import LectureView from './pages/LectureView.js'
+import DetailPage from './pages/Details';
 
 
 
@@ -73,6 +75,15 @@ export default class Routes extends React.Component {
                                 onClick={this.handleLogout}
                                 active={activeItem === 'Logout'}
                               />
+                              <Menu.Item
+                                  as={Link}
+                                  //replace={false}
+                                  to={{pathname: '/changePassword', state: {}}} //where we can pass values into state (access as this.props.state.____)
+                                  name={"ChangePassword"}
+                                  content="Change Password"
+                                  onClick={this.handlePageJump}
+                                  active={activeItem === 'ChangePassword'}
+                              />
                           </Menu>
 
                           {/* NEW PAGES ADD PATHNAMES HERE */}
@@ -83,7 +94,9 @@ export default class Routes extends React.Component {
                             <Route exaxt path ="/register" component ={Register}/>
                             <Route exact path ="/dashboard" component ={Dashboard}/>
                             <Route exact path ="/changePassword" component ={ChangePassword}/>
+                            <Route exact path ="/changeEmail" component ={ChangeEmail}/>
                             <Route exact path ="/lectureView" component={LectureView}/>
+                            <Route exact path ="/detailPage" component={DetailPage}/>
                             <Redirect to="/404" />
                           </Switch>
 
