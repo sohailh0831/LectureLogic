@@ -363,9 +363,9 @@ function addStudentRequest(req, res) {
                 return;
             }
 
-            con.end();
-            resolve(results);
-            return;
+            // con.end();
+            // resolve(results);
+            // return;
         });
     });
 }
