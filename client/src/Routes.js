@@ -74,6 +74,15 @@ export default class Routes extends React.Component {
                                 onClick={this.handleLogout}
                                 active={activeItem === 'Logout'}
                               />
+                              <Menu.Item
+                                  as={Link}
+                                  //replace={false}
+                                  to={{pathname: '/changePassword', state: {}}} //where we can pass values into state (access as this.props.state.____)
+                                  name={"ChangePassword"}
+                                  content="Change Password"
+                                  onClick={this.handlePageJump}
+                                  active={activeItem === 'ChangePassword'}
+                              />
                           </Menu>
 
                           {/* NEW PAGES ADD PATHNAMES HERE */}
