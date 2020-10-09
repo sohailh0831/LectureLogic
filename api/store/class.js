@@ -309,6 +309,7 @@ function getStudentClasses(req, res) {
 
 function addStudentRequest(req, res) {
     return new Promise(resolve => {
+        console.log("Fuck");
         try{
             if ( isNull(req.query.classId) ) {
                 console.log("NO CLASS ID SPECIFIED");
@@ -321,6 +322,7 @@ function addStudentRequest(req, res) {
 
         let con = mysql.createConnection(dbInfo);
         con.query(`select id, request_list from class where id = ${req.query.classId}`, async (error, results, fields) => {
+            console.log("results");
             if (error) {
                 console.log(error.stack);
                 con.end();
@@ -329,7 +331,11 @@ function addStudentRequest(req, res) {
                 return;
             } 
             if (results.length === 1){
-                let requestlist = JSON.parse(results[0]).request_list;
+                console.log(results, req.user.email, results[0].request_list)
+                let requestlist = results[0].request_list;
+                if (requestlist == null) {
+                    requestlist = {};
+                }
                 requestlist[req.user.email] = req.user.name;
                 reqlist = JSON.stringify(requestlist);
                 con.query(`update class set user_list where id = ${req.query.classId}`, (error1, results1, fields1) => {
@@ -340,6 +346,7 @@ function addStudentRequest(req, res) {
                         resolve();
                         return;
                     } 
+                    console.log("hit2")
                     con.end();
                     resolve("Worked");
                     return;

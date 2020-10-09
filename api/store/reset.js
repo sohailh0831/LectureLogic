@@ -24,7 +24,6 @@ let dbInfo = {
         if(email === newEmail){
             let con = mysql.createConnection(dbInfo);
             con.query(`SELECT id from user WHERE email=${mysql.escape(newEmail)};`, (error, results, fields) =>  {
-                
                 if (error) {
                     console.log(error.stack);
                     con.end();

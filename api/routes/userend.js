@@ -7,6 +7,7 @@ const mysql = require("mysql");
 const bcrypt = require('bcrypt');
 const { resetEmail } =  require("../store/reset");
 const { addStudentRequest, getStudentRequests } =  require("../store/class");
+const { updateConfidence } =  require("../store/quiz");
 //for passport
 const LocalStrategy = require('passport-local').Strategy;
 const AuthenticationFunctions = require('../Authentication.js');
@@ -230,8 +231,9 @@ router.get('/logout', AuthenticationFunctions.ensureAuthenticated, (req, res) =>
 });
 
 router.post('/reqestClass', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
-  console.log("VERY COOL",req.user)
-  let results = await addStudentRequest;
+  console.log("VERY COOL", req.query)
+  let results = await addStudentRequest(req, res);
+  console.log(results);
   if (results) {
     req.flash('success', 'Successfully updated.');
     return res.send("\"OK\"");
@@ -243,7 +245,7 @@ router.post('/reqestClass', AuthenticationFunctions.ensureAuthenticated, async f
 });
 
 router.get('/reqestClass', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
-  let results = await getStudentRequests;
+  let results = await getStudentRequests(req, res);
   if (results) {
     req.flash('success', 'Successfully updated.');
     return res.send({status: "OK", results});
@@ -255,7 +257,7 @@ router.get('/reqestClass', AuthenticationFunctions.ensureAuthenticated, async fu
 });
 
 router.put('/confidence', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
-  let results = await getStudentClasses(req, res);
+  let results = await updateConfidence(req, res);
 
   if (results) {
       req.flash('success', 'Successfully updated confidence.');
