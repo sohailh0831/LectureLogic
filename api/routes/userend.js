@@ -5,7 +5,7 @@ const flash = require('connect-flash');
 const uuid = require('uuid');
 const mysql = require("mysql");
 const bcrypt = require('bcrypt');
-
+const { resetEmail } =  require("../store/reset");
 //for passport
 const LocalStrategy = require('passport-local').Strategy;
 const AuthenticationFunctions = require('../Authentication.js');
@@ -87,43 +87,44 @@ router.get('/', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
   });
 });
 
-  router.get('/postLogin', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
-    return res.send("\"OK\"")
+router.get('/postLogin', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
+  return res.send("\"OK\"")
+});
+
+router.get('/dashboard', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
+  return res.send(req.user);
+});
+
+router.post('/changePassword', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
+  let currentPassword = req.body.currentPassword;
+  let newPassword = req.body.newPassword;
+  let reNewPassword = req.body.reNewPassword;
+  let userId = req.user.id;
+
+  if (bcrypt.compareSync(currentPassword, req.user.password)) { // compare current password
+    let salt = bcrypt.genSaltSync(10);
+    let hashedPassword = bcrypt.hashSync(newPassword, salt);
+    let con = mysql.createConnection(dbInfo);
+    con.query(`UPDATE user SET password = ${mysql.escape(hashedPassword)} WHERE id=${mysql.escape(userId)};`, (error, results, fields) => {
+      if (error) {
+        console.log(error.stack);
+      }
+      con.end();
+      res.send("\"OK\"");
+      return;
   });
+}
+  else{ //flash error
 
-  router.get('/dashboard', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
-    return res.send(req.user);
-  });
-
-  router.post('/changePassword', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
-    let currentPassword = req.body.currentPassword;
-    let newPassword = req.body.newPassword;
-    let reNewPassword = req.body.reNewPassword;
-    let userId = req.user.id;
-
-    if (bcrypt.compareSync(currentPassword, req.user.password)) { // compare current password
-      let salt = bcrypt.genSaltSync(10);
-      let hashedPassword = bcrypt.hashSync(newPassword, salt);
-      let con = mysql.createConnection(dbInfo);
-      con.query(`UPDATE user SET password = ${mysql.escape(hashedPassword)} WHERE id=${mysql.escape(userId)};`, (error, results, fields) => {
-        if (error) {
-          console.log(error.stack);
-        }
-        con.end();
-        res.send("\"OK\"");
-        return;
-    });
+      return;
   }
-    else{ //flash error
 
-        return;
-    }
-
-  });
+});
 
 
 
 router.get('/login', AuthenticationFunctions.ensureNotAuthenticated, (req, res) => {
+  console.log('bruh')
   return res.render('login.ejs', {
     error: req.flash('error'),
     success: req.flash('success'),
@@ -226,8 +227,10 @@ router.get('/logout', AuthenticationFunctions.ensureAuthenticated, (req, res) =>
   return res.send("\"OK\"");
 });
 
-router.put('/reset-email', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
+router.put('/reset-email', AuthenticationFunctions.ensureNotAuthenticated, (req, res) => {
+  console.log('body',req.body)
   let results = resetEmail(req, res);
+  
   if (results) {
     console.log(`${req.body.newEmail} successfully registered.`);
     req.flash('success', 'Successfully updated.');
