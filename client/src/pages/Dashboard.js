@@ -15,7 +15,8 @@ class Dashboard extends React.Component {
             newClassDesc: '',
             type: '',
             school: '',
-            listReceived: false
+            listReceived: false,
+            studentList: []
         };
         this.handleAddClass = this.handleAddClass.bind(this);
         this.getClassList = this.getClassList.bind(this);
@@ -42,10 +43,12 @@ class Dashboard extends React.Component {
             }
         }).then(response => response.json())
             .then(data => {
-                this.setState({ username: data.username , name: data.name, response: data, userId: data.id, type: data.type, school: data.school })
+                this.setState({ username: data.username , name: data.name, response: data, userId: data.id, type: data.type, school: data.school });
+                console.log(data.class_id);
             }); // here's how u set variables u want to use later
     
         this.getClassList();
+
     }
 
     compo
@@ -103,7 +106,7 @@ class Dashboard extends React.Component {
                         {/* Class Card */}
                         <Grid.Column style={{width: "auto"}}>
                             {this.state.classList.map((classList, index) => {
-                                    return(<ClassCard className={this.state.classList[index].name} classDesc={this.state.classList[index].description} />)
+                                    return(<ClassCard classId={this.state.classList[index].id} className={this.state.classList[index].name} classDesc={this.state.classList[index].description} />)
                                 }
                             )}
                         </Grid.Column>
@@ -150,7 +153,7 @@ class Dashboard extends React.Component {
                             {/* Class Card */}
                             <Grid.Column style={{width: "auto"}}>
                                 {this.state.classList.map((classList, index) => {
-                                        return(<ClassCard className={this.state.classList[index].name} classDesc={this.state.classList[index].description} />)
+                                        return(<ClassCard classId={this.state.classList[index].id} className={this.state.classList[index].name} classDesc={this.state.classList[index].description} />)
                                     }
                                 )}
                             </Grid.Column>

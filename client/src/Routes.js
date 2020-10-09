@@ -14,6 +14,7 @@ import Dashboard from './pages/Dashboard'
 import ChangePassword from './pages/ChangePassword'
 import ChangeEmail from './pages/ChangeEmail'
 import LectureView from './pages/LectureView.js'
+import DetailPage from './pages/Details';
 
 
 
@@ -95,6 +96,7 @@ export default class Routes extends React.Component {
                             <Route exact path ="/changePassword" component ={ChangePassword}/>
                             <Route exact path ="/changeEmail" component ={ChangeEmail}/>
                             <Route exact path ="/lectureView" component={LectureView}/>
+                            <Route exact path ="/detailPage" component={DetailPage}/>
                             <Redirect to="/404" />
                           </Switch>
 
