@@ -229,7 +229,8 @@ router.get('/logout', AuthenticationFunctions.ensureAuthenticated, (req, res) =>
   return res.send("\"OK\"");
 });
 
-router.post('/reqestClass', AuthenticationFunctions.ensureAuthenticated, async (req, res) => {
+router.post('/reqestClass', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  console.log("VERY COOL",req.user)
   let results = await addStudentRequest;
   if (results) {
     req.flash('success', 'Successfully updated.');
@@ -241,8 +242,8 @@ router.post('/reqestClass', AuthenticationFunctions.ensureAuthenticated, async (
   }
 });
 
-router.get('/reqestClass', AuthenticationFunctions.ensureAuthenticated, async (req, res) => {
-  let results = await getStudentRequest;
+router.get('/reqestClass', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  let results = await getStudentRequests;
   if (results) {
     req.flash('success', 'Successfully updated.');
     return res.send({status: "OK", results});
@@ -253,19 +254,33 @@ router.get('/reqestClass', AuthenticationFunctions.ensureAuthenticated, async (r
 }
 });
 
+router.put('/confidence', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  let results = await getStudentClasses(req, res);
 
-router.put('/reset-email', AuthenticationFunctions.ensureAuthenticated, async (req, res) => {
-  console.log('body',req.body)
+  if (results) {
+      req.flash('success', 'Successfully updated confidence.');
+      console.log("IN RESULTS");
+      return res.status(200).send(results);
+  } else {
+      req.flash('error', 'Something went wrong. Try again.');
+      console.log("IN NO RESULTS");
+      return res.status(400).send(results);//json({status:400, message: "error"});
+  }
+});
+
+router.put('/reset-email', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  //console.log('body',req.user)
   let results = await resetEmail(req, res);
-  
+  // console.log(results)
   if (results) {
     console.log(`${req.body.newEmail} successfully registered.`);
     req.flash('success', 'Successfully updated.');
-    return res.send("\"OK\"");
+    res.send("\"OK\"");
+    return;
   }
   else {
       req.flash('error', 'Something Went Wrong. Try Again.');
-      return res.redirect('/register');
+      return res.redirect('/');
   }
   return;
 });

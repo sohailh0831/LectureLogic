@@ -94,12 +94,12 @@ export default class ChangeEmail extends React.Component {
                 newEmail: this.state.newEmail,
                 reNewEmail: this.state.reNewEmail
             })
-        }).then(res => res.json()).then((data) => { 
+        }).then(res => res.json()).then((data) => {
+            console.log(data) 
             if(data === "OK"){ //successfully logged in
                 localStorage.setItem("authenticated", "authenticated");
                 console.log("successfully changed email")
-                window.location.replace('/');
-            }
+                window.location.replace('/');            }
             else{
            //window.location.replace('/login'); // need to flash that authentication failed
            console.log("email change fail")

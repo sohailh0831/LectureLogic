@@ -147,6 +147,7 @@ function addStudentToClass(req, res) {
                     //req.flash('success', 'Successfully created class.');
                     //res.send(results2);
                     resolve( results2);
+                    return;
             });
 
         });
@@ -306,79 +307,93 @@ function getStudentClasses(req, res) {
     
 }
 
-async function addStudentRequest(req, res) {
-    try{
-        if ( isNull(req.query.classId) ) {
-            console.log("NO CLASS ID SPECIFIED");
-            return;
-        } 
-    } catch (error) {
-        console.log("ERROR");
-    }
-
-    let con = mysql.createConnection(dbInfo);
-    await con.query(`select id, request_list from class where id = ${req.query.classId}`, async (error, results, fields) => {
-        if (error) {
-            console.log(error.stack);
-            con.end();
-            res.status(400).json({status:400, message: "Update to request list failed."});
-            return;
-        } 
-        if (results.length === 1){
-            let requestlist = JSON.parse(results[0]).request_list;
-            requestlist[req.user.email] = req.user.name;
-            reqlist = JSON.stringify(requestlist);
-            await con.query(`update class set user_list where id = ${req.query.classId}`, (error1, results1, fields1) => {
-                if (error1) {
-                    console.log(error1.stack);
-                    con.end();
-                    res.status(400).json({status:400, message: "Update to request list failed."});
-                    return;
-                } 
-                con.end();
-                return results1;
-            });
-        } else {
-            con.end();
-            res.status(400).json({status:400, message: "Class does not exist."});
-            return;
+function addStudentRequest(req, res) {
+    return new Promise(resolve => {
+        try{
+            if ( isNull(req.query.classId) ) {
+                console.log("NO CLASS ID SPECIFIED");
+                resolve();
+                return;
+            } 
+        } catch (error) {
+            console.log("ERROR");
         }
 
-        con.end();
-        return results;
+        let con = mysql.createConnection(dbInfo);
+        con.query(`select id, request_list from class where id = ${req.query.classId}`, async (error, results, fields) => {
+            if (error) {
+                console.log(error.stack);
+                con.end();
+                res.status(400).json({status:400, message: "Update to request list failed."});
+                resolve();
+                return;
+            } 
+            if (results.length === 1){
+                let requestlist = JSON.parse(results[0]).request_list;
+                requestlist[req.user.email] = req.user.name;
+                reqlist = JSON.stringify(requestlist);
+                con.query(`update class set user_list where id = ${req.query.classId}`, (error1, results1, fields1) => {
+                    if (error1) {
+                        console.log(error1.stack);
+                        con.end();
+                        res.status(400).json({status:400, message: "Update to request list failed."});
+                        resolve();
+                        return;
+                    } 
+                    con.end();
+                    resolve("Worked");
+                    return;
+                });
+            } else {
+                con.end();
+                res.status(400).json({status:400, message: "Class does not exist."});
+                resolve();
+                return;
+            }
+
+            con.end();
+            resolve();
+            return results;
+        });
     });
 }
 
 async function getStudentRequests(req, res) {
-    try{
-        if ( isNull(req.query.classId) ) {
-            console.log("NO CLASS ID SPECIFIED");
-            return;
-        } 
-    } catch (error) {
-        console.log("ERROR");
-    }
-
-    let con = mysql.createConnection(dbInfo);
-    await con.query(`select id, request_list from class where id = ${req.query.classId}`, (error, results, fields) => { 
-        if (error) {
-            console.log(error.stack);
-            con.end();
-            res.status(400).json({status:400, message: "Update to request list failed."});
-            return;
-        } 
-        if (results.length === 1){
-            con.end();
-            let requestlist = JSON.parse(results[0]).request_list;
-            return requestlist;
-        } else {
-            con.end();
-            res.status(400).json({status:400, message: "Class does not exist."});
-            return;
+    return new Promise(resolve => {
+        try{
+            if ( isNull(req.query.classId) ) {
+                console.log("NO CLASS ID SPECIFIED");
+                resolve();
+                return;
+            } 
+        } catch (error) {
+            console.log("ERROR");
         }
 
-        con.end();
-        return results;
+        let con = mysql.createConnection(dbInfo);
+        con.query(`select id, request_list from class where id = ${req.query.classId}`, (error, results, fields) => { 
+            if (error) {
+                console.log(error.stack);
+                con.end();
+                res.status(400).json({status:400, message: "Update to request list failed."});
+                resolve();
+                return;
+            } 
+            if (results.length === 1){
+                con.end();
+                let requestlist = JSON.parse(results[0]).request_list;
+                resolve(requestlist);
+            } else {
+                con.end();
+                res.status(400).json({status:400, message: "Class does not exist."});
+                resolve();
+                return;
+            }
+
+            con.end();
+            resolve(results);
+            return;
+        });
     });
 }
 
