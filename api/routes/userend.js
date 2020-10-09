@@ -197,7 +197,7 @@ router.get('/register', function(req, res, next) {
             con.end();
             req.flash('success', 'Successfully registered. You may now login.');
             //return res.redirect('/login');
-            return res.send("[\"OK\"]");
+            return res.send("\"OK\"");
           }
           else {
             con.end();

@@ -254,9 +254,14 @@ export default class Register extends React.Component {
                 type: this.state.value,
                 school: this.state.school
             })
-        }).then(res => res.text()).then((data) => { 
-            window.location.replace('/login'); //redirect to login page 
-            this.setState({response: data})
+        }).then(res => res.json()).then((data) => { 
+            console.log(data)
+            if(data == "OK"){ //successfully logged in
+                window.location.replace('/login'); //redirect to login page 
+                this.setState({response: data})
+            }
+            //window.location.replace('/login'); //redirect to login page 
+            
         }).catch(console.log);
 
     }

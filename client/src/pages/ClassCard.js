@@ -10,7 +10,8 @@ export default class ClassCard extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            studentList: []
+            studentList: [],
+            results: {}
         }
         this.handleGetStudentList = this.handleGetStudentList.bind(this);
     }
@@ -42,8 +43,9 @@ export default class ClassCard extends React.Component{
                                         trigger={<Button color='blue' onClick={this.handleGetStudentList}>Students</Button>}
                                         header={'Student List for ' + this.props.className}
                                         content={this.state.studentList.map((index) => {
-                                                    return(<ClassDetailsCard classId={this.state.classList[index].id} className={this.state.classList[index].name} classDesc={this.state.classList[index].description} />)
+                                                    return(<ClassDetailsCard studentName={this.state.results[index]} studentEmail={index} />)
                                                 })}
+                                        //content="hey"
                                         actions={['Close']}
                                     />
                                 </Header.Content>
@@ -59,7 +61,7 @@ export default class ClassCard extends React.Component{
 
     async handleGetStudentList(){
         console.log("HERE");
-        await fetch('http://localhost:9000/requestClass?classId=' + this.props.classId ,{
+        await fetch('http://localhost:9000/requests?classId=' + this.props.classId ,{
             method: 'GET',
             credentials: "include",
             headers: {
@@ -69,7 +71,8 @@ export default class ClassCard extends React.Component{
             }
         }).then(response => response.json())
             .then(data => {
-                console.log(data.student_list);
+                this.setState({studentList: Object.keys(data.results), results: data.results})
+                console.log(Object.keys(data.results)[0]);
             }); // here's how u set variables u want to use later
     }
 };
