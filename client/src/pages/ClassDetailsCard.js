@@ -25,6 +25,8 @@ export default class ClassDetailsCard extends React.Component{
     }
 
     render() {
+        console.log(this.props.studentEmail);
+        console.log(this.props.studentName);
 
         return(
             <div>
