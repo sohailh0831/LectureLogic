@@ -14,6 +14,7 @@ class Dashboard extends React.Component {
             classList: [],
             newClassDesc: '',
             type: '',
+            school: '',
             listReceived: false
         };
         this.handleAddClass = this.handleAddClass.bind(this);
@@ -41,7 +42,7 @@ class Dashboard extends React.Component {
             }
         }).then(response => response.json())
             .then(data => {
-                this.setState({ username: data.username , name: data.name, response: data, userId: data.id, type: data.type })
+                this.setState({ username: data.username , name: data.name, response: data, userId: data.id, type: data.type, school: data.school })
             }); // here's how u set variables u want to use later
     
         this.getClassList();
@@ -69,7 +70,8 @@ class Dashboard extends React.Component {
 
                         <Segment stacked textAlign="center" verticalAlign='middle'>
                             <Header as = 'h2' color = 'grey' textAlign = 'center'>
-                                {popUpMessage}
+                                {/* {popUpMessage} */}
+                                {this.state.school}
                             </Header>
 
                             <Modal
