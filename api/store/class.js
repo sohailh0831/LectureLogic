@@ -5,6 +5,7 @@ const { isNull, result } = require("lodash");
 const mysql = require("mysql");
 const dotenv = require('dotenv').config();
 var expressValidator = require('express-validator');
+const { json } = require('express');
 var app = express();
 app.use(expressValidator());
 var app = express.Router();
@@ -335,10 +336,14 @@ function addStudentRequest(req, res) {
                 let requestlist = results[0].request_list;
                 if (requestlist == null) {
                     requestlist = {};
+                    console.log("POGG")
+                } else {
+                    requestlist = JSON.parse(requestlist);
                 }
                 requestlist[req.user.email] = req.user.name;
-                reqlist = JSON.stringify(requestlist);
-                con.query(`update class set user_list where id = ${req.query.classId}`, (error1, results1, fields1) => {
+                console.log(requestlist)
+                let reqlist = JSON.stringify(requestlist);
+                con.query(`update class set request_list = ${mysql.escape(reqlist)} where id = ${req.query.classId}`, (error1, results1, fields1) => {
                     if (error1) {
                         console.log(error1.stack);
                         con.end();
@@ -388,7 +393,12 @@ async function getStudentRequests(req, res) {
             } 
             if (results.length === 1){
                 con.end();
-                let requestlist = JSON.parse(results[0]).request_list;
+                let requestlist = results[0].request_list;
+                if (requestlist == null) {
+                    requestlist = {};
+                } else {
+                    requestlist = JSON.parse(requestlist);
+                }
                 resolve(requestlist);
             } else {
                 con.end();
