@@ -233,7 +233,7 @@ router.get('/logout', AuthenticationFunctions.ensureAuthenticated, (req, res) =>
 router.post('/reqestClass', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
   console.log("VERY COOL", req.query)
   let results = await addStudentRequest(req, res);
-  console.log(results);
+
   if (results) {
     req.flash('success', 'Successfully updated.');
     return res.send("\"OK\"");
@@ -258,7 +258,7 @@ router.get('/requests', AuthenticationFunctions.ensureAuthenticated, async funct
 
 router.put('/confidence', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
   let results = await updateConfidence(req, res);
-
+  
   if (results) {
       req.flash('success', 'Successfully updated confidence.');
       console.log("IN RESULTS");
