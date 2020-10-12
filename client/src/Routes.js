@@ -84,6 +84,24 @@ export default class Routes extends React.Component {
                                   onClick={this.handlePageJump}
                                   active={activeItem === 'ChangePassword'}
                               />
+                              <Menu.Item
+                                  as={Link}
+                                  //replace={false}
+                                  to={{pathname: '/changeEmail', state: {}}} //where we can pass values into state (access as this.props.state.____)
+                                  name={"ChangeEmail"}
+                                  content="Change Email"
+                                  onClick={this.handlePageJump}
+                                  active={activeItem === 'ChangeEmail'}
+                              />
+                              <Menu.Item
+                                  as={Link}
+                                  //replace={false}
+                                  to={{pathname: '/lectureView', state: {}}} //where we can pass values into state (access as this.props.state.____)
+                                  name={"LectureView"}
+                                  content="Lecture View"
+                                  onClick={this.handlePageJump}
+                                  active={activeItem === 'Lecture View'}
+                              />
                           </Menu>
 
                           {/* NEW PAGES ADD PATHNAMES HERE */}

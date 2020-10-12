@@ -128,7 +128,7 @@ class Dashboard extends React.Component {
     
                             <Segment stacked textAlign="center" verticalAlign='middle'>
                                 <Header as = 'h2' color = 'grey' textAlign = 'center'>
-                                    {popUpMessage}
+                                    {this.state.school}
                                 </Header>
     
                                 <Modal
