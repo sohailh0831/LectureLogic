@@ -285,9 +285,9 @@ function getStudentClasses(req, res) {
             var listStud = results[0].class_list;
             listStud = listStud.toString().substring(1, listStud.length-1);
             listStud = "("+listStud+")";
-            console.log("LIST " + listStud);
+            console.log("LIST: " + listStud);
             
-            con.query(`select * from class where id in ${listStud}`, (error2, results2, fields2) => {
+            con.query(`select * from class where id in (${listStud})`, (error2, results2, fields2) => {
                     if (error2) {
                         console.log(error2.stack);
                         con.end();

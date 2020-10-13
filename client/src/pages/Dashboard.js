@@ -248,10 +248,10 @@ class Dashboard extends React.Component {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
                         'Access-Control-Allow-Credentials': true,
-                    },
-                    body: JSON.stringify({
-                        id: this.state.userId
-                    })
+                     }
+                    // body: JSON.stringify({
+                    //     id: this.state.userId
+                    // })
                 }).then(response => response.json())
                 .then(data => {
                     this.setState({classList: data, listReceived: true})

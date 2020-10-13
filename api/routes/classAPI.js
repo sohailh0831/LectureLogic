@@ -99,7 +99,7 @@ router.post('/addStudentToClass', AuthenticationFunctions.ensureAuthenticated, a
     }
 });
 
-router.get('/studentClasses/:userId', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+router.get('/studentClasses:userId', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
     let results = await getStudentClasses(req, res);
 
     if (results) {
