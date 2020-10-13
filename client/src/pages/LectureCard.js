@@ -55,25 +55,26 @@ export default class LectureCard extends React.Component{
         } else {    // if instructor, show student list button
             return(
                 <div>
-                    <Link to = {'.../LectureView'} > {/* <Link to ={{ pathname: './ClassPage/'+this.state.className, state: {classId: this.state.classId, classDesc: this.state.classDesc} }} >*/}
-                        <Card style={{width: "500px"}} centered >
+                    
+                        <Card style={{width: "500px"}} centered >                
                             <Card.Content>
-                                <Header as="h4" textAlign="left" dividing>
+                                <Header as="h4" textAlign="left" dividing> 
                                     <div lectureName="left aligned">
                                         <Header.Content>
-                                            {this.props.lectureName}
+                                            <Link to = {'.../LectureView'} > {/* <Link to ={{ pathname: './ClassPage/'+this.state.className, state: {classId: this.state.classId, classDesc: this.state.classDesc} }} >*/}
+                                                {this.props.lectureName}
+                                            </Link>
                                             <div lectureName="meta">
                                                 <p style={{fontSize: "75%"}} data-testid={"Lecture Description"}>({this.props.lectureDesc})</p>
                                                 <p style={{fontSize: "75%"}} data-testid={"Lecture Section"}>Section: {this.props.lectureSection}</p>
                                                 {/* <p style={{fontSize: "75%"}} data-testid={"Class Id"}>({this.props.classId})</p> */}
                                             </div>
                                         </Header.Content>
-
-                                    </div>
-                                </Header>
+                                    </div>                                   
+                                </Header>                               
                             </Card.Content>
                         </Card>
-                    </Link>
+           
                 </div>
 
             )//End return(...)

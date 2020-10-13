@@ -58,13 +58,15 @@ export default class ClassCard extends React.Component{
         } else {    // if instructor, show student list button
             return(
                 <div>
-                    <Link to ={{ pathname: './ClassPage/'+this.state.className, state: {classId: this.state.classId, classDesc: this.state.classDesc} }} > {/*params={{className: this.state.className}} >*/}
+                    
                        <Card style={{width: "500px"}} centered >
                             <Card.Content>
                                 <Header as="h4" textAlign="left" dividing>
                                     <div className="left aligned">
                                         <Header.Content>
+                                        <Link to ={{ pathname: './ClassPage/'+this.state.className, state: {classId: this.state.classId, classDesc: this.state.classDesc} }} > {/*params={{className: this.state.className}} >*/}
                                             {this.props.className}
+                                            </Link>
                                             <div className="meta">
                                                 <p style={{fontSize: "75%"}} data-testid={"Class Description"}>({this.props.classDesc})</p>
                                                 {/* <p style={{fontSize: "75%"}} data-testid={"Class Id"}>({this.props.classId})</p> */}
@@ -85,7 +87,6 @@ export default class ClassCard extends React.Component{
                                 </Header>
                             </Card.Content>
                         </Card>
-                    </Link>
                 </div>
 
             )//End return(...)
