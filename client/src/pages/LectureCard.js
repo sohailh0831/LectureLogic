@@ -30,7 +30,7 @@ export default class LectureCard extends React.Component{
         if (this.props.type == 1){ // if student, hide student list button            
             return(
                 <div>
-                     <Link to = {'./LectureView'} > {/*<Link to ={{ pathname: './ClassPage/'+this.state.className, state: {classId: this.state.classId, classDesc: this.state.classDesc} }} ></Link> */}
+                     <Link to = {'/LectureView'} > {/*<Link to ={{ pathname: './ClassPage/'+this.state.className, state: {classId: this.state.classId, classDesc: this.state.classDesc} }} ></Link> */}
                         <Card style={{width: "500px"}} centered >
                             <Card.Content>
                                 <Header as="h4" textAlign="left" dividing>
@@ -61,7 +61,7 @@ export default class LectureCard extends React.Component{
                                 <Header as="h4" textAlign="left" dividing> 
                                     <div lectureName="left aligned">
                                         <Header.Content>
-                                            <Link to = {'./LectureView'} > {/* <Link to ={{ pathname: './ClassPage/'+this.state.className, state: {classId: this.state.classId, classDesc: this.state.classDesc} }} >*/}
+                                            <Link to = {'/LectureView'} > {/* <Link to ={{ pathname: './ClassPage/'+this.state.className, state: {classId: this.state.classId, classDesc: this.state.classDesc} }} >*/}
                                                 {this.props.lectureName}
                                             </Link>
                                             <div lectureName="meta">
