@@ -5,7 +5,7 @@ import {Link} from "react-router-dom";
 import ClassDetailsCard from './ClassDetailsCard';
 
 
-export default class ClassCard extends React.Component{
+export default class LectureCard extends React.Component{
 
     constructor(props){
         super(props);
@@ -19,30 +19,27 @@ export default class ClassCard extends React.Component{
     async componentDidMount(){
         //console.log(this.props.post);
         this.setState({
-            className: this.props.className,
-            classId: this.props.classId,
-            classDesc: this.props.classDesc,
+            lectureName: this.props.lectureName,
+            lectureDesc: this.props.lectureDesc,
             temp: this.props.type
         });
     }
 
     render() {
         let temp = true;
-        // console.log("CLAS NAME IN CLASS CARD: "+this.state.className);
-        // console.log("CLAS ID IN CLASS CARD "+this.state.classId);
-        // console.log("CLAS DESCRIPTION IN CLASS CARD "+this.state.classDesc);
         if (this.props.type == 1){ // if student, hide student list button            
             return(
                 <div>
-                    <Link to ={{ pathname: './ClassPage/'+this.state.className, state: {classId: this.state.classId, classDesc: this.state.classDesc} }} > {/*params={{className: this.state.className}} >*/}
+                     <Link to = {'./LectureView'} > {/*<Link to ={{ pathname: './ClassPage/'+this.state.className, state: {classId: this.state.classId, classDesc: this.state.classDesc} }} ></Link> */}
                         <Card style={{width: "500px"}} centered >
                             <Card.Content>
                                 <Header as="h4" textAlign="left" dividing>
-                                    <div className="left aligned">
+                                    <div lectureName="left aligned">
                                         <Header.Content>
-                                            {this.props.className}
-                                            <div className="meta">
-                                                <p style={{fontSize: "75%"}} data-testid={"Class Description"}>({this.props.classDesc})</p>
+                                            {this.props.lectureName}
+                                            <div lectureName="meta">
+                                                <p style={{fontSize: "75%"}} data-testid={"Lecture Description"}>({this.props.lectureDesc})</p>
+                                                <p style={{fontSize: "75%"}} data-testid={"Lecture Section"}>Section: {this.props.lectureSection}</p>
                                                 {/* <p style={{fontSize: "75%"}} data-testid={"Class Id"}>({this.props.classId})</p> */}
                                             </div>
                                         </Header.Content>
@@ -58,27 +55,18 @@ export default class ClassCard extends React.Component{
         } else {    // if instructor, show student list button
             return(
                 <div>
-                    <Link to ={{ pathname: './ClassPage/'+this.state.className, state: {classId: this.state.classId, classDesc: this.state.classDesc} }} > {/*params={{className: this.state.className}} >*/}
-                       <Card style={{width: "500px"}} centered >
+                    <Link to = {'.../LectureView'} > {/* <Link to ={{ pathname: './ClassPage/'+this.state.className, state: {classId: this.state.classId, classDesc: this.state.classDesc} }} >*/}
+                        <Card style={{width: "500px"}} centered >
                             <Card.Content>
                                 <Header as="h4" textAlign="left" dividing>
-                                    <div className="left aligned">
+                                    <div lectureName="left aligned">
                                         <Header.Content>
-                                            {this.props.className}
-                                            <div className="meta">
-                                                <p style={{fontSize: "75%"}} data-testid={"Class Description"}>({this.props.classDesc})</p>
+                                            {this.props.lectureName}
+                                            <div lectureName="meta">
+                                                <p style={{fontSize: "75%"}} data-testid={"Lecture Description"}>({this.props.lectureDesc})</p>
+                                                <p style={{fontSize: "75%"}} data-testid={"Lecture Section"}>Section: {this.props.lectureSection}</p>
                                                 {/* <p style={{fontSize: "75%"}} data-testid={"Class Id"}>({this.props.classId})</p> */}
                                             </div>
-                                            <Modal
-                                                
-                                                trigger={<Button color='blue' onClick={this.handleGetStudentList}>Students</Button>}
-                                                header={'Student List for ' + this.props.className}
-                                                content={this.state.studentList.map((index) => {
-                                                            return(<ClassDetailsCard studentName={this.state.results[index]} studentEmail={index} />)
-                                                        })}
-                                                //content="hey"
-                                                actions={['Close']}
-                                            />
                                         </Header.Content>
 
                                     </div>

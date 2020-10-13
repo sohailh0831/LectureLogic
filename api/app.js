@@ -11,6 +11,7 @@ var authRouter = require('./routes/userend');
 const dotenv = require('dotenv')
 var expressValidator = require('express-validator');
 var classRouter = require('./routes/classAPI.js')
+var lectureRouter = require('./routes/lectureAPI');
 
 dotenv.config();
 
@@ -59,6 +60,7 @@ app.use('/users', usersRouter);
 app.use('/testAPI',testAPIRouter);
 app.use('/',authRouter);
 app.use('/class', classRouter);
+app.use('/lecture', lectureRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

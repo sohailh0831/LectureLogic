@@ -80,46 +80,52 @@ function classList(req, res) {
 /* --- Updates class's student list and user's class list --- */
 function addStudentToClass(req, res) {
     return new Promise(resolve => {
+        console.log("HERHERHEHEHEHEHEHEHE: "+req.query.classId);
         try{
-            req.checkBody('email', 'studentId field is required.').notEmpty();
-            if ( isNull(req.query.classId) ) {
+            req.checkBody('student_id', 'studentId field is required.').notEmpty();
+            req.checkBody('class_id', 'studentId field is required.').notEmpty();
+            if ( isNull(req.body.class_id) ) {
                 console.log("NO CLASS ID SPECIFIED");
                 return;
             } 
-            if (req.validationErrors()) {
-                console.log("Validation error");
+             if (req.validationErrors()) {
+                 console.log("Validation error");
                 resolve();
                 return;
-            }
+             }
         } catch (error) {
-            //console.log("ERROR in checkbody");
+            console.log("ERROR in checkbody");
             resolve();
             return;
         }
-        let email = req.body.email;
-        let classId = req.query.classId;
+        console.log("what");
+        let studentId = req.body.student_id;
+        let classId = req.body.class_id;
 
         let con = mysql.createConnection(dbInfo);
         con.query(`select student_list from class where id = ${mysql.escape(classId)}`, (error, results, fields) => {
             if (error) {
                 console.log(error.stack);
+                console.log("query error");
                 con.end();
                 //res.status(400).json({status:400, message: "Query error finding student_list from class."});
                 resolve();
                 return;
             }
-            
+            console.log("error here");
             if ( results[0] === undefined ) {
                 resolve();
                 return;
             }
+            console.log("error after results query");
             if ( isNull(results[0].student_list) ) {
-                results[0].student_list = `[ "${mysql.escape(email)}" ]`;
+                results[0].student_list = `[ "${mysql.escape(studentId)}" ]`;
             }
-
-            var listStud = JSON.parse(results[0].email);
-            
-            if ( listStud.includes(email.toString()) ) {
+            console.log("error before parse");
+            console.log(results[0]);
+            var listStud = JSON.parse(results[0].student_list);
+            console.log("error before includes");
+            if ( listStud.includes(studentId.toString()) ) {
                 console.log("ALREADY CONTAINS IT");
                 con.end();
                 
@@ -127,10 +133,10 @@ function addStudentToClass(req, res) {
                 resolve();
                 return;
             } else {
-                listStud.push(email.toString());
+                listStud.push(studentId.toString());
                 console.log("UPDATED LIST: "+listStud);
             }
-
+            console.log("where am i ");
             con.query(`update class set student_list = ${mysql.escape(JSON.stringify(listStud))} where id = ${mysql.escape(classId)}`, async (error2, results2, fields2) => {
                     if (error2) {
                         console.log(error2.stack);
@@ -143,7 +149,7 @@ function addStudentToClass(req, res) {
                     await addClassToStudent(studentId, classId, req, res);
                     
                     console.log("Results1: " + results + "\nResults2: " + results2);
-                    console.log(`${req.body.email} successfully added.`);
+                    console.log(`${req.body.student_id} successfully added.`);
                     con.end();
                     //req.flash('success', 'Successfully created class.');
                     //res.send(results2);
@@ -162,6 +168,7 @@ function addStudentToClass(req, res) {
 function addClassToStudent(studentId, classId, req, res) {
     return new Promise(resolve => {
         let con = mysql.createConnection(dbInfo);
+        console.log("In add class to student");
         con.query(`select class_list from user where id = ${mysql.escape(studentId)}`, (error, results, fields) => {
             if (error) {
                 console.log(error.stack);
@@ -287,7 +294,7 @@ function getStudentClasses(req, res) {
             listStud = "("+listStud+")";
             console.log("LIST: " + listStud);
             
-            con.query(`select * from class where id in (${listStud})`, (error2, results2, fields2) => {
+            con.query(`select * from class where id in ${listStud}`, (error2, results2, fields2) => {
                     if (error2) {
                         console.log(error2.stack);
                         con.end();
