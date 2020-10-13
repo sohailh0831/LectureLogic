@@ -65,8 +65,9 @@ class Dashboard extends React.Component {
         }
 
         console.log(this.state.classList);
-
+        console.log("SCHOOL "+this.state.school);
         if (this.state.response.type === '0') {
+            //console.log("DASH TYPE: "+this.state.response.type);
             return (
             <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle'>
                 <Grid.Column style={{maxWidth: 450}}>
@@ -105,8 +106,8 @@ class Dashboard extends React.Component {
 
                         {/* Class Card */}
                         <Grid.Column style={{width: "auto"}}>
-                            {this.state.classList.map((classList, index) => {
-                                    return(<ClassCard classId={this.state.classList[index].id} className={this.state.classList[index].name} classDesc={this.state.classList[index].description} />)
+                            {this.state.classList.map((classList, index) => { 
+                                    return(<ClassCard classId={this.state.classList[index].id} className={this.state.classList[index].name} classDesc={this.state.classList[index].description} type={this.state.response.type}/>)
                                 }
                             )}
                         </Grid.Column>
@@ -153,7 +154,7 @@ class Dashboard extends React.Component {
                             {/* Class Card */}
                             <Grid.Column style={{width: "auto"}}>
                                 {this.state.classList.map((classList, index) => {
-                                        return(<ClassCard classId={this.state.classList[index].id} className={this.state.classList[index].name} classDesc={this.state.classList[index].description} />)
+                                        return(<ClassCard classId={this.state.classList[index].id} className={this.state.classList[index].name} classDesc={this.state.classList[index].description } type={this.state.response.type}/>)
                                     }
                                 )}
                             </Grid.Column>
@@ -220,6 +221,27 @@ class Dashboard extends React.Component {
                         'Access-Control-Allow-Credentials': true,
                     },
                     body: JSON.stringify({
+
+                    })
+                }).then(res => res.json()).then((data) => { 
+                    console.log(data);
+                    this.setState({response: data})
+                    window.location.replace('/dashboard');
+                }).catch(console.log)
+
+                //JOE PUT THE CODE BELOW HERE WHERE YOU HAVE TEACHERS ACCEPTING CLASS REQUESTS
+                console.log("ADDING STUDENT TO CLASS");
+                await fetch(`http://localhost:9000/class/addStudentToClass`, {
+                    method: 'POST',
+                    credentials: "include",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Credentials': true,
+                    },
+                    body: JSON.stringify({
+                        'student_id': this.state.userId,
+                        'class_id': this.state.className
                     })
                 }).then(res => res.json()).then((data) => { 
                     console.log(data);
@@ -248,10 +270,11 @@ class Dashboard extends React.Component {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
                         'Access-Control-Allow-Credentials': true,
-                    },
-                    body: JSON.stringify({
-                        id: this.state.userId
-                    })
+                      }
+                      // ,
+                    // body: JSON.stringify({
+                    //     id: this.state.userId
+                    // })
                 }).then(response => response.json())
                 .then(data => {
                     this.setState({classList: data, listReceived: true})

@@ -133,8 +133,8 @@ describe('Server Class', async function () {
         let res;
         let result = await classList(req, res);
 
-        assert.equal(result[3].name, "CLASS2");
-        assert.equal(result[3].description, "This is the unit test class");
+        assert.equal(result[3].name, "testClass");
+        assert.equal(result[3].description, "Paul is cool");
      });
     });
   });

@@ -6,7 +6,7 @@ const uuid = require('uuid');
 const mysql = require("mysql");
 const bcrypt = require('bcrypt');
 const { resetEmail } =  require("../store/reset");
-const { addStudentRequest, getStudentRequests } =  require("../store/class");
+const { addStudentRequest, getStudentRequests, addStudentToClass } =  require("../store/class");
 const { updateConfidence } =  require("../store/quiz");
 //for passport
 const LocalStrategy = require('passport-local').Strategy;
@@ -233,10 +233,13 @@ router.get('/logout', AuthenticationFunctions.ensureAuthenticated, (req, res) =>
 router.post('/reqestClass', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
   console.log("VERY COOL", req.query)
   let results = await addStudentRequest(req, res);
+  //let results2 = await addStudentToClass(req, res);
 
   if (results) {
-    req.flash('success', 'Successfully updated.');
-    return res.send("\"OK\"");
+
+      req.flash('success', 'Successfully updated.');
+      return res.send("\"OK\"");
+    
   }
   else {
       req.flash('error', 'Something Went Wrong. Try Again.');
