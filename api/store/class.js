@@ -294,6 +294,13 @@ function getStudentClasses(req, res) {
             listStud = "("+listStud+")";
             console.log("LIST: " + listStud);
             
+            if (listStud == '()') {
+                con.end();
+                resolve();
+                return;
+            }
+
+            
             con.query(`select * from class where id in ${listStud}`, (error2, results2, fields2) => {
                     if (error2) {
                         console.log(error2.stack);
