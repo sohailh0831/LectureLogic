@@ -41,9 +41,11 @@ function updateConfidence(req, res) {
             } 
             if (results.length === 1) {
                 console.log('hitting')
-                let confidence = JSON.parse(results[0]).confidence;
+                let confidence = JSON.parse(results[0].confidence);
+                if (!confidence) confidence = {};
                 confidence[req.body.question] = req.body.val;
-                con.query(`update quiz set confidence WHERE uuid = '${req.user.id}' AND id = ${req.body.quizId}`, async (error1, results1, fields1) => { 
+                let conf = JSON.stringify(confidence);
+                con.query(`update quiz set confidence = ${mysql.escape(conf)} WHERE uuid = '${req.user.id}' AND id = ${req.body.quizId}`, async (error1, results1, fields1) => { 
                     if (error1) {
                         console.log(error1.stack);
                         con.end();
