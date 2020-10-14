@@ -114,7 +114,7 @@ export default class Routes extends React.Component {
                             <Route exact path ="/dashboard" component ={Dashboard}/>
                             <Route exact path ="/changePassword" component ={ChangePassword}/>
                             <Route exact path ="/changeEmail" component ={ChangeEmail}/>
-                            <Route exact path ="/lectureView" component={LectureView}/>
+                            <Route path ="/LectureView/:lectureId" component={LectureView}/>
                             <Route exact path ="/detailPage" component={DetailPage}/>
                             <Route path ="/classPage/:className" exact component={ClassPage}/>
                             <Redirect to="/404" />

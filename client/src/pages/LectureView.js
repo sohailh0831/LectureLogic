@@ -17,6 +17,7 @@ class LectureView extends React.Component {
             classList: [],
             newClassDesc: '',
             sliderData: 5,
+            lectureVideoLink: 'Test',
             changeFlag: false
         };
         this.handleChange = this.handleChange.bind(this);
@@ -79,7 +80,7 @@ class LectureView extends React.Component {
             window.location.replace('/login'); //redirects to login if not already logged in
         }
         let tmpId;
-        await fetch('http://localhost:9000/lectureView' ,{
+        await fetch('http://localhost:9000/dashboard' ,{
             method: 'GET',
             credentials: "include",
             headers: {

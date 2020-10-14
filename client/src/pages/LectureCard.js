@@ -19,6 +19,7 @@ export default class LectureCard extends React.Component{
     async componentDidMount(){
         //console.log(this.props.post);
         this.setState({
+            lectureId: this.props.lectureId,
             lectureName: this.props.lectureName,
             lectureDesc: this.props.lectureDesc,
             temp: this.props.type
@@ -30,14 +31,16 @@ export default class LectureCard extends React.Component{
         if (this.props.type == 1){ // if student, hide student list button            
             return(
                 <div>
-                     <Link to = {'/LectureView'} > {/*<Link to ={{ pathname: './ClassPage/'+this.state.className, state: {classId: this.state.classId, classDesc: this.state.classDesc} }} ></Link> */}
+                     {/* <Link to = {'/LectureView'} >  */}
+                     {/* <Link to ={{ pathname: './ClassPage/'+this.state.className, state: {classId: this.state.classId, classDesc: this.state.classDesc} }} ></Link> */}
+                     <Link to ={{ pathname: '/LectureView/'+this.props.lectureId, state: {lectureId: this.props.lectureId, lectureDesc: this.props.lectureDesc, lectureSection: this.props.lectureSection, lectureVideoLink: this.props.lectureVideoLink} }} >
                         <Card style={{width: "500px"}} centered >
                             <Card.Content>
                                 <Header as="h4" textAlign="left" dividing>
-                                    <div lectureName="left aligned">
+                                    <div lecturename="left aligned">
                                         <Header.Content>
                                             {this.props.lectureName}
-                                            <div lectureName="meta">
+                                            <div lecturename="meta">
                                                 <p style={{fontSize: "75%"}} data-testid={"Lecture Description"}>({this.props.lectureDesc})</p>
                                                 <p style={{fontSize: "75%"}} data-testid={"Lecture Section"}>Section: {this.props.lectureSection}</p>
                                                 {/* <p style={{fontSize: "75%"}} data-testid={"Class Id"}>({this.props.classId})</p> */}
