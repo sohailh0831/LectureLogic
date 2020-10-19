@@ -290,4 +290,55 @@ router.put('/reset-email', AuthenticationFunctions.ensureAuthenticated, async fu
   return;
 });
 
+
+router.post('/getLectureVideoLink', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  let lectureId = req.body.lectureId;
+  let con = mysql.createConnection(dbInfo);
+  con.query(`SELECT video_link FROM lecture WHERE id=${mysql.escape(lectureId)};`, (error, results, fields) => {
+    if (error) {
+      console.log(error.stack);
+    }
+    else{
+      let video_link = results[0].video_link;
+      console.log("Video Link: " + results[0].video_link);
+      res.send("{\"lectureVideoLink\":\""+ video_link + "\"}");
+    }
+    con.end();
+    
+    return;
+});
+
+});
+
+
+
+router.post('/changePassword', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
+  let currentPassword = req.body.currentPassword;
+  let newPassword = req.body.newPassword;
+  let reNewPassword = req.body.reNewPassword;
+  let userId = req.user.id;
+
+  if (bcrypt.compareSync(currentPassword, req.user.password)) { // compare current password
+    let salt = bcrypt.genSaltSync(10);
+    let hashedPassword = bcrypt.hashSync(newPassword, salt);
+    let con = mysql.createConnection(dbInfo);
+    con.query(`UPDATE user SET password = ${mysql.escape(hashedPassword)} WHERE id=${mysql.escape(userId)};`, (error, results, fields) => {
+      if (error) {
+        console.log(error.stack);
+      }
+      con.end();
+      res.send("\"OK\"");
+      return;
+  });
+}
+  else{ //flash error
+
+      return;
+  }
+
+});
+
+
+
+
 module.exports = router;

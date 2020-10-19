@@ -1,10 +1,11 @@
 import React from 'react'
-import { Button, Form, Grid, Header, Segment, Popup } from 'semantic-ui-react'
+import { Button, Form, Grid, Header, Segment, Popup, Label } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 import ClassCard from './ClassCard';
 import { Image, Embed, List, Accordion } from 'semantic-ui-react'
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
+import ReactPlayer from "react-player";
 
 class LectureView extends React.Component {
     constructor(props) {
@@ -18,10 +19,13 @@ class LectureView extends React.Component {
             newClassDesc: '',
             sliderData: 5,
             lectureVideoLink: 'Test',
-            changeFlag: false
+            fulllectureVideoLink: '',
+            currentTimestamp: '',
+            changeFlag: false,
         };
         this.handleChange = this.handleChange.bind(this);
         this.sendSliderData = this.sendSliderData.bind(this);
+        this.player = React.createRef();
         // this.getClassList = this.getClassList.bind(this);
 
     }
@@ -35,6 +39,11 @@ class LectureView extends React.Component {
         // }, 30000);
       //  return () => clearInterval(interval);
     }
+
+     handleGetCurrentTime = () => {
+        console.log(this.player.current.getCurrentTime())
+        this.setState({currentTimestamp: this.player.current.getCurrentTime()})
+      }
 
     async sendSliderData(e) {
         const interval = setInterval( async () => {
@@ -75,11 +84,59 @@ class LectureView extends React.Component {
 
     async componentDidMount() { // this is function called before render() ... use it to fetch any info u need
         // Simple GET request using fetch
-        //console.log(localStorage.getItem("authenticated"))
+
         if(localStorage.getItem("authenticated") !== "authenticated"){
             window.location.replace('/login'); //redirects to login if not already logged in
         }
+
+        /* gets the ID in the path name of URL e.g /LectureView/ID*/
+        let urlElements = window.location.pathname.split('/')
+        console.log(urlElements[2])
+
+
+        await fetch('http://localhost:9000/getLectureVideoLink' ,{
+            method: 'POST',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            },
+            body: JSON.stringify({
+                lectureId: urlElements[2]
+            })
+        }).then(response => response.json())
+            .then(data => {
+                let fullVidLink = data.lectureVideoLink;
+                let embedLink =data.lectureVideoLink.split("watch?v=")[1];
+                this.setState({ lectureVideoLink: embedLink });
+                this.setState({ fullLectureVideoLink: fullVidLink });
+                console.log("lec " + this.state.lectureVideoLink)
+                //console.log(data);
+            }); // here's how u set variables u want to use later
+
+
         let tmpId;
+        await fetch('http://localhost:9000/dashboard' ,{
+            method: 'GET',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            }
+        }).then(response => response.json())
+            .then(data => {
+                this.setState({ username: data.username , name: data.name, response: data, userId: data.id  })
+                console.log(data);
+                tmpId = data.id;
+            }); // here's how u set variables u want to use later
+
+
+
+
+
+
         await fetch('http://localhost:9000/dashboard' ,{
             method: 'GET',
             credentials: "include",
@@ -145,7 +202,21 @@ class LectureView extends React.Component {
                                     </Header>
 
                                     {/* Video component */}
-                                    <Embed id='MtN1YnoL46Q' placeholder='/images/image-16by9.png' source='youtube' />
+                                    {/* <Embed id={this.state.lectureVideoLink} placeholder='/images/image-16by9.png' source='youtube' /> */}
+                                    <ReactPlayer 
+                                    width='382px' height='214px' 
+                                    ref = {this.player} url={this.state.fullLectureVideoLink}
+                                    controls={true}
+                                    />                                    
+                                    <Button color='purple' fluid size='large' active={this.state.enabled} onClick={this.handleGetCurrentTime}>
+                                     Get Current Time Stamp
+                                    </Button>
+                                    <Label fluid size='large'>
+                                    Time Stamp: {this.state.currentTimestamp}
+                                    </Label>
+                                    
+                                    
+                        
                                 
                                 </Segment>
                                 {/* Class Card

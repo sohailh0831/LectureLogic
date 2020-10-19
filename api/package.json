@@ -37,6 +37,7 @@
     "morgan": "~1.9.1",
     "mssql": "^6.2.3",
     "mysql": "^2.18.1",
+    "nodemon": "^2.0.5",
     "passport": "^0.4.1",
     "passport-local": "^1.0.0",
     "uuid": "^8.3.0"

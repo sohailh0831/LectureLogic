@@ -260,6 +260,9 @@ export default class Register extends React.Component {
                 window.location.replace('/login'); //redirect to login page 
                 this.setState({response: data})
             }
+            else{
+                console.log("Registration Failed")
+            }
             //window.location.replace('/login'); //redirect to login page 
             
         }).catch(console.log);
