@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Form, Grid, Header, Segment, Popup, Label } from 'semantic-ui-react'
+import { Button, Form, Grid, Header, Segment, Popup, Label, Modal } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 import ClassCard from './ClassCard';
 import { Image, Embed, List, Accordion } from 'semantic-ui-react'
@@ -22,6 +22,8 @@ class LectureView extends React.Component {
             fulllectureVideoLink: '',
             currentTimestamp: '',
             changeFlag: false,
+            formattedTimestamp: '',
+            testQuestions: ['Sample Question1', 'Sample Question2', 'John', 'George', 'Ringo']
         };
         this.handleChange = this.handleChange.bind(this);
         this.sendSliderData = this.sendSliderData.bind(this);
@@ -40,9 +42,24 @@ class LectureView extends React.Component {
       //  return () => clearInterval(interval);
     }
 
+
+     convertSeconds = function(sec) {
+        var hrs = Math.floor(sec / 3600);
+        var min = Math.floor((sec - (hrs * 3600)) / 60);
+        var seconds = sec - (hrs * 3600) - (min * 60);
+        seconds = Math.round(seconds * 100) / 100
+       
+        var result = (hrs < 10 ? "0" + hrs : hrs);
+        result += "hrs -" + (min < 10 ? "0" + min : min);
+        result += "mins-" + (seconds < 10 ? "0" + seconds : seconds);
+        result += "secs"
+        return result;
+     }
+
      handleGetCurrentTime = () => {
-        console.log(this.player.current.getCurrentTime())
-        this.setState({currentTimestamp: this.player.current.getCurrentTime()})
+        var roundedCurrentTime = Math.floor(this.player.current.getCurrentTime()); //rounds to remove decimal from seconds
+        this.setState({formattedTimestamp: this.convertSeconds(roundedCurrentTime)}); // formats in hr:min:sec format
+        this.setState({currentTimestamp: roundedCurrentTime})
       }
 
     async sendSliderData(e) {
@@ -78,7 +95,7 @@ class LectureView extends React.Component {
             }
             
         }, 30000);
-        console.log("clearing interval");
+        //console.log("clearing interval");
         //return () => clearInterval(interval);
     }
 
@@ -173,52 +190,70 @@ class LectureView extends React.Component {
                     <Grid.Row style={{height: '70%'}} textAlign = 'left' >
                         <Grid.Column>  
                                 {/* Question list component */}
-                                <Segment stacked textAlign="center" verticalAlign='middle'>
+                                <Segment stacked textAlign="left" verticalAlign='middle'>
                                 <List>
-                                        <List.Item>
-                                            <List.Header>New York City</List.Header>A lovely city
-                                        </List.Item>
-                                        <List.Item>
-                                            <List.Header>Chicago</List.Header>
-                                            Also quite a lovely city
-                                        </List.Item>
-                                        <List.Item>
-                                            <List.Header>Los Angeles</List.Header>
-                                            Sometimes can be a lovely city
-                                        </List.Item>
-                                        <List.Item>
-                                            <List.Header>San Francisco</List.Header>
-                                            What a lovely city
-                                        </List.Item>
+                                {this.state.testQuestions.map(question => (
+                                            <List.Item>
+                                            <List.Header>Time Stamp: {this.state.formattedTimestamp}  </List.Header> 
+                                            <p>Question: {question}</p> 
+                                            <p>Answer: ''</p>
+                                            </List.Item>
+                                        ))}
                                     </List>
                                     </Segment>
-                        </Grid.Column>
-                        <Grid.Column >
 
-
-                                <Segment stacked textAlign="center" verticalAlign='middle'>
-                                    <Header as = 'h2' color = 'grey' textAlign = 'center'>
-                                        Dashboard Temp Header
+                                    <Segment>
+                                    <Header as='h2' color='grey' textAlign='center'>
+                                        Ask a question:
                                     </Header>
+                                    <Form size='large'>
+                                        <Segment stacked>
+                                            <Form.Input
+                                                fluid
+                                                placeholder='Question'
+                                                required={true}
+                                                value={this.state.question}
+                                                onChange={this.handleUserChange}
+                                            />
 
-                                    {/* Video component */}
-                                    {/* <Embed id={this.state.lectureVideoLink} placeholder='/images/image-16by9.png' source='youtube' /> */}
-                                    <ReactPlayer 
-                                    width='382px' height='214px' 
-                                    ref = {this.player} url={this.state.fullLectureVideoLink}
-                                    controls={true}
-                                    />                                    
-                                    <Button color='purple' fluid size='large' active={this.state.enabled} onClick={this.handleGetCurrentTime}>
-                                     Get Current Time Stamp
-                                    </Button>
-                                    <Label fluid size='large'>
-                                    Time Stamp: {this.state.currentTimestamp}
-                                    </Label>
-                                    
-                                    
-                        
-                                
-                                </Segment>
+                                            <Button onClick={this.handleLogin} color='purple' fluid size='large'>
+                                                Ask Question
+                                            </Button>
+                                            
+                                            
+                                        </Segment>
+                                    </Form>
+                                            </Segment>
+                                        </Grid.Column>
+                                        <Grid.Column >
+
+
+                                                <Segment stacked textAlign="center" verticalAlign='middle'>
+                                                    <Header as = 'h2' color = 'grey' textAlign = 'center'>
+                                                        Dashboard Temp Header
+                                                    </Header>
+
+                                                    {/* Video component */}
+                                                    {/* <Embed id={this.state.lectureVideoLink} placeholder='/images/image-16by9.png' source='youtube' /> */}
+                                                    <ReactPlayer 
+                                                    width='382px' height='214px' 
+                                                    ref = {this.player} url={this.state.fullLectureVideoLink}
+                                                    controls={true}
+                                                    />                                    
+                                                    <Button color='purple' fluid size='large' active={this.state.enabled} onClick={this.handleGetCurrentTime}>
+                                                    Get Current Time Stamp
+                                                    </Button>
+                                                    <Label fluid size='large'>
+                                                    Time Stamp: {this.state.currentTimestamp}
+                                                    </Label>
+                                                    <Label fluid size='large'>
+                                                    Formatted Time Stamp: {this.state.formattedTimestamp}
+                                                    </Label>
+                                                    
+                                                    
+                                        
+                                                
+                                                    </Segment>
                                 {/* Class Card
                                 <Grid.Column style={{width: "auto"}}>
                                     {this.state.classList.map((classList, index) => {
