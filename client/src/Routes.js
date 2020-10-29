@@ -4,7 +4,8 @@ import {Link} from 'react-router-dom';
 import {GlobalStyles} from './config/global';
 
 import {
-  Menu
+  Menu,
+  Sidebar
 } from "semantic-ui-react"
 
 import Register from './pages/Register';
@@ -26,9 +27,11 @@ export default class Routes extends React.Component {
       super(props);
       this.handlePageJump = this.handlePageJump.bind(this);
       this.handleLogout = this.handleLogout.bind(this);
+      this.handleSidebar = this.handleSidebar.bind(this);
 
       this.state = {
         menuVisible: true,
+        sidebarVisible: false
       }
   
     } /* End constructor */
@@ -41,13 +44,35 @@ export default class Routes extends React.Component {
               <div className="Routes">
                   {/* This is the menu bar */}
                   <BrowserRouter>
-                          <Menu attached="top" size="huge">
+                        <Menu attached="top" size="massive">
+                          <Menu.Item
+                              icon='align justify'
+                              name={"Menu"}
+                              content="Menu"
+                              //content="Sidebar"
+                              //floated='right'
+                              onClick={this.handleSidebar}
+                              active={activeItem === 'Menu'}
+                          />
+                        </Menu>
+
+                          <Sidebar.Pusher>
+                            <Sidebar
+                              as={Menu}
+                              animation='overlay'
+                              icon='labeled'
+                              inverted
+                              onHide={() => this.setState({sidebarVisible: false})}
+                              vertical
+                              visible={this.state.sidebarVisible}
+                              width='thin'
+                            >
                               <Menu.Item
                                   as={Link}
                                   //replace={false}
                                   to={{pathname: '/', state: {}}} //where we can pass values into state (access as this.props.state.____)
                                   name={"MainPage"}
-                                  content="Home"
+                                  content="Dashboard"
                                   onClick={this.handlePageJump}
                                   active={activeItem === 'MainPage'}
                               />
@@ -70,13 +95,6 @@ export default class Routes extends React.Component {
                                   active={activeItem === 'Login'}
                               />
                               <Menu.Item
-                                //replace={false}
-                                name={"Logout"}
-                                content="Logout"
-                                onClick={this.handleLogout}
-                                active={activeItem === 'Logout'}
-                              />
-                              <Menu.Item
                                   as={Link}
                                   //replace={false}
                                   to={{pathname: '/changePassword', state: {}}} //where we can pass values into state (access as this.props.state.____)
@@ -94,7 +112,7 @@ export default class Routes extends React.Component {
                                   onClick={this.handlePageJump}
                                   active={activeItem === 'ChangeEmail'}
                               />
-                              <Menu.Item
+                              {/* <Menu.Item
                                   as={Link}
                                   //replace={false}
                                   to={{pathname: '/lectureView', state: {}}} //where we can pass values into state (access as this.props.state.____)
@@ -102,8 +120,19 @@ export default class Routes extends React.Component {
                                   content="Lecture View"
                                   onClick={this.handlePageJump}
                                   active={activeItem === 'Lecture View'}
+                              /> */}
+                              <Menu.Item
+                                //replace={false}
+                                visible={localStorage.getItem('authenticated') !== 'authenticated'}
+                                name={"Logout"}
+                                content="Logout"
+                                onClick={this.handleLogout}
+                                active={activeItem === 'Logout'}
                               />
-                          </Menu>
+
+                              
+                            </Sidebar>
+                          </Sidebar.Pusher>
 
                           {/* NEW PAGES ADD PATHNAMES HERE */}
                           <Switch>
@@ -130,6 +159,12 @@ export default class Routes extends React.Component {
     handlePageJump(e, { name }) {
       this.setState({activeItem: name})
     }
+
+    handleSidebar(e, { name }) {
+      this.setState({sidebarVisible: true, activeItem: name})
+    }
+
+    
 
     async handleLogout() {
       if (localStorage.getItem('authenticated') === 'authenticated'){ //make sure that

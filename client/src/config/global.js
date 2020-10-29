@@ -36,4 +36,14 @@ export const GlobalStyles = createGlobalStyle`
         background: black !important;
         color: white !important;
     }
+
+    menu {
+        attached: top;
+        size: huge;
+    }
+
+    .ui.sidebar {
+        attached: top;
+
+    }
   `
