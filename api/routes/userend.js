@@ -7,7 +7,7 @@ const mysql = require("mysql");
 const bcrypt = require('bcrypt');
 const { resetEmail } =  require("../store/reset");
 const { addStudentRequest, getStudentRequests, addStudentToClass } =  require("../store/class");
-const { updateConfidence } =  require("../store/quiz");
+const { updateConfidence, getAvgConfidence, getConfidence } =  require("../store/quiz");
 //for passport
 const LocalStrategy = require('passport-local').Strategy;
 const AuthenticationFunctions = require('../Authentication.js');
@@ -270,6 +270,28 @@ router.put('/confidence', AuthenticationFunctions.ensureAuthenticated, async fun
       req.flash('error', 'Something went wrong. Try again.');
       console.log("IN NO RESULTS");
       return res.status(400).send(results);//json({status:400, message: "error"});
+  }
+});
+
+
+router.get('/confidence', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  let results = await getConfidence(req, res);
+  console.log('\n\n\nresults:', results,'\n\n\n')
+  if (results) {
+    
+      return res.status(200).send(results);
+  } else {
+      return res.status(400).send(results);//json({status:400, message: "error"});
+  }
+});
+
+router.get('/avgconfidence', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  let results = await getAvgConfidence(req, res);
+  console.log(results);
+  if (results) {
+      return res.status(200).send({Average: results});
+  } else {
+      return res.status(400).send({Average: results});//json({status:400, message: "error"});
   }
 });
 
