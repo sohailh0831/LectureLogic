@@ -287,11 +287,11 @@ router.get('/confidence', AuthenticationFunctions.ensureAuthenticated, async fun
 
 router.get('/avgconfidence', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
   let results = await getAvgConfidence(req, res);
-  
+  console.log(results);
   if (results) {
-      return res.status(200).send(results);
+      return res.status(200).send({Average: results});
   } else {
-      return res.status(400).send(results);//json({status:400, message: "error"});
+      return res.status(400).send({Average: results});//json({status:400, message: "error"});
   }
 });
 

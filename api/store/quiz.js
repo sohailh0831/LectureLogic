@@ -32,7 +32,7 @@ function updateConfidence(req, res) {
         }
 
         let con = mysql.createConnection(dbInfo);
-        con.query(`select confidence, record from quiz WHERE uuid = '${req.user.id}' AND id = ${req.body.quizId}`, (error, results, fields) => { 
+        con.query(`select confidence, record from quiz WHERE uuid = '${req.user.id}' AND lecId = ${req.body.quizId}`, (error, results, fields) => { 
             console.log('results:', results)
             if (error) {
                 console.log(error.stack);
@@ -53,7 +53,7 @@ function updateConfidence(req, res) {
                 record[req.body.time] = req.body.val;
                 let rec = JSON.stringify(record);
                 console.log(rec)
-                con.query(`update quiz set record = ${mysql.escape(rec)} WHERE uuid = '${req.user.id}' AND id = ${req.body.quizId}`, async (error1, results1, fields1) => { 
+                con.query(`update quiz set record = ${mysql.escape(rec)} WHERE uuid = '${req.user.id}' AND lecId = ${req.body.quizId}`, async (error1, results1, fields1) => { 
                     if (error1) {
                         console.log(error1.stack);
                         con.end();
@@ -69,7 +69,7 @@ function updateConfidence(req, res) {
                     }
                 });
                 
-                con.query(`update quiz set confidence = ${mysql.escape(conf)} WHERE uuid = '${req.user.id}' AND id = ${req.body.quizId}`, async (error1, results1, fields1) => { 
+                con.query(`update quiz set confidence = ${mysql.escape(conf)} WHERE uuid = '${req.user.id}' AND lecId = ${req.body.quizId}`, async (error1, results1, fields1) => { 
                     if (error1) {
                         console.log(error1.stack);
                         con.end();
@@ -110,7 +110,7 @@ return new Promise(resolve => {
     }
 
     let con = mysql.createConnection(dbInfo);
-    con.query(`select confidence, record from quiz WHERE uuid = '${req.user.id}' AND id = ${req.query.quizId}`, (error, results, fields) => { 
+    con.query(`select confidence, record from quiz WHERE uuid = '${req.user.id}' AND lecId = ${req.query.quizId}`, (error, results, fields) => { 
         if (error) {
             console.log(error.stack);
             con.end();
@@ -141,14 +141,12 @@ function getAvgConfidence(req, res) {
 return new Promise(resolve => {
     console.log(req.user, req.body)
     try{
-        req.checkBody('quizId', 'quizId field is required.').notEmpty();
-        req.checkBody('question', 'question field is required.').notEmpty();
     } catch (error) {
         console.log("ERROR");
     }
 
     let con = mysql.createConnection(dbInfo);
-    con.query(`select confidence from quiz WHERE id = ${req.body.quizId}`, (error, results, fields) => { 
+    con.query(`select confidence from quiz WHERE lecId = ${req.query.quizId}`, (error, results, fields) => { 
         if (error) {
             console.log(error.stack);
             con.end();
@@ -156,14 +154,14 @@ return new Promise(resolve => {
             resolve();
             return;
         } 
+        console.log('POGG',results)
         if (results.length > 0) {
             let sum = 0;
             let i = 0;
             for(i; i < results.length; i++){
-                let confidence = JSON.parse(results[0].confidence);
-                if (!confidence) confidence = {};
-                else sum += confidence;
-                
+                let confidence = JSON.parse(results[i].confidence);
+                if (!confidence) confidence = '0';
+                else sum += parseInt(confidence, 10);
             }
             let avg = sum/results.length;
             console.log(avg)

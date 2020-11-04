@@ -13,6 +13,7 @@ class Confidence extends React.Component {
             response: '',
             response2: '',
             response3: '',
+            response4: '',
             classList: [],
             newClassDesc: '',
             type: '',
@@ -50,6 +51,7 @@ class Confidence extends React.Component {
             }); // here's how u set variables u want to use later
     
         this.handleGetConfidence();
+        this.handleGetAvgConfidence();
 
     }
 
@@ -69,9 +71,16 @@ class Confidence extends React.Component {
             <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle'>
                 <Grid.Column style={{maxWidth: 450}}>
                     <Form size='large'>
-
-                        
-
+                        <Grid.Column style={{width: "auto"}}>
+                            <Segment stacked textAlign="left" verticalAlign='left'>
+                                <p>Class Average Confidence: {this.state.response4}</p> 
+                            </Segment>
+                        </Grid.Column>
+                        <Grid.Column style={{width: "auto"}}>
+                            <Segment stacked textAlign="left" verticalAlign='left'>
+                                <p>Confidence: {this.state.response2}</p> 
+                            </Segment>
+                        </Grid.Column>
                         {/* Class Card */}
                         <Grid.Column style={{width: "auto"}}>
                             <Segment stacked textAlign="left" verticalAlign='middle'>
@@ -88,12 +97,9 @@ class Confidence extends React.Component {
                             </Segment>
                             
                         </Grid.Column>
-                        <Grid.Column style={{width: "auto"}}>
-                            <Segment stacked textAlign="left" verticalAlign='left'>
-                                <p>Confidence: {this.state.response2}</p> 
-                            </Segment>
-                        </Grid.Column>
+                        
                     </Form>
+                               
                 </Grid.Column>
             </Grid>
 
@@ -131,6 +137,24 @@ class Confidence extends React.Component {
         }).then(res => res.json()).then((data) => { 
             console.log("data",data);
             this.setState({response3: data.record, response2: data.confidence})
+            // window.location.replace('/dashboard');
+        }).catch(console.log("ok"))
+    } /* End handleAddClass(...) */
+   
+   
+    async handleGetAvgConfidence() {
+        console.log("Getting avg confidence");
+        await fetch("http://localhost:9000/avgconfidence?quizId=1", {
+            method: 'GET',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            }
+        }).then(res => res.json()).then((data) => { 
+            console.log("data",data);
+            this.setState({response4: data.Average})
             // window.location.replace('/dashboard');
         }).catch(console.log("ok"))
     } /* End handleAddClass(...) */
