@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Form, Grid, Header, Segment, Popup, Label, Modal } from 'semantic-ui-react'
+import { Button, Form, Grid, Header, Segment, Popup, Label, Modal,FormField } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 import ClassCard from './ClassCard';
 import { Image, Embed, List, Accordion } from 'semantic-ui-react'
@@ -19,15 +19,21 @@ class LectureView extends React.Component {
             newClassDesc: '',
             sliderData: 5,
             lectureVideoLink: 'Test',
+            lectureId: '',
             fulllectureVideoLink: '',
             currentTimestamp: '',
             changeFlag: false,
             formattedTimestamp: '',
-            testQuestions: ['Sample Question1', 'Sample Question2', 'John', 'George', 'Ringo']
+            testQuestions: ['Sample Question1', 'Sample Question2', 'John', 'George', 'Ringo'],
+            newQuestion: '',
+            loadedQuestions: []
         };
         this.handleChange = this.handleChange.bind(this);
         this.sendSliderData = this.sendSliderData.bind(this);
+        this.handleQuestionChange = this.handleQuestionChange.bind(this);
+        this.handleNewQuestion = this.handleNewQuestion.bind(this);
         this.player = React.createRef();
+        
         // this.getClassList = this.getClassList.bind(this);
 
     }
@@ -35,11 +41,6 @@ class LectureView extends React.Component {
     async handleChange(e) {
         await this.setState({ sliderData: e.target.value, changeFlag: true }); 
         console.log(this.state.sliderData); 
-        // const interval = setInterval(() => {
-        
-            
-        // }, 30000);
-      //  return () => clearInterval(interval);
     }
 
 
@@ -50,9 +51,8 @@ class LectureView extends React.Component {
         seconds = Math.round(seconds * 100) / 100
        
         var result = (hrs < 10 ? "0" + hrs : hrs);
-        result += "hrs -" + (min < 10 ? "0" + min : min);
-        result += "mins-" + (seconds < 10 ? "0" + seconds : seconds);
-        result += "secs"
+        result += ":" + (min < 10 ? "0" + min : min);
+        result += ":" + (seconds < 10 ? "0" + seconds : seconds);
         return result;
      }
 
@@ -61,6 +61,11 @@ class LectureView extends React.Component {
         this.setState({formattedTimestamp: this.convertSeconds(roundedCurrentTime)}); // formats in hr:min:sec format
         this.setState({currentTimestamp: roundedCurrentTime})
       }
+
+
+
+
+
 
     async sendSliderData(e) {
         const interval = setInterval( async () => {
@@ -108,7 +113,7 @@ class LectureView extends React.Component {
 
         /* gets the ID in the path name of URL e.g /LectureView/ID*/
         let urlElements = window.location.pathname.split('/')
-        console.log(urlElements[2])
+        this.setState({lectureId: urlElements[2]})
 
 
         await fetch('http://localhost:9000/getLectureVideoLink' ,{
@@ -168,6 +173,14 @@ class LectureView extends React.Component {
                 console.log(data);
                 tmpId = data.id;
             }); // here's how u set variables u want to use later
+
+
+
+            setInterval(() => {
+                console.log('Interval triggered');
+                this.getQuestions()
+              }, 1000);
+             
     
     }
 
@@ -190,16 +203,20 @@ class LectureView extends React.Component {
                     <Grid.Row style={{height: '70%'}} textAlign = 'left' >
                         <Grid.Column>  
                                 {/* Question list component */}
-                                <Segment stacked textAlign="left" verticalAlign='middle'>
-                                <List>
-                                {this.state.testQuestions.map(question => (
+                                <Header as='h2' color='grey' textAlign='center'>
+                                        Question Board
+                                    </Header>
+                                <Segment stacked textAlign="left" verticalAlign='middle' style={{overflow: 'auto', maxHeight: 700 }}>
+                                 <List>
+                                {this.state.loadedQuestions.map(entry => (
                                             <List.Item>
-                                            <List.Header>Time Stamp: {this.state.formattedTimestamp}  </List.Header> 
-                                            <p>Question: {question}</p> 
-                                            <p>Answer: ''</p>
+                                            <List.Header>Question: {entry.question} </List.Header>
+                                            <List.Header>Answer:  {entry.answer}</List.Header>
+                                            <List.Header>Asked by: {entry.studentName}  ({entry.formattedTimestamp})  </List.Header>
                                             </List.Item>
                                         ))}
-                                    </List>
+                                    </List> 
+
                                     </Segment>
 
                                     <Segment>
@@ -209,14 +226,14 @@ class LectureView extends React.Component {
                                     <Form size='large'>
                                         <Segment stacked>
                                             <Form.Input
-                                                fluid
                                                 placeholder='Question'
                                                 required={true}
-                                                value={this.state.question}
-                                                onChange={this.handleUserChange}
+                                                value={this.state.newQuestion}
+                                                onChange={this.handleQuestionChange}
                                             />
 
-                                            <Button onClick={this.handleLogin} color='purple' fluid size='large'>
+
+                                            <Button onClick={this.handleNewQuestion} color='purple' fluid size='large'>
                                                 Ask Question
                                             </Button>
                                             
@@ -240,7 +257,7 @@ class LectureView extends React.Component {
                                                     ref = {this.player} url={this.state.fullLectureVideoLink}
                                                     controls={true}
                                                     />                                    
-                                                    <Button color='purple' fluid size='large' active={this.state.enabled} onClick={this.handleGetCurrentTime}>
+                                                    {/* <Button color='purple' fluid size='large' active={this.state.enabled} onClick={this.handleGetCurrentTime}>
                                                     Get Current Time Stamp
                                                     </Button>
                                                     <Label fluid size='large'>
@@ -248,7 +265,7 @@ class LectureView extends React.Component {
                                                     </Label>
                                                     <Label fluid size='large'>
                                                     Formatted Time Stamp: {this.state.formattedTimestamp}
-                                                    </Label>
+                                                    </Label> */}
                                                     
                                                     
                                         
@@ -349,6 +366,63 @@ class LectureView extends React.Component {
     //     }
     // } /* End getClassList(...) */
 
+    async handleQuestionChange(event) {
+        const value = event.target.value;
+        await this.setState({newQuestion: value});
+        //console.log(event.target.value);
+    }
+    //new question
 
+
+async handleNewQuestion() {
+    await this.handleGetCurrentTime()
+    await fetch("http://localhost:9000/postQuestionStudent", {
+        method: 'POST',
+        credentials: "include",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Credentials': true,
+        },
+        body: JSON.stringify({
+            question: this.state.newQuestion,
+            lectureId: this.state.lectureId,
+            timestamp: this.state.currentTimestamp,
+            formattedTimestamp: this.state.formattedTimestamp
+            
+        })
+    }).then(res => res.json()).then((data) => { 
+        this.setState({newQuestion: ''})
+    }).catch(console.log)
+    // this.getQuestions()
+}
+
+
+async getQuestions(){
+    await this.handleGetCurrentTime()
+    await fetch("http://localhost:9000/getQuestionsStudent", {
+        method: 'POST',
+        credentials: "include",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Credentials': true,
+        },
+        body: JSON.stringify({
+            lectureId: this.state.lectureId, 
+        })
+    }).then(res => res.json()).then((data) => { 
+        //need to remove based on timestamp
+        //need to mark unanswered questions
+        for (var i = data.length - 1; i >= 0; i--) {
+            if(data[i].answer === '')
+                    data[i].answer = '(Not Yet Answered)'
+            if (this.state.currentTimestamp < data[i].timestamp) { 
+                data.splice(i, 1);
+            }
+        }
+        this.setState({loadedQuestions: data})
+    }).catch(console.log)
+}
     
 } export default LectureView

@@ -338,6 +338,49 @@ router.post('/changePassword', AuthenticationFunctions.ensureAuthenticated, (req
 
 });
 
+//new question (student view)
+router.post('/postQuestionStudent', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
+  let question = req.body.question;
+  let studentName = req.user.name;
+  let lectureId = req.body.lectureId;
+  let questionId = uuid.v4();
+  let timestamp = req.body.timestamp;
+  let formattedTimestamp = req.body.formattedTimestamp;
+
+  let con = mysql.createConnection(dbInfo);
+     con.query(`INSERT INTO question VALUES(${mysql.escape(questionId)},${mysql.escape(lectureId)},${mysql.escape(studentName)},${mysql.escape(question)},${mysql.escape('')},${mysql.escape(0)},${mysql.escape(timestamp)},${mysql.escape(formattedTimestamp)});`, (error, results, fields) => {
+      if (error) {
+        console.log(error.stack);
+      }
+      con.end();
+      res.send("\"OK\"");
+      return;
+  });
+
+
+});
+
+
+//get questions (Student view)
+router.post('/getQuestionsStudent', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
+  let lectureId = req.body.lectureId;
+  let con = mysql.createConnection(dbInfo);
+     con.query(`SELECT * FROM question WHERE lectureId=(${mysql.escape(lectureId)}) ORDER BY timestamp DESC;`, (error, results, fields) => {
+      if (error) {
+        console.log(error.stack);
+      }
+      //console.log(results)
+      
+      // results.forEach(result => console.log(result));
+
+      con.end();
+      res.send(results);
+      return;
+  });
+
+
+});
+
 
 
 
