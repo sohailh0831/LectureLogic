@@ -23,12 +23,13 @@ class LectureView extends React.Component {
             currentTimestamp: '',
             changeFlag: false,
             formattedTimestamp: '',
+            fullTime: '',
             testQuestions: ['Sample Question1', 'Sample Question2', 'John', 'George', 'Ringo']
         };
         this.handleChange = this.handleChange.bind(this);
         this.sendSliderData = this.sendSliderData.bind(this);
         this.player = React.createRef();
-        this.getConfData = this.getConfData.bind(this);
+        // this.getConfData = this.getConfData.bind(this);
         // this.getClassList = this.getClassList.bind(this);
 
     }
@@ -64,8 +65,9 @@ class LectureView extends React.Component {
       }
 
     async sendSliderData(e) {
-        this.handleGetCurrentTime()
+        // this.handleGetCurrentTime()
         const interval = setInterval( async () => {
+            this.handleGetCurrentTime();
             if ( this.state.changeFlag ) {
                 console.log("SENDING SLIDER DATA");
                 this.setState({changeFlag: false});
@@ -80,7 +82,7 @@ class LectureView extends React.Component {
             body: JSON.stringify({
                 quizId: 1,
                 val: this.state.sliderData,
-                time: this.currentTimestamp
+                time: this.state.formattedTimestamp
             })
         }).then(res => res.json()).then((data) => {
             console.log(data) 

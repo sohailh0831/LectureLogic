@@ -21,7 +21,7 @@ let dbInfo = {
 
 function updateConfidence(req, res) {
     return new Promise(resolve => {
-        console.log(req.user, req.body)
+        console.log(req.body)
         try{
             req.checkBody('quizId', 'quizId field is required.').notEmpty();
             req.checkBody('val', 'val field is required.').notEmpty();
@@ -32,7 +32,8 @@ function updateConfidence(req, res) {
         }
 
         let con = mysql.createConnection(dbInfo);
-        con.query(`select confidence from quiz WHERE uuid = '${req.user.id}' AND id = ${req.body.quizId}`, (error, results, fields) => { 
+        con.query(`select confidence, record from quiz WHERE uuid = '${req.user.id}' AND id = ${req.body.quizId}`, (error, results, fields) => { 
+            console.log('results:', results)
             if (error) {
                 console.log(error.stack);
                 con.end();
@@ -51,7 +52,7 @@ function updateConfidence(req, res) {
                 if (!record) record = {};
                 record[req.body.time] = req.body.val;
                 let rec = JSON.stringify(record);
-
+                console.log(rec)
                 con.query(`update quiz set record = ${mysql.escape(rec)} WHERE uuid = '${req.user.id}' AND id = ${req.body.quizId}`, async (error1, results1, fields1) => { 
                     if (error1) {
                         console.log(error1.stack);
@@ -101,28 +102,31 @@ function updateConfidence(req, res) {
 
 function getConfidence(req, res) {
 return new Promise(resolve => {
-    console.log(req.user, req.body)
+    console.log(req.user, req.query)
     try{
-        req.checkBody('quizId', 'quizId field is required.').notEmpty();
+        // req.checkBody('quizId', 'quizId field is required.').notEmpty();
     } catch (error) {
         console.log("ERROR");
     }
 
     let con = mysql.createConnection(dbInfo);
-    con.query(`select confidence from quiz WHERE uuid = '${req.user.id}' AND id = ${req.body.quizId}`, (error, results, fields) => { 
+    con.query(`select confidence, record from quiz WHERE uuid = '${req.user.id}' AND id = ${req.query.quizId}`, (error, results, fields) => { 
         if (error) {
             console.log(error.stack);
             con.end();
-            res.status(400).json({status:400, message: "Update to request list failed."});
+            res.status(400).json({status:400, message: "Query to request list failed."});
             resolve();
             return;
         } 
         if (results.length === 1) {
             let confidence = JSON.parse(results[0].confidence);
             if (!confidence) confidence = {};
+            
+            let record = JSON.parse(results[0].record);
+            if (!record) confidence = {};
 
-            console.log(confidence)
-            resolve(confidence);
+            console.log({confidence, record})
+            resolve({confidence, record});
             return;
         }
         con.end();

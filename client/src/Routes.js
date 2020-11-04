@@ -17,6 +17,7 @@ import ChangeEmail from './pages/ChangeEmail'
 import LectureView from './pages/LectureView.js'
 import DetailPage from './pages/Details';
 import ClassPage from './pages/ClassPage';
+import Confidence from './pages/ViewConfidence';
 
 
 
@@ -112,6 +113,15 @@ export default class Routes extends React.Component {
                                   onClick={this.handlePageJump}
                                   active={activeItem === 'ChangeEmail'}
                               />
+                              <Menu.Item
+                                  as={Link}
+                                  //replace={false}
+                                  to={{pathname: '/confidence', state: {}}} //where we can pass values into state (access as this.props.state.____)
+                                  name={"Confidence"}
+                                  content="Confidence"
+                                  onClick={this.handlePageJump}
+                                  active={activeItem === 'Confidence'}
+                              />
                               {/* <Menu.Item
                                   as={Link}
                                   //replace={false}
@@ -146,6 +156,7 @@ export default class Routes extends React.Component {
                             <Route path ="/LectureView/:lectureId" component={LectureView}/>
                             <Route exact path ="/detailPage" component={DetailPage}/>
                             <Route path ="/classPage/:className" exact component={ClassPage}/>
+                            <Route path ="/confidence" exact component={Confidence}/>
                             <Redirect to="/404" />
                           </Switch>
 

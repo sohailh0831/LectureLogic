@@ -276,8 +276,9 @@ router.put('/confidence', AuthenticationFunctions.ensureAuthenticated, async fun
 
 router.get('/confidence', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
   let results = await getConfidence(req, res);
-  
+  console.log('\n\n\nresults:', results,'\n\n\n')
   if (results) {
+    
       return res.status(200).send(results);
   } else {
       return res.status(400).send(results);//json({status:400, message: "error"});
