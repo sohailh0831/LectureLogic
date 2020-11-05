@@ -9,6 +9,9 @@ const mysql = require("mysql");
 // const { officialSchools, instructorSchools } = require("../store/school");
 const { getLectures } = require("../store/lecture"); 
 const { addLecture } = require("../store/lecture");
+const { removeLecture } = require("../store/lecture");
+const { editLecture } = require("../store/lecture");
+
 const AuthenticationFunctions = require('../Authentication.js');
 
 let dbInfo = {
@@ -67,6 +70,37 @@ router.post('/addLecture', AuthenticationFunctions.ensureAuthenticated,async fun
     }
 });
 
+router.post('/removeLecture', AuthenticationFunctions.ensureAuthenticated,async function(req, res, next) {
+    
+    console.log("lec id "+req.body.lecture_id);
+    let results = await removeLecture(req, res);
+    
+    if (results) {
+        req.flash('success', 'Successfully removed class.');
+        console.log("IN results");
+        return res.json({status:200, message: "success"});
+    } else {
+        req.flash('error', 'Failed to remove class.');
+        console.log("IN NO RESULTS");
+        return res.status(400).send(results);//son({status:400, message: "error"});
+    }
+});
+
+router.post('/editLecture', AuthenticationFunctions.ensureAuthenticated,async function(req, res, next) {
+    
+    //console.log("lec id "+req.body.lecture_id);
+    let results = await editLecture(req, res);
+    
+    if (results) {
+        req.flash('success', 'Successfully removed class.');
+        console.log("IN results");
+        return res.json({status:200, message: "success"});
+    } else {
+        req.flash('error', 'Failed to remove class.');
+        console.log("IN NO RESULTS");
+        return res.status(400).send(results);//son({status:400, message: "error"});
+    }
+});
 
 
 module.exports = router;

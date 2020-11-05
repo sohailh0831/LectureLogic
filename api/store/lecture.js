@@ -26,7 +26,7 @@ function getLectures(req, res) {
         console.log("IN INSTRUCTOR CLASSES: "+req);
         try{
             
-            if ( isNull(req.query.clas_id) ) {
+            if ( isNull(req.query.class_id) ) {
                 console.log("NO CLASS ID SPECIFIED");
                 resolve();
                 return;
@@ -95,6 +95,77 @@ function addLecture(req, res) {
     });
 }
 
+function removeLecture(req, res) {
+    return new Promise(resolve => {
+        try{
+            if ( isNull(req.body.lecture_id) ) {
+                console.log("NO CLASS ID SPECIFIED");
+                resolve();
+                return;
+            } 
+        } catch (error) {
+            console.log("NO lec id in body");
+        }
+        
+        let lecture_id = req.body.lecture_id;
+        // TODO: future - remove data from that lec
+        console.log("LECUTER ID: "+req.body.lecture_id);
+        let con = mysql.createConnection(dbInfo);
+        con.query(`delete from lecture WHERE id = ${mysql.escape(lecture_id)}`, (error, results, fields) => {
+            if (error) {
+                console.log(error.stack);
+                con.end();
+                resolve();
+                return;
+            }
+            
+            console.log(`${req.body.lecture_id} successfully deleted.`);
+            con.end();
+            resolve(results);
+        });
+    });
+}
+
+function editLecture(req, res) {
+    return new Promise(resolve => {
+        
+        try{
+            req.checkBody('name', 'Name field is required.').notEmpty();
+            req.checkBody('description', 'Description field is required.').notEmpty();
+            req.checkBody('lecture_id', 'instructor_id field is required.').notEmpty();
+            req.checkBody('video_link', 'Video Link field is required.' ).notEmpty();
+            req.checkBody('section', 'Section field is required.' ).notEmpty();
+
+            if (req.validationErrors()) {
+                resolve();
+                return;
+            }
+        } catch (error) {
+
+        }
+        
+        let lecture_id = req.body.lecture_id;
+        let name = req.body.name;
+        let description = req.body.description;
+        let video_link = req.body.video_link;
+        let section = req.body.section;
+
+        let con = mysql.createConnection(dbInfo);
+        con.query(`update lecture SET name=${mysql.escape(name)}, description=${mysql.escape(description)}, section=${mysql.escape(section)}, video_link=${mysql.escape(video_link)} where id=${mysql.escape(lecture_id)}`, (error, results, fields) => {
+            if (error) {
+                console.log(error.stack);
+                con.end();
+                resolve();
+                return;
+            }
+            
+            console.log(`${req.body.name} successfully created.`);
+            con.end();
+            resolve(results);
+        });
+    });
+}
 
 
-module.exports = {getLectures, addLecture}
+
+module.exports = {getLectures, addLecture, removeLecture, editLecture}
