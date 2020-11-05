@@ -369,8 +369,10 @@ router.post('/postQuestionStudent', AuthenticationFunctions.ensureAuthenticated,
   let timestamp = req.body.timestamp;
   let formattedTimestamp = req.body.formattedTimestamp;
 
+  console.log(question)
+
   let con = mysql.createConnection(dbInfo);
-     con.query(`INSERT INTO question VALUES(${mysql.escape(questionId)},${mysql.escape(lectureId)},${mysql.escape(studentName)},${mysql.escape(question)},${mysql.escape('')},${mysql.escape(0)},${mysql.escape(timestamp)},${mysql.escape(formattedTimestamp)});`, (error, results, fields) => {
+     con.query(`INSERT INTO question VALUES(${mysql.escape(questionId)},${mysql.escape(lectureId)},${mysql.escape(studentName)},${mysql.escape(question)},${mysql.escape('')},${mysql.escape(0)},${mysql.escape(timestamp)},${mysql.escape(formattedTimestamp)},${mysql.escape('')});`, (error, results, fields) => {
       if (error) {
         console.log(error.stack);
       }
@@ -395,6 +397,24 @@ router.post('/getQuestionsStudent', AuthenticationFunctions.ensureAuthenticated,
       
       // results.forEach(result => console.log(result));
 
+      con.end();
+      res.send(results);
+      return;
+  });
+
+
+});
+
+//get lecture metadata
+router.post('/getLectureMetadata', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
+  let lectureId = req.body.lectureId;
+  console.log(lectureId)
+  let con = mysql.createConnection(dbInfo);
+     con.query(`SELECT * FROM lecture WHERE id=(${mysql.escape(lectureId)});`, (error, results, fields) => {
+      if (error) {
+        console.log(error.stack);
+      }
+      console.log(results)
       con.end();
       res.send(results);
       return;
