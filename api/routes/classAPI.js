@@ -5,7 +5,7 @@ const dotenv = require('dotenv').config();
 const mysql = require("mysql");
 const { addStudentToClass } = require("../store/class");
 const { classList } = require("../store/class");
-const { addClass, getStudentClasses, getInstructorClasses, postClassQuestion, getClassDiscussionPosts } = require("../store/class");
+const { addClass, getStudentClasses, getInstructorClasses, postClassQuestion, getClassQuestions, answerClassQuestion, postComment, getComments } = require("../store/class");
 const { officialSchools, instructorSchools } = require("../store/school");
 const AuthenticationFunctions = require('../Authentication.js');
 
@@ -143,17 +143,61 @@ router.post('/postClassQuestion', AuthenticationFunctions.ensureAuthenticated, a
     }
 });
 
-router.get('/getClassDiscussion', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
-    let results = await getClassDiscussionPosts(req, res);
+router.get('/getClassQuestions', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+    let results = await getClassQuestions(req, res);
 
     if (results) {
-        req.flash('success', 'Successfully got class discussion.');
+        req.flash('success', 'Successfully got class questions.');
         console.log("IN RESULTS");
         return res.status(200).send(results);
     } else {
         req.flash('error', 'Something went wrong. Try again.');
         console.log("IN NO RESULTS");
         return res.status(400).send(results);//.json({status:400, message: "error"});
+    }
+});
+
+router.post('/answerQuestion', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+    let results = await answerClassQuestion(req, res);
+    
+    if (results) {
+        req.flash('success', 'Successfully answered question.');
+        console.log("IN results");
+        return res.json({status:200, message: "success"});
+    } else {
+        req.flash('error', 'Failed to answer question.');
+        console.log("IN NO RESULTS");
+        return res.status(400).send(results);//son({status:400, message: "error"});
+    }
+});
+
+router.get('/getComments', async function(req, res, next) {
+    console.log("questionID: "+req.query.questionId);
+    let results = await getComments(req, res);
+    
+    if (results) {
+        req.flash('success', 'Successfully got class list.');
+        console.log("IN results");
+        console.log(results);
+        return res.status(200).send(results);
+    } else {
+        req.flash('error', 'Failed to get class list.');
+        console.log("IN NO RESULTS");
+        return res.status(400).send(results);//json({status:400, message: "error"});
+    }
+});
+
+router.post('/postComment', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+    let results = await postComment(req, res);
+    
+    if (results) {
+        req.flash('success', 'Successfully posted Comment.');
+        console.log("IN results");
+        return res.json({status:200, message: "success"});
+    } else {
+        req.flash('error', 'Failed to post comment.');
+        console.log("IN NO RESULTS");
+        return res.status(400).send(results);//son({status:400, message: "error"});
     }
 });
 
