@@ -249,13 +249,19 @@ class LectureView extends React.Component {
                                         </Header>
                                     <Segment stacked textAlign="left" verticalAlign='middle' style={{overflow: 'auto', maxHeight: 700 }}>
                                     <List>
-                                    {this.state.loadedQuestions.map(entry => (
-                                                <List.Item>
-                                                <List.Header>Question: {entry.question} </List.Header>
-                                                <List.Header>Answer:  {entry.answer}</List.Header>
-                                                <List.Header>Asked by: {entry.studentName}  ({entry.formattedTimestamp})  </List.Header>
-                                                </List.Item>
-                                            ))}
+                                    {this.state.loadedQuestions.map((entry) =>{
+                                                    // <List.Item>
+                                                    // <List.Header as={Link} onClick={this.handleQuestionClicked(entry.question, entry.answer, entry.studentName)}>
+                                                    //     Question: {entry.question} 
+                                                        
+                                                    //     </List.Header>
+                                                    // <List.Header>Answer:  {entry.answer}</List.Header>
+                                                    // <List.Header>Asked by: {entry.studentName}  ({entry.formattedTimestamp})  </List.Header>
+                                                    // </List.Item>
+                                                    return(<QuestionCard question={entry.question} studentFlag={1} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href}></QuestionCard>);
+
+                                                    
+                                            })}
                                         </List> 
 
                                         </Segment>
@@ -365,7 +371,7 @@ class LectureView extends React.Component {
                                                     // <List.Header>Answer:  {entry.answer}</List.Header>
                                                     // <List.Header>Asked by: {entry.studentName}  ({entry.formattedTimestamp})  </List.Header>
                                                     // </List.Item>
-                                                    return(<QuestionCard question={entry.question} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href}></QuestionCard>);
+                                                    return(<QuestionCard question={entry.question} studentFlag={0} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href}></QuestionCard>);
 
                                                     
                                             })}

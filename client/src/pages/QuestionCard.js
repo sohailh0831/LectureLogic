@@ -25,7 +25,7 @@ export default class QuestionCard extends React.Component{
 
     render() {  
          let temp; 
-         if ( this.props.answer === '(Not Yet Answered)' )  {
+         if ( this.props.answer === '(Not Yet Answered)' && this.props.studentFlag === 0)  {
             temp = <Input placeholder='Click to answer question' onClick={this.handleOpenModal}/>;
          }  else {
             temp = this.props.answer;
