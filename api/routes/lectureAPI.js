@@ -12,6 +12,7 @@ const { addLecture } = require("../store/lecture");
 const { removeLecture } = require("../store/lecture");
 const { editLecture } = require("../store/lecture");
 const { answerQuestion } = require("../store/lecture");
+const { resolveQuestion, unresolveQuestion } = require("../store/lecture");
 
 const AuthenticationFunctions = require('../Authentication.js');
 
@@ -112,6 +113,33 @@ router.post('/answerQuestion', AuthenticationFunctions.ensureAuthenticated, asyn
         return res.json({status:200, message: "success"});
     } else {
         req.flash('error', 'Failed to answer question.');
+        console.log("IN NO RESULTS");
+        return res.status(400).send(results);//son({status:400, message: "error"});
+    }
+});
+
+router.post('/resolveQuestion', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+    let results = await resolveQuestion(req, res);
+    
+    if (results) {
+        req.flash('success', 'Successfully resovled question.');
+        console.log("IN results");
+        return res.json({status:200, message: "success"});
+    } else {
+        req.flash('error', 'Failed to resolve question.');
+        console.log("IN NO RESULTS");
+        return res.status(400).send(results);//son({status:400, message: "error"});
+    }
+});
+router.post('/unresolveQuestion', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+    let results = await unresolveQuestion(req, res);
+    
+    if (results) {
+        req.flash('success', 'Successfully resovled question.');
+        console.log("IN results");
+        return res.json({status:200, message: "success"});
+    } else {
+        req.flash('error', 'Failed to resolve question.');
         console.log("IN NO RESULTS");
         return res.status(400).send(results);//son({status:400, message: "error"});
     }

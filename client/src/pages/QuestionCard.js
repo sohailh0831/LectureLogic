@@ -1,5 +1,5 @@
 import React from "react";
-import {Card, CardContent, Header, Modal, Button, Form} from "semantic-ui-react";
+import {Card, CardContent, Header, Modal, Button, Form, Checkbox, Input} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 
 
@@ -15,6 +15,7 @@ export default class QuestionCard extends React.Component{
         this.handleOpenModal = this.handleOpenModal.bind(this);
         this.handleAnswerChange = this.handleAnswerChange.bind(this);
         this.handleSubmitAnswer = this.handleSubmitAnswer.bind(this);
+        this.handleResolve = this.handleResolve.bind(this);
     }
 
     async componentDidMount(){
@@ -22,20 +23,43 @@ export default class QuestionCard extends React.Component{
         
     }
 
-    render() {       
-        return(
+    render() {  
+         let temp; 
+         if ( this.props.answer === '(Not Yet Answered)' )  {
+            temp = <Input placeholder='Click to answer question' onClick={this.handleOpenModal}/>;
+         }  else {
+            temp = this.props.answer;
+         }
+         
+         //if (this.props.studentName === )
+         // if current user is username of question asker or is instructor
+            // show button to resolve
+         // else
+            // show resolved or not based on isAnsweredValue
+            //console.log("RESOLVE "+this.props.isResolved);
+            let temp2;
+            if ( this.props.isAnswered == 1) {
+                temp2 = <Checkbox label='Mark as unresolved' onClick={this.handleResolve} defaultChecked />;
+            } else {
+                temp2 = <Checkbox label='Mark as resolved' onClick={this.handleResolve} />
+            }
+        return(           
             <div>
-                <Link onClick={this.handleOpenModal} > {/*params={{className: this.state.className}} >*/}
+                {/* <Link onClick={this.handleOpenModal} >  */}
                     <Card style={{width: "500px"}} centered >
                         <Card.Content>
-                            <Header as="h4" textAlign="left" dividing>
+                            <div className="right aligned">
+                            {/* <Checkbox label='Mark as resolved' onClick={this.handleResolve} /> */}
+                            {temp2}
+                            </div>
+                            <Header as='h4' textAlign="left" dividing>
                                 <div className="left aligned">
                                     <Header.Content>
                                         {this.props.question}
                                         <div className="meta">
                                             <p style={{fontSize: "75%"}} data-testid={"Student"}>(Asked By: {this.props.studentName})</p>
                                             <p style={{fontSize: "75%"}} data-testid={"TimeStamp"}>Time Stamp: {this.props.time}</p>
-                                            <p style={{fontSize: "75%"}} data-testid={"Answer"}>Answer: {this.props.answer}</p>
+                                            <p style={{fontSize: "75%"}} data-testid={"Answer"}>Answer: {temp}</p>
                                             {/* <p style={{fontSize: "75%"}} data-testid={"QuestionId"}>QID: {this.props.questionId}</p> */}
 
                                         </div>
@@ -55,8 +79,8 @@ export default class QuestionCard extends React.Component{
                                     <Modal.Description>
                                     <Header> {this.props.question} </Header>
                                     <Form.Input
-                                        //placeholder= {this.props.answer}
-                                        value={this.state.answer}
+                                        placeholder=''
+                                        //value={this.state.answer}
                                         onChange={this.handleAnswerChange}
                                     />
                                     </Modal.Description>
@@ -75,7 +99,7 @@ export default class QuestionCard extends React.Component{
                             
                         </Card.Content>
                     </Card>
-                </Link>
+                {/* </Link> */}
             </div>
 
         )//End return(...)
@@ -95,6 +119,48 @@ export default class QuestionCard extends React.Component{
         this.setState({answer: event.target.value});
     }
 
+    async handleResolve() {
+        if ( this.props.isAnswered === 1){ //call unresolve
+            console.log('unresolving');
+            await fetch("http://localhost:9000/Lecture/unresolveQuestion", {
+                method: 'POST',
+                credentials: "include",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Credentials': true,
+                },
+                body: JSON.stringify({
+                    questionId: this.props.questionId,
+                })
+            }).then(res => res.json()).then((data) => { 
+                console.log(data);
+                this.setState({response: data, answer: ''})
+                //window.location.replace(this.props.link);
+            }).catch(console.log)
+
+        } else {                            // call resolve
+            console.log('resolving');
+            await fetch("http://localhost:9000/Lecture/resolveQuestion", {
+                method: 'POST',
+                credentials: "include",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Credentials': true,
+                },
+                body: JSON.stringify({
+                    questionId: this.props.questionId,
+                })
+            }).then(res => res.json()).then((data) => { 
+                console.log(data);
+                this.setState({response: data, answer: ''})
+                //window.location.replace(this.props.link);
+            }).catch(console.log)
+        }
+
+    }
+
     async handleSubmitAnswer() {
         console.log('Submit: ' + this.state.answer);
         this.setState({openModal: false});
@@ -112,7 +178,7 @@ export default class QuestionCard extends React.Component{
                 })
             }).then(res => res.json()).then((data) => { 
                 console.log(data);
-                this.setState({response: data})
+                this.setState({response: data, answer: ''})
                 //window.location.replace(this.props.link);
             }).catch(console.log)
 

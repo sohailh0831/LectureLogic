@@ -222,7 +222,7 @@ class LectureView extends React.Component {
 
 
             setInterval(() => {
-                console.log('Interval triggered');
+                //console.log('Interval triggered');
                 this.getQuestions()
               }, 1000);
              
@@ -365,7 +365,7 @@ class LectureView extends React.Component {
                                                     // <List.Header>Answer:  {entry.answer}</List.Header>
                                                     // <List.Header>Asked by: {entry.studentName}  ({entry.formattedTimestamp})  </List.Header>
                                                     // </List.Item>
-                                                    return(<QuestionCard question={entry.question} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href}></QuestionCard>);
+                                                    return(<QuestionCard question={entry.question} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href}></QuestionCard>);
 
                                                     
                                             })}
