@@ -166,6 +166,41 @@ function editLecture(req, res) {
     });
 }
 
+function answerQuestion(req, res) {
+    return new Promise(resolve => {
+        
+        try{
+            req.checkBody('questionId', 'questionId field is required.').notEmpty();
+            req.checkBody('answer', 'Answer field is required.').notEmpty();
+
+            if (req.validationErrors()) {
+                resolve();
+                return;
+            }
+        } catch (error) {
+
+        }
+        
+        let questionId = req.body.questionId;
+        let answer = req.body.answer;
+        
+        let con = mysql.createConnection(dbInfo);
+        con.query(`update question SET answer= ${mysql.escape(answer)}, isAnswered=1 where questionId=${mysql.escape(questionId)}`, (error, results, fields) => {
+            if (error) {
+                console.log(error.stack);
+                con.end();
+                resolve();
+                return;
+            }
+            
+            console.log(`${req.body.questionId} successfully answered.`);
+            con.end();
+            resolve(results);
+        });
+    });
+}
 
 
-module.exports = {getLectures, addLecture, removeLecture, editLecture}
+
+
+module.exports = {getLectures, addLecture, removeLecture, editLecture, answerQuestion}

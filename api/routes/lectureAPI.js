@@ -11,6 +11,7 @@ const { getLectures } = require("../store/lecture");
 const { addLecture } = require("../store/lecture");
 const { removeLecture } = require("../store/lecture");
 const { editLecture } = require("../store/lecture");
+const { answerQuestion } = require("../store/lecture");
 
 const AuthenticationFunctions = require('../Authentication.js');
 
@@ -76,11 +77,11 @@ router.post('/removeLecture', AuthenticationFunctions.ensureAuthenticated,async 
     let results = await removeLecture(req, res);
     
     if (results) {
-        req.flash('success', 'Successfully removed class.');
+        req.flash('success', 'Successfully removed lecture.');
         console.log("IN results");
         return res.json({status:200, message: "success"});
     } else {
-        req.flash('error', 'Failed to remove class.');
+        req.flash('error', 'Failed to remove lecture.');
         console.log("IN NO RESULTS");
         return res.status(400).send(results);//son({status:400, message: "error"});
     }
@@ -92,11 +93,25 @@ router.post('/editLecture', AuthenticationFunctions.ensureAuthenticated,async fu
     let results = await editLecture(req, res);
     
     if (results) {
-        req.flash('success', 'Successfully removed class.');
+        req.flash('success', 'Successfully edited lecture.');
         console.log("IN results");
         return res.json({status:200, message: "success"});
     } else {
-        req.flash('error', 'Failed to remove class.');
+        req.flash('error', 'Failed to edit lecture.');
+        console.log("IN NO RESULTS");
+        return res.status(400).send(results);//son({status:400, message: "error"});
+    }
+});
+
+router.post('/answerQuestion', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+    let results = await answerQuestion(req, res);
+    
+    if (results) {
+        req.flash('success', 'Successfully answered question.');
+        console.log("IN results");
+        return res.json({status:200, message: "success"});
+    } else {
+        req.flash('error', 'Failed to answer question.');
         console.log("IN NO RESULTS");
         return res.status(400).send(results);//son({status:400, message: "error"});
     }
