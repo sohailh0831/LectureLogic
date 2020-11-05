@@ -39,9 +39,11 @@ export default class QuestionCard extends React.Component{
             //console.log("RESOLVE "+this.props.isResolved);
             let temp2;
             if ( this.props.isAnswered == 1) {
-                temp2 = <Checkbox label='Mark as unresolved' onClick={this.handleResolve} defaultChecked />;
+                //checked=true;
+                temp2 = <Checkbox label='Mark as unresolved' onClick={this.handleResolve} checked={this.props.isAnswered==1} />;
             } else {
-                temp2 = <Checkbox label='Mark as resolved' onClick={this.handleResolve} />
+                //checked=false;
+                temp2 = <Checkbox label='Mark as resolved' onClick={this.handleResolve} checked={this.props.isAnswered==1}/>
             }
         return(           
             <div>
