@@ -1,5 +1,5 @@
 import React from "react";
-import {Card, CardContent, Header, Modal, Button, Form, Checkbox, Input} from "semantic-ui-react";
+import {Card, CardContent, Header, Modal, Button, Form, Checkbox, Input, List, Segment} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 
 
@@ -10,7 +10,9 @@ export default class QuestionCard extends React.Component{
         this.state = {
             openModal: false,
             openCommentModel: false,
-            answer: this.props.answer
+            answer: this.props.answer,
+            commentList: [],
+            comment: ''
             
         }
         this.handleOpenModal = this.handleOpenModal.bind(this);
@@ -19,6 +21,9 @@ export default class QuestionCard extends React.Component{
         this.handleResolve = this.handleResolve.bind(this);
         this.handleOpenCommentModal = this.handleOpenCommentModal.bind(this);
         this.handleGetComments = this.handleGetComments.bind(this);
+        this.handleSubmitComment = this.handleSubmitComment.bind(this);
+        this.handleCommentChange = this.handleCommentChange.bind(this);
+
     }
 
     async componentDidMount(){
@@ -59,23 +64,30 @@ export default class QuestionCard extends React.Component{
                             </div>
                             <div className="right aligned">
                                 {/* Add variable to change name on button from Click to respond to Click to see responces */}
-                                <Button onClick={this.handleOpenCommentModal} > Click to respond. </Button>
+                                <Button onClick={this.handleOpenCommentModal} > See All Comments </Button>
 
                                 <Modal
-                                onClose={() => this.setState({openCommentModal: false})}
-                                onOpen={() => this.setState({openCommentModal: true})}
-                                open={this.state.openCommentModal}
-                                //close={!this.state.openModal}
+                                    onClose={() => this.setState({openCommentModal: false})}
+                                    onOpen={() => this.setState({openCommentModal: true})}
+                                    open={this.state.openCommentModal}
+                                    //close={!this.state.openModal}
                                 >
-                                <Modal.Header>Leave a comment:</Modal.Header>
+                                <Modal.Header>Question: {this.props.question}</Modal.Header>
                                 <Modal.Content>
                                     <Modal.Description>
-                                    <Header> {this.props.question} </Header>
-                                    <Form.Input
-                                        placeholder=''
-                                        //value={this.state.answer}
-                                        //onChange={this.handleAnswerChange}
+                                    <Header> Answer: {this.props.answer} </Header>
+                                    
+                                        <List>
+                                            {this.state.commentList.map((index) => { return (<List.Item>{index}</List.Item>) })}
+                                        </List>
+
+                                    
+                                        <Form.Input
+                                            placeholder='Leave a Comment!'
+                                            value={this.state.comment}
+                                            onChange={this.handleCommentChange}
                                     />
+
                                     </Modal.Description>
                                 </Modal.Content>
                                 <Modal.Actions>
@@ -84,7 +96,7 @@ export default class QuestionCard extends React.Component{
                                         content="Submit"
                                         labelPosition='right'
                                         icon='checkmark'
-                                        onClick={this.handleGetComments}
+                                        onClick={this.handleSubmitComment}
                                         positive
                                     />
                                 </Modal.Actions>
@@ -152,6 +164,7 @@ export default class QuestionCard extends React.Component{
 
     handleOpenCommentModal() {
         console.log('Opening comment model: ' );
+        this.handleGetComments();
         this.setState({openCommentModal: true});
     }
     // handleCloseModal() {
@@ -162,6 +175,11 @@ export default class QuestionCard extends React.Component{
     handleAnswerChange(event) {
         console.log(event.target.value);
         this.setState({answer: event.target.value});
+    }
+
+    handleCommentChange(event) {
+        console.log(event.target.value);
+        this.setState({comment: event.target.value});
     }
 
     async handleResolve() {
@@ -242,9 +260,38 @@ export default class QuestionCard extends React.Component{
                 }
             }).then(res => res.json()).then((data) => { 
                 console.log(data);
-                //this.setState({response: data, answer: ''})
+                this.setState({comments: data})
                 //window.location.replace(this.props.link);
             }).catch(console.log)
+    }
+
+    async handleSubmitComment() {
+        console.log('SubmitComment: ' + this.state.comment);
+        console.log(this.props.lectureId);
+        console.log(this.props.commenter);
+        console.log(this.props.questionId);
+
+
+        this.setState({openModal: false, comment: ''});
+        await fetch("http://localhost:9000/lecture/postComment", {
+                method: 'POST',
+                credentials: "include",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Credentials': true,
+                },
+                body: JSON.stringify({
+                    lectureId: this.props.lectureId,
+                    commenter: this.props.commenter,
+                    questionId: this.props.questionId,
+                    comment: this.state.comment
+                })
+            }).then(res => res.json()).then((data) => { 
+                console.log(data);
+                //window.location.replace(this.props.link);
+            }).catch(console.log)
+
     }
 
     

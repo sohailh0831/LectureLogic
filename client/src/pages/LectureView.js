@@ -1,12 +1,7 @@
 import React from 'react'
-import { Button, Form, Grid, Header, Segment, Popup, Label, Modal,FormField } from 'semantic-ui-react'
+import { Button, Form, Grid, Header, Segment, Modal, List } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
-import ClassCard from './ClassCard';
-import { Image, Embed, List, Accordion} from 'semantic-ui-react'
-import Typography from '@material-ui/core/Typography';
-import Slider from '@material-ui/core/Slider';
 import ReactPlayer from "react-player";
-import {Link} from 'react-router-dom';
 import QuestionCard from './QuestionCard';
 
 
@@ -32,16 +27,14 @@ class LectureView extends React.Component {
             newQuestion: '',
             loadedQuestions: [],
             openAnswerModal: false,
-            answer: ''
+            answer: '',
+            commenter: '',
         };
         this.handleChange = this.handleChange.bind(this);
         this.sendSliderData = this.sendSliderData.bind(this);
         this.handleQuestionChange = this.handleQuestionChange.bind(this);
         this.handleNewQuestion = this.handleNewQuestion.bind(this);
         this.player = React.createRef();
-        this.handleQuestionClicked = this.handleQuestionClicked.bind(this);
-        this.handleSubmitAnswer = this.handleSubmitAnswer.bind(this);
-        this.handleAnswerChange = this.handleAnswerChange.bind(this);
 
     }
 
@@ -194,28 +187,9 @@ class LectureView extends React.Component {
             }
         }).then(response => response.json())
             .then(data => {
-                this.setState({ username: data.username , name: data.name, response: data, userId: data.id  })
+                this.setState({ commenter: data.username, username: data.username , name: data.name, response: data, userId: data.id  })
                 console.log(data);
-                tmpId = data.id;
-            }); // here's how u set variables u want to use later
-
-
-
-
-
-
-        await fetch('http://localhost:9000/dashboard' ,{
-            method: 'GET',
-            credentials: "include",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Credentials': true,
-            }
-        }).then(response => response.json())
-            .then(data => {
-                this.setState({ username: data.username , name: data.name, response: data, userId: data.id  })
-                console.log(data);
+                console.log(this.state.commenter);
                 tmpId = data.id;
             }); // here's how u set variables u want to use later
 
@@ -247,24 +221,7 @@ class LectureView extends React.Component {
                                     <Header as='h2' color='grey' textAlign='center'>
                                             Question Board
                                         </Header>
-                                    <Segment stacked textAlign="left" verticalAlign='middle' style={{overflow: 'auto', maxHeight: 700 }}>
-                                    <List>
-                                    {this.state.loadedQuestions.map((entry) =>{
-                                                    // <List.Item>
-                                                    // <List.Header as={Link} onClick={this.handleQuestionClicked(entry.question, entry.answer, entry.studentName)}>
-                                                    //     Question: {entry.question} 
-                                                        
-                                                    //     </List.Header>
-                                                    // <List.Header>Answer:  {entry.answer}</List.Header>
-                                                    // <List.Header>Asked by: {entry.studentName}  ({entry.formattedTimestamp})  </List.Header>
-                                                    // </List.Item>
-                                                    return(<QuestionCard question={entry.question} studentFlag={1} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href}></QuestionCard>);
-
-                                                    
-                                            })}
-                                        </List> 
-
-                                        </Segment>
+                                    
 
                                         <Segment>
                                         <Header as='h2' color='grey' textAlign='center'>
@@ -360,24 +317,24 @@ class LectureView extends React.Component {
                                         <Header as='h2' color='grey' textAlign='center'>
                                                 Question Board
                                             </Header>
-                                        <Segment stacked textAlign="left" verticalAlign='middle' style={{overflow: 'auto', maxHeight: 700 }}>
-                                        <List>
-                                        {this.state.loadedQuestions.map((entry) =>{
-                                                    // <List.Item>
-                                                    // <List.Header as={Link} onClick={this.handleQuestionClicked(entry.question, entry.answer, entry.studentName)}>
-                                                    //     Question: {entry.question} 
-                                                        
-                                                    //     </List.Header>
-                                                    // <List.Header>Answer:  {entry.answer}</List.Header>
-                                                    // <List.Header>Asked by: {entry.studentName}  ({entry.formattedTimestamp})  </List.Header>
-                                                    // </List.Item>
-                                                    return(<QuestionCard question={entry.question} studentFlag={0} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href}></QuestionCard>);
+                                            <Segment stacked textAlign="left" verticalAlign='middle' style={{overflow: 'auto', maxHeight: 700 }}>
+                                                <List>
+                                                {this.state.loadedQuestions.map((entry) =>{
+                                                                // <List.Item>
+                                                                // <List.Header as={Link} onClick={this.handleQuestionClicked(entry.question, entry.answer, entry.studentName)}>
+                                                                //     Question: {entry.question} 
+                                                                    
+                                                                //     </List.Header>
+                                                                // <List.Header>Answer:  {entry.answer}</List.Header>
+                                                                // <List.Header>Asked by: {entry.studentName}  ({entry.formattedTimestamp})  </List.Header>
+                                                                // </List.Item>
+                                                                return(<QuestionCard lectureId={this.state.lectureId} commenter={this.state.commenter} question={entry.question} studentFlag={1} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href}></QuestionCard>);
 
-                                                    
-                                            })}
-                                            </List> 
+                                                                
+                                                        })}
+                                                    </List> 
 
-                                            </Segment>
+                                                </Segment>
 
                                             <Segment>
                                             <Header as='h2' color='grey' textAlign='center'>
@@ -407,7 +364,7 @@ class LectureView extends React.Component {
 
                                                         <Segment stacked textAlign="center" verticalAlign='middle'>
                                                             <Header as = 'h2' color = 'grey' textAlign = 'center'>
-                                                                Dashboard Temp Header
+                                                                Lecture: {this.state.lectureID}
                                                             </Header>
 
                                                             {/* Video component */}
@@ -465,46 +422,6 @@ class LectureView extends React.Component {
         
     } //End render{}(...)
 
-    handleQuestionClicked(question, answer, student) {
-        console.log("question clicked");
-        this.setState({openAnswerModal: true, answer: answer});
-        return(<Modal
-            onClose={() => this.setState({openAnswerModal: false, answer: ''})}
-            onOpen={() => this.setState({openAnswerModal: true})}
-            open={this.state.openAnswerModal}
-            >
-            <Modal.Header>Answer a Question</Modal.Header>
-            <Modal.Content>
-                <Modal.Description>
-                <Header> {question} </Header>
-                <Form.Input
-                    placeholder='Answer Here'
-                    value={this.state.answer}
-                    onChange={this.handleAnswerChange}
-                />
-                </Modal.Description>
-            </Modal.Content>
-            <Modal.Actions>
-                <Button
-                content="Submit"
-                labelPosition='right'
-                icon='checkmark'
-                onClick={this.handleSubmitAnswer}
-                positive
-                />
-            </Modal.Actions>
-        </Modal>)
-    }
-
-    handleAnswerChange(event) {
-        console.log(event.target.value);
-        this.setState({answer: event.target.value});
-    }
-
-    async handleSubmitAnswer() {
-        console.log("Submit");
-        this.setState({openAnswerModal: false, answer: ''});
-    }
 
     // async handleAddClass() { //absolutely doesnt work dont try it and dont fuck with it
     //     console.log("Adding a Class");
