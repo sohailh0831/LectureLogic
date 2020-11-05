@@ -301,7 +301,7 @@ function postComment(req, res) {
     return new Promise(resolve => {
         
         try{
-            req.checkBody('classId', 'classId field is required.').notEmpty();
+            //req.checkBody('classId', 'classId field is required.').notEmpty();
             req.checkBody('lectureId', 'lectureId field is required.').notEmpty();
             req.checkBody('commenter', 'commenter field is required.').notEmpty();
             req.checkBody('questionId', 'questionId field is required.' ).notEmpty();
@@ -315,14 +315,14 @@ function postComment(req, res) {
 
         }
         
-        let classId = req.body.classId;
+        //let classId = req.body.classId;
         let lectureId = req.body.lectureId;
         let commenter = req.body.commenter;
         let questionId = req.body.questionId;
         let comment = req.body.comment;
 
         let con = mysql.createConnection(dbInfo);
-        con.query(`insert into comments (classId, lectureId, commenter, questionId, comment) values (${mysql.escape(classId)}, ${mysql.escape(lectureId)}, ${mysql.escape(commenter)}, ${mysql.escape(questionId)},${mysql.escape(comment)})`, (error, results, fields) => {
+        con.query(`insert into comments (classId, lectureId, commenter, questionId, comment) values (0, ${mysql.escape(lectureId)}, ${mysql.escape(commenter)}, ${mysql.escape(questionId)},${mysql.escape(comment)})`, (error, results, fields) => {
             if (error) {
                 console.log(error.stack);
                 con.end();

@@ -245,7 +245,6 @@ export default class QuestionCard extends React.Component{
                 //this.setState({response: data, answer: ''})
                 //window.location.replace(this.props.link);
             }).catch(console.log)
-
     }
 
     
