@@ -264,5 +264,78 @@ function unresolveQuestion(req, res) {
     });
 }
 
+async function getComments(req, res) {
+    return new Promise(resolve => {
+        try{   
+            req.checkBody('questionId', 'questionId field is required.').notEmpty();
+            if (req.validationErrors()) {
+                resolve();
+                return;
+            }
+        } catch (error) {
 
-module.exports = {getLectures, addLecture, removeLecture, editLecture, answerQuestion, resolveQuestion, unresolveQuestion}
+        }
+        
+        let questionId = req.body.questionId;
+
+        let con = mysql.createConnection(dbInfo);
+        con.query(`select * from comments where questionId = ${mysql.escape(questionId)}`, (error, results, fields) => { 
+            if (error) {
+                console.log(error.stack);
+                con.end();
+                res.status(400).json({status:400, message: "Failed to get class discussion posts."});
+                resolve();
+                return;
+            } 
+
+            con.end();
+            resolve(results);
+            return;
+  
+        });
+    });
+}
+
+function postComment(req, res) {
+    return new Promise(resolve => {
+        
+        try{
+            req.checkBody('classId', 'classId field is required.').notEmpty();
+            req.checkBody('lectureId', 'lectureId field is required.').notEmpty();
+            req.checkBody('commenter', 'commenter field is required.').notEmpty();
+            req.checkBody('questionId', 'questionId field is required.' ).notEmpty();
+            req.checkBody('comment', 'comment field is required.' ).notEmpty();
+
+            if (req.validationErrors()) {
+                resolve();
+                return;
+            }
+        } catch (error) {
+
+        }
+        
+        let classId = req.body.classId;
+        let lectureId = req.body.lectureId;
+        let commenter = req.body.commenter;
+        let questionId = req.body.questionId;
+        let comment = req.body.comment;
+
+        let con = mysql.createConnection(dbInfo);
+        con.query(`insert into comments (classId, lectureId, commenter, questionId, comment) values (${mysql.escape(classId)}, ${mysql.escape(lectureId)}, ${mysql.escape(commenter)}, ${mysql.escape(questionId)},${mysql.escape(comment)})`, (error, results, fields) => {
+            if (error) {
+                console.log(error.stack);
+                con.end();
+                resolve();
+                return;
+            }
+            
+            console.log(`${req.body.comment} successfully inserted.`);
+            con.end();
+            resolve(results);
+        });
+    });
+}
+
+
+
+module.exports = {getLectures, addLecture, removeLecture, editLecture, answerQuestion, resolveQuestion, unresolveQuestion, getComments, postComment}

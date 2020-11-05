@@ -12,7 +12,7 @@ const { addLecture } = require("../store/lecture");
 const { removeLecture } = require("../store/lecture");
 const { editLecture } = require("../store/lecture");
 const { answerQuestion } = require("../store/lecture");
-const { resolveQuestion, unresolveQuestion } = require("../store/lecture");
+const { resolveQuestion, unresolveQuestion, getComments, postComment } = require("../store/lecture");
 
 const AuthenticationFunctions = require('../Authentication.js');
 
@@ -145,5 +145,33 @@ router.post('/unresolveQuestion', AuthenticationFunctions.ensureAuthenticated, a
     }
 });
 
+router.get('/responses', async function(req, res, next) {
+    let results = await getComments(req, res);
+    
+    if (results) {
+        req.flash('success', 'Successfully got class list.');
+        console.log("IN results");
+        console.log(results);
+        return res.status(200).send(results);
+    } else {
+        req.flash('error', 'Failed to get class list.');
+        console.log("IN NO RESULTS");
+        return res.status(400).send(results);//json({status:400, message: "error"});
+    }
+});
+
+router.post('/postComment', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+    let results = await postComment(req, res);
+    
+    if (results) {
+        req.flash('success', 'Successfully posted Comment.');
+        console.log("IN results");
+        return res.json({status:200, message: "success"});
+    } else {
+        req.flash('error', 'Failed to post comment.');
+        console.log("IN NO RESULTS");
+        return res.status(400).send(results);//son({status:400, message: "error"});
+    }
+});
 
 module.exports = router;

@@ -9,6 +9,7 @@ export default class QuestionCard extends React.Component{
         super(props);
         this.state = {
             openModal: false,
+            openCommentModel: false,
             answer: this.props.answer
             
         }
@@ -16,6 +17,7 @@ export default class QuestionCard extends React.Component{
         this.handleAnswerChange = this.handleAnswerChange.bind(this);
         this.handleSubmitAnswer = this.handleSubmitAnswer.bind(this);
         this.handleResolve = this.handleResolve.bind(this);
+        this.handleOpenCommentModal = this.handleOpenCommentModal.bind(this);
     }
 
     async componentDidMount(){
@@ -25,7 +27,7 @@ export default class QuestionCard extends React.Component{
 
     render() {  
          let temp; 
-         if ( this.props.answer === '(Not Yet Answered)' && this.props.studentFlag === 0)  {
+         if ( this.props.answer === '(Not Yet Answered)' )  {   // && this.props.studentFlag === 0
             temp = <Input placeholder='Click to answer question' onClick={this.handleOpenModal}/>;
          }  else {
             temp = this.props.answer;
@@ -53,6 +55,41 @@ export default class QuestionCard extends React.Component{
                             <div className="right aligned">
                             {/* <Checkbox label='Mark as resolved' onClick={this.handleResolve} /> */}
                             {temp2}
+                            </div>
+                            <div className="right aligned">
+                                {/* Add variable to change name on button from Click to respond to Click to see responces */}
+                                <Button onClick={this.handleOpenCommentModal} > Click to respond. </Button>
+
+                                <Modal
+                                onClose={() => this.setState({openCommentModal: false})}
+                                onOpen={() => this.setState({openCommentModal: true})}
+                                open={this.state.openCommentModal}
+                                //close={!this.state.openModal}
+                                >
+                                <Modal.Header>Leave a comment:</Modal.Header>
+                                <Modal.Content>
+                                    <Modal.Description>
+                                    <Header> {this.props.question} </Header>
+                                    <Form.Input
+                                        placeholder=''
+                                        //value={this.state.answer}
+                                        //onChange={this.handleAnswerChange}
+                                    />
+                                    </Modal.Description>
+                                </Modal.Content>
+                                <Modal.Actions>
+                                    
+                                    <Button
+                                        content="Submit"
+                                        labelPosition='right'
+                                        icon='checkmark'
+                                        // onClick={this.handleSubmitAnswer}
+                                        positive
+                                    />
+                                </Modal.Actions>
+                            </Modal>
+
+
                             </div>
                             <Header as='h4' textAlign="left" dividing>
                                 <div className="left aligned">
@@ -110,6 +147,11 @@ export default class QuestionCard extends React.Component{
     handleOpenModal() {
         console.log('Opening Modal: ' + this.props.question);
         this.setState({openModal: true});
+    }
+
+    handleOpenCommentModal() {
+        console.log('Opening comment model: ' );
+        this.setState({openCommentModal: true});
     }
     // handleCloseModal() {
     //     console.log('Opening Modal: ' + this.props.question);
