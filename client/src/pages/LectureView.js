@@ -24,7 +24,8 @@ class LectureView extends React.Component {
             currentTimestamp: '',
             changeFlag: false,
             formattedTimestamp: '',
-            testQuestions: ['Sample Question1', 'Sample Question2', 'John', 'George', 'Ringo'],
+            fullTime: '',
+            testQuestions: ['Sample Question1', 'Sample Question2', 'John', 'George', 'Ringo']
             newQuestion: '',
             loadedQuestions: []
         };
@@ -33,8 +34,6 @@ class LectureView extends React.Component {
         this.handleQuestionChange = this.handleQuestionChange.bind(this);
         this.handleNewQuestion = this.handleNewQuestion.bind(this);
         this.player = React.createRef();
-        
-        // this.getClassList = this.getClassList.bind(this);
 
     }
 
@@ -68,7 +67,9 @@ class LectureView extends React.Component {
 
 
     async sendSliderData(e) {
+        // this.handleGetCurrentTime()
         const interval = setInterval( async () => {
+            this.handleGetCurrentTime();
             if ( this.state.changeFlag ) {
                 console.log("SENDING SLIDER DATA");
                 this.setState({changeFlag: false});
@@ -82,8 +83,8 @@ class LectureView extends React.Component {
             },
             body: JSON.stringify({
                 quizId: 1,
-                question: 1,
-                val: this.state.sliderData
+                val: this.state.sliderData,
+                time: this.state.formattedTimestamp
             })
         }).then(res => res.json()).then((data) => {
             console.log(data) 
@@ -103,6 +104,42 @@ class LectureView extends React.Component {
         //console.log("clearing interval");
         //return () => clearInterval(interval);
     }
+
+    async getConfData(e) {
+        const interval = async () => {
+            if ( this.state.changeFlag ) {
+                console.log("SENDING SLIDER DATA");
+                this.setState({changeFlag: false});
+                await fetch("http://localhost:9000/confidence", {
+            method: 'GET',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            },
+            body: JSON.stringify({
+                quizId: 1,
+            })
+        }).then(res => res.json()).then((data) => {
+            console.log(data) 
+            if(data === "OK"){ //successfully logged in
+                localStorage.setItem("authenticated", "authenticated");
+                console.log("successfully changed email")
+                window.location.replace('/');            }
+            else{
+           //window.location.replace('/login'); // need to flash that authentication failed
+           console.log("email change fail")
+            }
+            this.setState({response: data})
+        }).catch(console.log)
+            }
+            
+        };
+        //console.log("clearing interval");
+        //return () => clearInterval(interval);
+    }
+
 
     async componentDidMount() { // this is function called before render() ... use it to fetch any info u need
         // Simple GET request using fetch
@@ -197,6 +234,7 @@ class LectureView extends React.Component {
 
         
         this.sendSliderData();
+        this.getConfData();
         return (
             <div>
             <Grid padded style={{height: '100vh'}} columns={3} >
