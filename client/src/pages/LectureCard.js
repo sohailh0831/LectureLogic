@@ -64,7 +64,7 @@ export default class LectureCard extends React.Component{
                                 <Header as="h4" textAlign="left" dividing> 
                                     <div lectureName="left aligned">
                                         <Header.Content>
-                                            <Link to = {'/LectureView'} > {/* <Link to ={{ pathname: './ClassPage/'+this.state.className, state: {classId: this.state.classId, classDesc: this.state.classDesc} }} >*/}
+                                            <Link to ={{ pathname: '/LectureView/'+this.props.lectureId, state: {lectureId: this.props.lectureId, lectureDesc: this.props.lectureDesc, lectureSection: this.props.lectureSection, lectureVideoLink: this.props.lectureVideoLink} }} >
                                                 {this.props.lectureName}
                                             </Link>
                                             <div lectureName="meta">

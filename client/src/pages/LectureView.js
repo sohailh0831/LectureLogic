@@ -25,7 +25,7 @@ class LectureView extends React.Component {
             changeFlag: false,
             formattedTimestamp: '',
             fullTime: '',
-            testQuestions: ['Sample Question1', 'Sample Question2', 'John', 'George', 'Ringo']
+            testQuestions: ['Sample Question1', 'Sample Question2', 'John', 'George', 'Ringo'],
             newQuestion: '',
             loadedQuestions: []
         };
