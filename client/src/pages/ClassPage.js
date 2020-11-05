@@ -135,7 +135,7 @@ class ClassPage extends React.Component {
                                         />
                                     </Form>
                                 }
-                                actions={['Close', <Button color='purple' onClick={this.handleAddLecture}> done</Button>]}
+                                actions={['Cancel', <Button color='purple' onClick={this.handleAddLecture}>Done</Button>]}
                             />
                             
 

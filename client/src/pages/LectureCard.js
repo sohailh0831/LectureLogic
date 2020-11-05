@@ -127,7 +127,7 @@ export default class LectureCard extends React.Component{
                                                             />
                                                         </Form>
                                                     }
-                                                    actions={['Close', <Button color='purple' onClick={this.handleEditLecture}>Done</Button>]}
+                                                    actions={['Cancel', <Button color='purple' onClick={this.handleEditLecture}>Done</Button>]}
                                                 />
                                           
                                             {/* </Dropdown.Item> */}
@@ -166,14 +166,7 @@ export default class LectureCard extends React.Component{
 
 
     async handleEditLecture(lectureId) {
-        console.log("lecture_id: "+lectureId);
-        console.log("editing lecture");
-        console.log("CLASSNAME:  "+this.props.className);
-        console.log("lecName: "+this.state.tempLectureName);
-        console.log("lecDesc: "+this.state.tempLectureDesc);
-        console.log("lecSection: "+this.state.tempLectureSection);
-        console.log("lecVidLink: "+this.state.tempLectureVideoLink);
-
+        
         if ( this.state.tempLectureName === '' || this.state.tempLectureName === undefined) {
             //console.log("NEW NAME UNDEFd");
             this.state.tempLectureName = this.props.lectureName;
