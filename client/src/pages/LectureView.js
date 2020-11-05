@@ -347,9 +347,9 @@ class LectureView extends React.Component {
             return(
                 <div>
                     {/* <Header>Instructor View</Header> */}
-                    <Grid padded style={{height: '100vh'}} columns={3} >
+                    <Grid padded style={{height: '100vh'}} columns={2} >
                             <Grid.Row style={{height: '70%'}} textAlign = 'left' >
-                                <Grid.Column>  
+                                <Grid.Column stretched>  
                                         {/* Question list component */}
                                         <Header as='h2' color='grey' textAlign='center'>
                                                 Question Board
@@ -396,7 +396,7 @@ class LectureView extends React.Component {
                                             </Form>
                                                     </Segment>
                                                 </Grid.Column>
-                                                <Grid.Column >
+                                                <Grid.Column stretched>
 
 
                                                         <Segment stacked textAlign="center" verticalAlign='middle'>
