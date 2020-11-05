@@ -370,7 +370,7 @@ router.post('/postQuestionStudent', AuthenticationFunctions.ensureAuthenticated,
   let formattedTimestamp = req.body.formattedTimestamp;
 
   let con = mysql.createConnection(dbInfo);
-     con.query(`INSERT INTO question VALUES(${mysql.escape(questionId)},${mysql.escape(lectureId)},${mysql.escape(studentName)},${mysql.escape(question)},${mysql.escape('')},${mysql.escape(0)},${mysql.escape(timestamp)},${mysql.escape(formattedTimestamp)});`, (error, results, fields) => {
+     con.query(`INSERT INTO question VALUES(${mysql.escape(questionId)},${mysql.escape(lectureId)},${mysql.escape(studentName)},${mysql.escape(question)},${mysql.escape('')},${mysql.escape(0)},${mysql.escape(timestamp)},${mysql.escape(formattedTimestamp)},${mysql.escape(0)});`, (error, results, fields) => {
       if (error) {
         console.log(error.stack);
       }

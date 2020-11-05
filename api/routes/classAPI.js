@@ -5,7 +5,7 @@ const dotenv = require('dotenv').config();
 const mysql = require("mysql");
 const { addStudentToClass } = require("../store/class");
 const { classList } = require("../store/class");
-const { addClass, getStudentClasses, getInstructorClasses } = require("../store/class");
+const { addClass, getStudentClasses, getInstructorClasses, postClassQuestion, getClassDiscussionPosts } = require("../store/class");
 const { officialSchools, instructorSchools } = require("../store/school");
 const AuthenticationFunctions = require('../Authentication.js');
 
@@ -119,6 +119,35 @@ router.get('/instructorClasses', AuthenticationFunctions.ensureAuthenticated, as
 
     if (results) {
         req.flash('success', 'Successfully got instructor classes.');
+        console.log("IN RESULTS");
+        return res.status(200).send(results);
+    } else {
+        req.flash('error', 'Something went wrong. Try again.');
+        console.log("IN NO RESULTS");
+        return res.status(400).send(results);//.json({status:400, message: "error"});
+    }
+});
+
+router.post('/postClassQuestion', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+    console.log("USERID: "+req.query.user_id);
+    let results = await postClassQuestion(req, res);
+
+    if (results) {
+        req.flash('success', 'Successfully got inserted class question classes.');
+        console.log("IN RESULTS");
+        return res.json({status:200, message: "success"});
+    } else {
+        req.flash('error', 'Something went wrong. Try again.');
+        console.log("IN NO RESULTS");
+        return res.status(400).send(results);//.json({status:400, message: "error"});
+    }
+});
+
+router.get('/getClassDiscussion', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+    let results = await getClassDiscussionPosts(req, res);
+
+    if (results) {
+        req.flash('success', 'Successfully got class discussion.');
         console.log("IN RESULTS");
         return res.status(200).send(results);
     } else {

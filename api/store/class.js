@@ -3,6 +3,7 @@ const flash = require('connect-flash');
 const uuid = require('uuid');
 const { isNull, result } = require("lodash");
 const mysql = require("mysql");
+
 const dotenv = require('dotenv').config();
 var expressValidator = require('express-validator');
 const { json } = require('express');
@@ -429,4 +430,113 @@ async function getStudentRequests(req, res) {
     });
 }
 
-module.exports = {addStudentToClass, classList, addClass, getStudentClasses, getInstructorClasses, addStudentRequest, getStudentRequests}
+async function postClassQuestion(req, res) {
+    return new Promise(resolve => {
+        
+        try{
+            req.checkBody('name', 'Name field is required.').notEmpty();
+            req.checkBody('question', 'question field is required.').notEmpty();
+            req.checkBody('classId', 'classId field is required.').notEmpty();
+            req.checkBody('name', 'Name field is required.').notEmpty();
+
+
+            if (req.validationErrors()) {
+                resolve();
+                return;
+            }
+        } catch (error) {
+
+        }
+        
+        let questionId = uuid.v4();
+        let question = req.body.question;
+        let studentName = req.user.name;
+        let classId = req.body.classId;
+        console.log("classId: ", classId);
+        let timestamp = req.body.timestamp;
+        let formattedTimestamp = req.body.formattedTimestamp;
+
+        let con = mysql.createConnection(dbInfo);
+            con.query(`INSERT INTO question VALUES(${mysql.escape(questionId)},${mysql.escape(0)},${mysql.escape(studentName)},${mysql.escape(question)},${mysql.escape('')},${mysql.escape(0)},${mysql.escape(timestamp)},${mysql.escape(formattedTimestamp)},${mysql.escape(classId)});`, (error, results, fields) => {
+            if (error) {
+                console.log(error.stack);
+                con.end();
+                resolve();
+                return;
+            }
+            
+            console.log(`${req.body.question} successfully inserted.`);
+            con.end();
+            resolve(results);
+        });
+    });
+}
+
+// async function answerClassQuestion(req, res) {
+//     return new Promise(resolve => {
+        
+//         try{
+//             req.checkBody('questionId', 'questionId field is required.').notEmpty();
+//             req.checkBody('answer', 'Answer field is required.').notEmpty();
+
+//             if (req.validationErrors()) {
+//                 resolve();
+//                 return;
+//             }
+//         } catch (error) {
+
+//         }
+        
+//         let questionId = req.body.questionId;
+//         let answer = req.body.answer;
+        
+//         let con = mysql.createConnection(dbInfo);
+//         con.query(`update question SET answer= ${mysql.escape(answer)} where questionId=${mysql.escape(questionId)}`, (error, results, fields) => {
+//             if (error) {
+//                 console.log(error.stack);
+//                 con.end();
+//                 resolve();
+//                 return;
+//             }
+            
+//             console.log(`${req.body.questionId} successfully answered.`);
+//             con.end();
+//             resolve(results);
+//         });
+//     });
+// }
+
+
+async function getClassDiscussionPosts(req, res) {
+    return new Promise(resolve => {
+        try{   
+            req.checkBody('classId', 'classId field is required.').notEmpty();
+            if (req.validationErrors()) {
+                resolve();
+                return;
+            }
+        } catch (error) {
+
+        }
+        
+        let classId = req.body.classId;
+
+        let con = mysql.createConnection(dbInfo);
+        con.query(`select * from question where classId = ${mysql.escape(classId)}`, (error, results, fields) => { 
+            if (error) {
+                console.log(error.stack);
+                con.end();
+                res.status(400).json({status:400, message: "Failed to get class discussion posts."});
+                resolve();
+                return;
+            } 
+
+            con.end();
+            resolve(results);
+            return;
+  
+        });
+    });
+}
+
+module.exports = {addStudentToClass, classList, addClass, getStudentClasses, getInstructorClasses, addStudentRequest, getStudentRequests, postClassQuestion, getClassDiscussionPosts}
