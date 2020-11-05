@@ -18,6 +18,7 @@ export default class QuestionCard extends React.Component{
         this.handleSubmitAnswer = this.handleSubmitAnswer.bind(this);
         this.handleResolve = this.handleResolve.bind(this);
         this.handleOpenCommentModal = this.handleOpenCommentModal.bind(this);
+        this.handleGetComments = this.handleGetComments.bind(this);
     }
 
     async componentDidMount(){
@@ -83,7 +84,7 @@ export default class QuestionCard extends React.Component{
                                         content="Submit"
                                         labelPosition='right'
                                         icon='checkmark'
-                                        // onClick={this.handleSubmitAnswer}
+                                        onClick={this.handleGetComments}
                                         positive
                                     />
                                 </Modal.Actions>
@@ -185,7 +186,7 @@ export default class QuestionCard extends React.Component{
 
         } else {                            // call resolve
             console.log('resolving');
-            await fetch("http://localhost:9000/Lecture/resolveQuestion", {
+            await fetch("http://localhost:9000/lecture/resolveQuestion", {
                 method: 'POST',
                 credentials: "include",
                 headers: {
@@ -208,7 +209,7 @@ export default class QuestionCard extends React.Component{
     async handleSubmitAnswer() {
         console.log('Submit: ' + this.state.answer);
         this.setState({openModal: false});
-        await fetch("http://localhost:9000/Lecture/answerQuestion", {
+        await fetch("http://localhost:9000/lecture/answerQuestion", {
                 method: 'POST',
                 credentials: "include",
                 headers: {
@@ -223,6 +224,25 @@ export default class QuestionCard extends React.Component{
             }).then(res => res.json()).then((data) => { 
                 console.log(data);
                 this.setState({response: data, answer: ''})
+                //window.location.replace(this.props.link);
+            }).catch(console.log)
+
+    }
+
+    async handleGetComments() {
+        console.log('Getting comments for question: '+this.state.questionId);
+        this.setState({openCommentModal: false});
+        await fetch("http://localhost:9000/lecture/responses?questionId=" + this.props.questionId, {
+                method: 'GET',
+                credentials: "include",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Credentials': true,
+                }
+            }).then(res => res.json()).then((data) => { 
+                console.log(data);
+                //this.setState({response: data, answer: ''})
                 //window.location.replace(this.props.link);
             }).catch(console.log)
 

@@ -267,19 +267,20 @@ function unresolveQuestion(req, res) {
 async function getComments(req, res) {
     return new Promise(resolve => {
         try{   
-            req.checkBody('questionId', 'questionId field is required.').notEmpty();
-            if (req.validationErrors()) {
+            
+            if ( isNull(req.query.questionId) ) {
+                console.log("NO USER ID SPECIFIED");
                 resolve();
                 return;
-            }
+            } 
         } catch (error) {
 
         }
         
-        let questionId = req.body.questionId;
+        //let questionId = req.body.questionId;
 
         let con = mysql.createConnection(dbInfo);
-        con.query(`select * from comments where questionId = ${mysql.escape(questionId)}`, (error, results, fields) => { 
+        con.query(`select * from comments where questionId = ${mysql.escape(req.query.questionId)}`, (error, results, fields) => { 
             if (error) {
                 console.log(error.stack);
                 con.end();

@@ -146,6 +146,7 @@ router.post('/unresolveQuestion', AuthenticationFunctions.ensureAuthenticated, a
 });
 
 router.get('/responses', async function(req, res, next) {
+    console.log("questionID: "+req.query.questionId);
     let results = await getComments(req, res);
     
     if (results) {
