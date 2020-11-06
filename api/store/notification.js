@@ -61,7 +61,7 @@ function getMessages(req, res) {
         }
     
         let con = mysql.createConnection(dbInfo);
-        con.query(`select message, sender, timestamp from quiz WHERE receiver = '${req.user.id}' ORDER BY id DESC`, async (error, results, fields1) => { 
+        con.query(`select content, sender, time from message WHERE receiver = '${req.user.id}' ORDER BY id DESC`, async (error, results, fields1) => { 
             if (error) {
                 console.log(error.stack);
                 con.end();
@@ -93,7 +93,7 @@ return new Promise(resolve => {
     }
 
     let con = mysql.createConnection(dbInfo);
-    con.query(`select message, sender, timestamp from quiz WHERE receiver = '${req.user.id}' AND status = 1 ORDER BY id DESC`, async (error, results, fields1) => { 
+    con.query(`select content, sender, time from message WHERE receiver = '${req.user.id}' AND status = 1 ORDER BY id DESC`, async (error, results, fields1) => { 
         if (error) {
             console.log(error.stack);
             con.end();
@@ -124,7 +124,7 @@ return new Promise(resolve => {
     }
 
     let con = mysql.createConnection(dbInfo);
-    con.query(`select message, sender, timestamp from quiz WHERE receiver = '${req.user.id}' AND status = 1 AND class = '${req.query.class}' ORDER BY id DESC`, async (error, results, fields1) => { 
+    con.query(`select content, sender, time from message WHERE receiver = '${req.user.id}' AND status = 1 AND class = '${req.query.class}' ORDER BY id DESC`, async (error, results, fields1) => { 
         if (error) {
             console.log(error.stack);
             con.end();
@@ -155,7 +155,7 @@ return new Promise(resolve => {
     }
 
     let con = mysql.createConnection(dbInfo);
-    con.query(`select message, sender, timestamp from quiz WHERE receiver = '${req.user.id}' AND class = '${req.query.class}' ORDER BY id DESC`, async (error, results, fields1) => { 
+    con.query(`select content, sender, time from message WHERE receiver = '${req.user.id}' AND class = '${req.query.class}' ORDER BY id DESC`, async (error, results, fields1) => { 
         if (error) {
             console.log(error.stack);
             con.end();
@@ -213,7 +213,7 @@ function clearNotificationsByClass(req, res) {
         }
     
         let con = mysql.createConnection(dbInfo);
-        con.query(`update quiz SET status = 0 WHERE receiver = '${req.user.id}' AND class = '${req.query.class}' AND sataus = 1 ORDER BY id DESC`, async (error, results, fields1) => { 
+        con.query(`update message SET status = 0 WHERE receiver = '${req.user.id}' AND class = '${req.query.class}' AND sataus = 1 ORDER BY id DESC`, async (error, results, fields1) => { 
             if (error) {
                 console.log(error.stack);
                 con.end();

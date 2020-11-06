@@ -19,6 +19,10 @@ import DetailPage from './pages/Details';
 import ClassPage from './pages/ClassPage';
 import Confidence from './pages/ViewConfidence';
 import DiscussionBoard from "./pages/DiscussionBoard";
+import ClassNotifications from "./pages/ClassNotifications";
+import ClassMessages from "./pages/ClassMessages";
+import UserMessages from "./pages/UserMessages";
+import UserNotifications from "./pages/UserNotifications";
 import ClassDiscussionBoard from "./pages/ClassDiscussionBoard";
 
 
@@ -161,6 +165,10 @@ export default class Routes extends React.Component {
                             <Route exact path ="/detailPage" component={DetailPage}/>
                             <Route path ="/classPage/:className" exact component={ClassPage}/>
                             <Route path ="/confidence" exact component={Confidence}/>
+                            <Route path ="/classNotifications/:classId" exact component={ClassNotifications}/>
+                            <Route path ="/classMessages/:classId" exact component={ClassMessages}/>
+                            <Route path ="/userNotifications" exact component={UserNotifications}/>
+                            <Route path ="/userMessages" exact component={UserMessages}/>
                             <Redirect to="/404" />
                           </Switch>
 
