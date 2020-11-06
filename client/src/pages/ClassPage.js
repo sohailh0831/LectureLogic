@@ -358,7 +358,7 @@ class ClassPage extends React.Component {
 
 
                         <Button onClick={this.handleSendMessage} color='purple' fluid size='large'>
-                            Ask Question
+                            Send Message
                         </Button>
                         
                         
