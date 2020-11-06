@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Form, Grid, Header, Segment, Modal, List } from 'semantic-ui-react'
+import { Button, Form, Grid, Header, Segment, List } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 import ReactPlayer from "react-player";
 import QuestionCard from './QuestionCard';
@@ -29,11 +29,19 @@ class LectureView extends React.Component {
             openAnswerModal: false,
             answer: '',
             commenter: '',
+            questionInterval: '',
+            lectureName: '',
+            lectureSections: '',
+            lectureDescription: '',
+            isLocked: false
         };
         this.handleChange = this.handleChange.bind(this);
         this.sendSliderData = this.sendSliderData.bind(this);
         this.handleQuestionChange = this.handleQuestionChange.bind(this);
         this.handleNewQuestion = this.handleNewQuestion.bind(this);
+        this.handleLectureDiscussion = this.handleLectureDiscussion.bind(this)
+        this.handleLockDiscussion = this.handleLockDiscussion.bind(this)
+        this.getLock = this.getLock.bind(this)
         this.player = React.createRef();
 
     }
@@ -57,9 +65,19 @@ class LectureView extends React.Component {
      }
 
      handleGetCurrentTime = () => {
-        var roundedCurrentTime = Math.floor(this.player.current.getCurrentTime()); //rounds to remove decimal from seconds
-        this.setState({formattedTimestamp: this.convertSeconds(roundedCurrentTime)}); // formats in hr:min:sec format
-        this.setState({currentTimestamp: roundedCurrentTime})
+        if(this.player.current != null){
+            var roundedCurrentTime = Math.floor(this.player.current.getCurrentTime()); //rounds to remove decimal from seconds
+            this.setState({formattedTimestamp: this.convertSeconds(roundedCurrentTime)}); // formats in hr:min:sec format
+            this.setState({currentTimestamp: roundedCurrentTime})
+        }
+      }
+
+      componentDidUpdate(){
+        window.onpopstate = e => {
+            console.log("backbutton pressed");
+            clearInterval(this.state.questionInterval)
+        }
+
       }
 
 
@@ -176,7 +194,6 @@ class LectureView extends React.Component {
             }); // here's how u set variables u want to use later
 
 
-        let tmpId;
         await fetch('http://localhost:9000/dashboard' ,{
             method: 'GET',
             credentials: "include",
@@ -190,74 +207,141 @@ class LectureView extends React.Component {
                 this.setState({ commenter: data.username, username: data.username , name: data.name, response: data, userId: data.id  })
                 console.log(data);
                 console.log(this.state.commenter);
-                tmpId = data.id;
             }); // here's how u set variables u want to use later
 
 
 
-            setInterval(() => {
-                //console.log('Interval triggered');
+            this.setState({questionInterval: setInterval(() => {
                 this.getQuestions()
-              }, 1000);
+                this.getLock()
+              }, 3000) })
+
+
+              await fetch('http://localhost:9000/getLectureMetadata' ,{
+                method: 'POST',
+                credentials: "include",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Credentials': true,
+                },
+                body: JSON.stringify({
+                    lectureId: this.state.lectureId
+                })
+            }).then(response => response.json())
+                .then(data => {
+                    this.setState({lectureName: data[0].name, lectureDescription: data[0].description, lectureSections: data[0].section})
+                    //console.log(data);
+                }); // here's how u set variables u want to use later
+    
              
     
     }
 
 
     render() {
-        /* decided what popup message to present */
-        let popUpMessage;
-        if (this.state.response.type === '1') { //if user is a student
-            popUpMessage = 'Join a Class';
-        
+
+        var discussionBoardLocked;
+        if(this.state.isLocked){
+            discussionBoardLocked = 
+            <Segment>
+                <Header>
+                    Instructor has locked the discussion board
+                </Header>
+            </Segment>
+        }
+        else{
+            discussionBoardLocked =
+            <Form size='large'>
+            <Segment stacked>
+                <Form.Input
+                    placeholder='Question'
+                    required={true}
+                    value={this.state.newQuestion}
+                    onChange={this.handleQuestionChange}
+                />
+
+
+                <Button onClick={this.handleNewQuestion} color='purple' fluid size='large'>
+                    Ask Question
+                </Button>
+                
+                
+            </Segment>
+        </Form>
+        }
+        var lockDiscussionBoardQuestion;
+        if(this.state.response.type === '0'){ //is instructor
+            if (!this.state.isLocked) {
+                lockDiscussionBoardQuestion = 
+                    <Segment>
+                        <Button onClick={this.handleLockDiscussion} color='red' fluid size='large'>
+                            Lock Question Board
+                        </Button>
+                    </Segment>
+            }
+            else {
+                lockDiscussionBoardQuestion = 
+                    <Segment>
+                        <Button onClick={this.handleLockDiscussion} color='green' fluid size='large'>
+                            Unlock Question Board
+                        </Button>
+                    </Segment>
+            }
+        }
+        else{
+        }
+
             this.sendSliderData();
             this.getConfData();
             return (
                 <div>
                 <Grid padded style={{height: '100vh'}} columns={3} >
                         <Grid.Row style={{height: '70%'}} textAlign = 'left' >
-                            <Grid.Column>  
-                                    {/* Question list component */}
-                                    <Header as='h2' color='grey' textAlign='center'>
-                                            Question Board
-                                        </Header>
-                                    
-
-                                        <Segment>
+                            <Grid.Column style = {{width: 400}}> 
+                            <Segment>
+                                            <Header>Lecture Name: {this.state.lectureName}</Header>
+                                            <Header>Lecture Description: {this.state.lectureDescription}</Header>
+                        </Segment>
+                        <Segment>
+                        <Button onClick={this.handleLectureDiscussion} color='purple' fluid size='large'>
+                                                Go to Lecture Discussion Board
+                                            </Button>
+                        </Segment>
+                        {lockDiscussionBoardQuestion}
+                        <Segment>
                                         <Header as='h2' color='grey' textAlign='center'>
                                             Ask a question:
                                         </Header>
-                                        <Form size='large'>
-                                            <Segment stacked>
-                                                <Form.Input
-                                                    placeholder='Question'
-                                                    required={true}
-                                                    value={this.state.newQuestion}
-                                                    onChange={this.handleQuestionChange}
-                                                />
-
-
-                                                <Button onClick={this.handleNewQuestion} color='purple' fluid size='large'>
-                                                    Ask Question
-                                                </Button>
-                                                
-                                                
-                                            </Segment>
-                                        </Form>
+                                                    {discussionBoardLocked}
                                                 </Segment>
+                                
+                                    {/* Question list component */}
+                                        <Segment stacked textAlign="left" verticalAlign='middle' style={{overflow: 'auto', maxHeight: 700 }}>
+                                        <Header as='h2' color='grey' textAlign='center'>
+                                            Question Board
+                                        </Header>
+                                                <List>
+                                                {this.state.loadedQuestions.map((entry) =>{
+                                                                return(<QuestionCard lectureId={this.state.lectureId} commenter={this.state.commenter} question={entry.question} studentFlag={1} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href} type={this.state.response.type}></QuestionCard>);    
+                                                        })}
+                                                    </List> 
+
+                                                </Segment>
+                                
                                             </Grid.Column>
-                                            <Grid.Column >
+                                            <Grid.Column style = {{width: 910}}> 
 
 
                                                     <Segment stacked textAlign="center" verticalAlign='middle'>
                                                         <Header as = 'h2' color = 'grey' textAlign = 'center'>
-                                                            Dashboard Temp Header
+                                                            Sections Covered: {this.state.lectureSections}
                                                         </Header>
 
                                                         {/* Video component */}
                                                         {/* <Embed id={this.state.lectureVideoLink} placeholder='/images/image-16by9.png' source='youtube' /> */}
                                                         <ReactPlayer 
-                                                        width='382px' height='214px' 
+                                                        width='853px' height='480px'
                                                         ref = {this.player} url={this.state.fullLectureVideoLink}
                                                         controls={true}
                                                         />                                    
@@ -275,19 +359,7 @@ class LectureView extends React.Component {
                                             
                                                     
                                                         </Segment>
-                                    {/* Class Card
-                                    <Grid.Column style={{width: "auto"}}>
-                                        {this.state.classList.map((classList, index) => {
-                                                return(<ClassCard className={this.state.classList[index].name} classDesc={this.state.classList[index].description} />)
-                                            }
-                                        )}
-                                    </Grid.Column> */}
-                                {/* </Form> */}
-                            </Grid.Column>
-                    
-                            <Grid.Column>
-                                {/* Slider (level of engagement) component */} 
-                                <Segment stacked textAlign="center" verticalAlign='middle'>
+                                                        <Segment stacked textAlign="center" verticalAlign='middle'>
                                     <Form.Input
                                         label={`Confidence Level:  `}
                                         min={1}
@@ -299,190 +371,25 @@ class LectureView extends React.Component {
                                         value={this.state.sliderValue}
                                     />
                                 </Segment>
+                                    
+                                    {/* <Grid.Column style={{width: "auto"}}>
+                                        {this.state.classList.map((classList, index) => {
+                                                return(<ClassCard className={this.state.classList[index].name} classDesc={this.state.classList[index].description} />)
+                                            }
+                                        )}
+                                    </Grid.Column> */}
+                                {/* </Form> */}
                             </Grid.Column>
+                    
                     </Grid.Row>
                 </Grid>
             </div>
 
             ) //End return(...)
-        } //End if student
-        else {
-            return(
-                <div>
-                    {/* <Header>Instructor View</Header> */}
-                    <Grid padded style={{height: '100vh'}} columns={2} >
-                            <Grid.Row style={{height: '70%'}} textAlign = 'left' >
-                                <Grid.Column stretched>  
-                                        {/* Question list component */}
-                                        <Header as='h2' color='grey' textAlign='center'>
-                                                Question Board
-                                            </Header>
-                                            <Segment stacked textAlign="left" verticalAlign='middle' style={{overflow: 'auto', maxHeight: 700 }}>
-                                                <List>
-                                                {this.state.loadedQuestions.map((entry) =>{
-                                                                // <List.Item>
-                                                                // <List.Header as={Link} onClick={this.handleQuestionClicked(entry.question, entry.answer, entry.studentName)}>
-                                                                //     Question: {entry.question} 
-                                                                    
-                                                                //     </List.Header>
-                                                                // <List.Header>Answer:  {entry.answer}</List.Header>
-                                                                // <List.Header>Asked by: {entry.studentName}  ({entry.formattedTimestamp})  </List.Header>
-                                                                // </List.Item>
-                                                                return(<QuestionCard lectureId={this.state.lectureId} commenter={this.state.commenter} question={entry.question} studentFlag={1} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href}></QuestionCard>);
-
-                                                                
-                                                        })}
-                                                    </List> 
-
-                                                </Segment>
-
-                                            <Segment>
-                                            <Header as='h2' color='grey' textAlign='center'>
-                                                Ask a question:
-                                            </Header>
-                                            <Form size='large'>
-                                                <Segment stacked>
-                                                    <Form.Input
-                                                        placeholder='Question'
-                                                        required={true}
-                                                        value={this.state.newQuestion}
-                                                        onChange={this.handleQuestionChange}
-                                                    />
-
-
-                                                    <Button onClick={this.handleNewQuestion} color='purple' fluid size='large'>
-                                                        Ask Question
-                                                    </Button>
-                                                    
-                                                    
-                                                </Segment>
-                                            </Form>
-                                                    </Segment>
-                                                </Grid.Column>
-                                                <Grid.Column stretched>
-
-
-                                                        <Segment stacked textAlign="center" verticalAlign='middle'>
-                                                            <Header as = 'h2' color = 'grey' textAlign = 'center'>
-                                                                Lecture: {this.state.lectureID}
-                                                            </Header>
-
-                                                            {/* Video component */}
-                                                            {/* <Embed id={this.state.lectureVideoLink} placeholder='/images/image-16by9.png' source='youtube' /> */}
-                                                            <ReactPlayer 
-                                                            width='382px' height='214px' 
-                                                            ref = {this.player} url={this.state.fullLectureVideoLink}
-                                                            controls={true}
-                                                            />                                    
-                                                            {/* <Button color='purple' fluid size='large' active={this.state.enabled} onClick={this.handleGetCurrentTime}>
-                                                            Get Current Time Stamp
-                                                            </Button>
-                                                            <Label fluid size='large'>
-                                                            Time Stamp: {this.state.currentTimestamp}
-                                                            </Label>
-                                                            <Label fluid size='large'>
-                                                            Formatted Time Stamp: {this.state.formattedTimestamp}
-                                                            </Label> */}
-
-                                                        </Segment>
-
-
-
-                                        {/* Class Card
-                                        <Grid.Column style={{width: "auto"}}>
-                                            {this.state.classList.map((classList, index) => {
-                                                    return(<ClassCard className={this.state.classList[index].name} classDesc={this.state.classList[index].description} />)
-                                                }
-                                            )}
-                                        </Grid.Column> */}
-                                    {/* </Form> */}
-                                </Grid.Column>
-                        
-                                <Grid.Column>
-                                    {/* Slider (level of engagement) component */} 
-                                    {/* <Segment stacked textAlign="center" verticalAlign='middle'>
-                                        <Form.Input
-                                            label={`Confidence Level:  `}
-                                            min={1}
-                                            max={10}
-                                            name='Confidence Level'
-                                            onChange={this.handleChange}
-                                            step={1}
-                                            type='range'
-                                            value={this.state.sliderValue}
-                                        />
-                                    </Segment> */}
-                                </Grid.Column>
-                        </Grid.Row>
-                    </Grid>
-                </div>
-            )
-        }
             //return(<ClassCard className={this.state.classList.name} classDesc={this.state.description} />);// -- ideally this works first shot but honestly prolly not lol
         
     } //End render{}(...)
 
-
-    // async handleAddClass() { //absolutely doesnt work dont try it and dont fuck with it
-    //     console.log("Adding a Class");
-    //     await fetch("http://localhost:9000/class/addClass", {
-    //         method: 'POST',
-    //         credentials: "include",
-    //         headers: {
-    //             'Accept': 'application/json',
-    //             'Content-Type': 'application/json',
-    //             'Access-Control-Allow-Credentials': true,
-    //         },
-    //         body: JSON.stringify({
-    //             name: this.state.name,
-    //             description: this.state.addClassDesc,
-    //             instrucor_id: this.state.userId,
-    //         })
-    //     }).then(res => res.json()).then((data) => { 
-    //         console.log(data);
-    //         this.setState({response: data})
-    //     }).catch(console.log)
-    // } /* End handleAddClass(...) */
-
-    // async getClassList() { //dont fuck with this... doesnt work
-    //     console.log("Getting Student ClassList");
-    //     if (this.state.type === '1') { //----------IF STUDENT----------
-    //         await fetch('http://localhost:9000/class/studentClasses?user_id=' + this.state.userId ,{
-    //             method: 'GET',
-    //             credentials: "include",
-    //             headers: {
-    //                 'Accept': 'application/json',
-    //                 'Content-Type': 'application/json',
-    //                 'Access-Control-Allow-Credentials': true,
-    //             },
-    //             body: JSON.stringify({
-    //                 id: this.state.userId
-    //             })
-    //         }).then(response => response.json())
-    //         .then(data => {
-    //             console.log(data);
-    //             this.setState({classList: data, listReceived: true})
-    //         }).catch(console.log);
-    //         //parse classlist
-    //     }
-    //     else{ //----------IF INSTRUCTOR----------
-    //         console.log("Getting Instructor Classlist")
-    //         await fetch('http://localhost:9000/class/instructorClasses?user_id=' + this.state.userId ,{
-    //             method: 'GET',
-    //             credentials: "include",
-    //             headers: {
-    //                 'Accept': 'application/json',
-    //                 'Content-Type': 'application/json',
-    //                 'Access-Control-Allow-Credentials': true,
-    //             }
-    //         }).then(response => response.json())
-    //         .then(data => {
-    //             //console.log(data);
-    //             this.setState({classList: data})
-    //         }).catch(console.log);
-    //         //parse classlist
-    //     }
-    // } /* End getClassList(...) */
 
     async handleQuestionChange(event) {
         const value = event.target.value;
@@ -542,5 +449,66 @@ async getQuestions(){
         this.setState({loadedQuestions: data})
     }).catch(console.log)
 }
+
+async getLock(){
+        await fetch('http://localhost:9000/getLectureMetadata' ,{
+        method: 'POST',
+        credentials: "include",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Credentials': true,
+        },
+        body: JSON.stringify({
+            lectureId: this.state.lectureId
+        })
+        }).then(response => response.json())
+        .then(data => {
+            let l;
+            if(data[0] != null){
+             l = data[0].discussionLock;
+            }
+            else{
+                l = 0;
+            }
+            console.log(data)
+             
+            if(l === 1){ // locked
+                    this.setState({isLocked: true})
+            }
+            else{ //unlocked
+                    this.setState({isLocked: false})
+            }
+            
+        }); 
+}
+
+async handleLockDiscussion(){
+    await fetch('http://localhost:9000/lockDiscussion/' ,{
+    method: 'POST',
+    credentials: "include",
+    headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Credentials': true,
+    },
+    body: JSON.stringify({
+        lectureId: this.state.lectureId,
+        isLocked: this.state.isLocked
+    })
+    }).then(response => response.json())
+    .then(data => {
+        
+    }); 
+}
+
+async handleLectureDiscussion() {
+    var link = "/DiscussionBoard/" + this.state.lectureId
+    window.location.replace(link);
+}
+
+
+
+
     
 } export default LectureView

@@ -8,6 +8,14 @@ const bcrypt = require('bcrypt');
 const { resetEmail } =  require("../store/reset");
 const { addStudentRequest, getStudentRequests, addStudentToClass } =  require("../store/class");
 const { updateConfidence, getAvgConfidence, getConfidence } =  require("../store/quiz");
+const { postMessage, 
+        clearNotifications, 
+        clearNotificationsByClass, 
+        getMessages, 
+        getMessagesByClass, 
+        getNotifications,
+        getNotificationsByClass
+      } = require("../store/notification")
 //for passport
 const LocalStrategy = require('passport-local').Strategy;
 const AuthenticationFunctions = require('../Authentication.js');
@@ -231,7 +239,8 @@ router.get('/logout', AuthenticationFunctions.ensureAuthenticated, (req, res) =>
 });
 
 router.post('/reqestClass', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
-  console.log("VERY COOL", req.query)
+  console.log("VERY COOL", req.query);
+  await addStudentToClass(req,res);
   let results = await addStudentRequest(req, res);
   //let results2 = await addStudentToClass(req, res);
 
@@ -369,6 +378,8 @@ router.post('/postQuestionStudent', AuthenticationFunctions.ensureAuthenticated,
   let timestamp = req.body.timestamp;
   let formattedTimestamp = req.body.formattedTimestamp;
 
+  console.log(question)
+
   let con = mysql.createConnection(dbInfo);
      con.query(`INSERT INTO question VALUES(${mysql.escape(questionId)},${mysql.escape(lectureId)},${mysql.escape(studentName)},${mysql.escape(question)},${mysql.escape('')},${mysql.escape(0)},${mysql.escape(timestamp)},${mysql.escape(formattedTimestamp)},${mysql.escape(0)});`, (error, results, fields) => {
       if (error) {
@@ -402,6 +413,138 @@ router.post('/getQuestionsStudent', AuthenticationFunctions.ensureAuthenticated,
 
 
 });
+
+//get lecture metadata
+router.post('/getLectureMetadata', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
+  let lectureId = req.body.lectureId;
+  let con = mysql.createConnection(dbInfo);
+     con.query(`SELECT * FROM lecture WHERE id=(${mysql.escape(lectureId)});`, (error, results, fields) => {
+      if (error) {
+        console.log(error.stack);
+      }
+      con.end();
+      res.send(results);
+      return;
+  });
+
+
+});
+
+
+//lock discussion
+router.post('/lockDiscussion', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
+  let lectureId = req.body.lectureId;
+  let isLocked = req.body.isLocked;
+  let newLock = 0;
+  if(isLocked == false)
+     newLock = 1;
+
+  let con = mysql.createConnection(dbInfo);
+     con.query(`UPDATE lecture SET discussionLock= ${mysql.escape(newLock)} WHERE id=(${mysql.escape(lectureId)});`, (error, results, fields) => {
+      if (error) {
+        console.log(error.stack);
+      }
+      con.end();
+      res.send(results);
+      return;
+  });
+
+
+});
+
+//delete question
+//lock discussion
+router.post('/deleteQuestion', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
+  let questionId = req.body.questionId;
+  let con = mysql.createConnection(dbInfo);
+     con.query(`DELETE FROM question WHERE questionId=${mysql.escape(questionId)};`, (error, results, fields) => {
+      if (error) {
+        console.log(error.stack);
+      }
+      con.end();
+      res.send(results);
+      return;
+  });
+
+
+});
+
+
+
+
+router.post('/messages', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  let results = await postMessage(req, res);
+  console.log('\n\n\nresults:', results,'\n\n\n')
+  if (results) {
+
+      return res.status(200).send(results);
+  } else {
+      return res.status(400).send(results);//json({status:400, message: "error"});
+  }
+});
+router.get('/messages', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  let results = await getMessages(req, res);
+  console.log('\n\n\nresults:', results,'\n\n\n')
+  if (results) {
+    
+      return res.status(200).send(results);
+  } else {
+      return res.status(400).send(results);//json({status:400, message: "error"});
+  }
+});
+router.get('/classmessage', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  let results = await getMessagesByClass(req, res);
+  console.log('\n\n\nresults:', results,'\n\n\n')
+  if (results) {
+    
+      return res.status(200).send(results);
+  } else {
+      return res.status(400).send(results);//json({status:400, message: "error"});
+  }
+});
+router.get('/notifications', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  let results = await getNotifications(req, res);
+  console.log('\n\n\nresults:', results,'\n\n\n')
+  if (results) {
+    
+      return res.status(200).send(results);
+  } else {
+      return res.status(400).send(results);//json({status:400, message: "error"});
+  }
+});
+router.get('/classnotifications', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  let results = await getNotificationsByClass(req, res);
+  console.log('\n\n\nresults:', results,'\n\n\n')
+  if (results) {
+    
+      return res.status(200).send(results);
+  } else {
+      return res.status(400).send(results);//json({status:400, message: "error"});
+  }
+});
+router.put('/clearnotifications', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  let results = await clearNotifications(req, res);
+  console.log('\n\n\nresults:', results,'\n\n\n')
+  if (results) {
+    
+      return res.status(200).send(results);
+  } else {
+      return res.status(400).send(results);//json({status:400, message: "error"});
+  }
+});
+router.put('/clearclassnotifications', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  let results = await clearNotificationsByClass(req, res);
+  console.log('\n\n\nresults:', results,'\n\n\n')
+  if (results) {
+    
+      return res.status(200).send(results);
+  } else {
+      return res.status(400).send(results);//json({status:400, message: "error"});
+  }
+});
+
+
+
 
 
 

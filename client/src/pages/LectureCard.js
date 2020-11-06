@@ -1,9 +1,6 @@
 import React from "react";
-import {Card, CardContent, Header, Modal, Button, Form} from "semantic-ui-react";
+import {Card, Header, Modal, Button, Form} from "semantic-ui-react";
 import {Link} from "react-router-dom";
-import { Dropdown } from 'semantic-ui-react';
-
-import ClassDetailsCard from './ClassDetailsCard';
 
 
 export default class LectureCard extends React.Component{
@@ -41,8 +38,7 @@ export default class LectureCard extends React.Component{
     }
 
     render() {
-        let temp = true;
-        if (this.props.type == 1){ // if student, hide student list button            
+        if (this.props.type === 1){ // if student, hide student list button            
             return(
                 <div>
                      {/* <Link to = {'/LectureView'} >  */}

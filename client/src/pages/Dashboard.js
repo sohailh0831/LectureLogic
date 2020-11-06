@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Form, Grid, Header, Segment, Popup, Modal } from 'semantic-ui-react'
+import { Button, Form, Grid, Header, Segment, Modal } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 import ClassCard from './ClassCard';
 
@@ -32,7 +32,7 @@ class Dashboard extends React.Component {
         if(localStorage.getItem("authenticated") !== "authenticated"){
             window.location.replace('/login'); //redirects to login if not already logged in
         }
-        let tmpId;
+        //let tmpId;
         await fetch('http://localhost:9000/dashboard' ,{
             method: 'GET',
             credentials: "include",
@@ -56,13 +56,13 @@ class Dashboard extends React.Component {
 
     render() {
         /* decided what popup message to present */
-        let popUpMessage;
-        if (this.state.response.type === '1') { //if user is a student
-            popUpMessage = 'Join a Class';
-        }
-        else { //else user is instructor
-            popUpMessage = 'Create New Class';
-        }
+        // let popUpMessage;
+        // if (this.state.response.type === '1') { //if user is a student
+        //     popUpMessage = 'Join a Class';
+        // }
+        // else { //else user is instructor
+        //     popUpMessage = 'Create New Class';
+        // }
 
         console.log(this.state.classList);
         console.log("SCHOOL "+this.state.school);

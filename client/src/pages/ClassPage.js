@@ -1,8 +1,8 @@
 import React from 'react'
-import { Button, Form, Grid, Header, Segment, Popup, Modal } from 'semantic-ui-react'
+import { Button, Form, Grid, Header, Segment, Modal } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
-//import ClassCard from './ClassCard';
 import LectureCard from './LectureCard';
+import QuestionCard from './QuestionCard';
 
 class ClassPage extends React.Component {
     constructor(props) {
@@ -26,15 +26,24 @@ class ClassPage extends React.Component {
             tmepLectureVideo: '',
             lectureDesc: '',
             lectureSection: '',
-            lectureVideoLink: ''
+            lectureVideoLink: '',
+            loadedQuestions: [],
+            classQuestionList: [],
+            isLocked: false,
+            newQuestion: ''
         };
         this.handleAddLecture = this.handleAddLecture.bind(this);
         // this.getClassList = this.getClassList.bind(this);
         this.getLectureList = this.getLectureList.bind(this);
+        this.getQuestions = this.getQuestions.bind(this);
         this.handleLectureNameChange = this.handleLectureNameChange.bind(this);
         this.handleLectureDescriptionChange = this.handleLectureDescriptionChange.bind(this);
         this.handleLectureSectionChange = this.handleLectureSectionChange.bind(this);
         this.handleLectureVideoLinkChange = this.handleLectureVideoLinkChange.bind(this);
+        this.handleLockDiscussion = this.handleLockDiscussion.bind(this)
+        this.getLock = this.getLock.bind(this)
+        this.handleQuestionChange = this.handleQuestionChange.bind(this);
+        this.handleNewQuestion = this.handleNewQuestion.bind(this);
         
 
     }
@@ -45,7 +54,7 @@ class ClassPage extends React.Component {
         if(localStorage.getItem("authenticated") !== "authenticated"){
             window.location.replace('/login'); //redirects to login if not already logged in
         }
-        let tmpId;
+        //let tmpId;
         await fetch('http://localhost:9000/dashboard' ,{
             method: 'GET',
             credentials: "include",
@@ -75,6 +84,10 @@ class ClassPage extends React.Component {
         this.getLectureList();
         console.log(this.state.lectureList);
 
+        this.getQuestions();
+        this.getLock()
+
+
         
     }
 
@@ -83,74 +96,148 @@ class ClassPage extends React.Component {
 
     render() {
         /* decided what popup message to present */
-        let popUpMessage;
-        if (this.state.response.type === '0') { //if user is a student
-            popUpMessage = 'Create New Lecture';
-        }
+        // let popUpMessage;
+        // if (this.state.response.type === '0') { //if user is a student
+        //     popUpMessage = 'Create New Lecture';
+        // }
 
         console.log(this.state.lectureList);
         console.log("CLASS ID: "+this.state.classId);
+        var discussionBoardLocked;
+        if(this.state.isLocked){
+            discussionBoardLocked = 
+            <Segment>
+                <Header>
+                    Instructor has locked the discussion board
+                </Header>
+            </Segment>
+        }
+        else{
+            discussionBoardLocked =
+            <Form size='large'>
+            <Segment stacked>
+                <Form.Input
+                    placeholder='Question'
+                    required={true}
+                    value={this.state.newQuestion}
+                    onChange={this.handleQuestionChange}
+                />
+
+
+                <Button onClick={this.handleNewQuestion} color='purple' fluid size='large'>
+                    Ask Question
+                </Button>
+                
+                
+            </Segment>
+        </Form>
+        }
+
+        var lockDiscussionBoardQuestion;    //use the state of isLocked to determine color of the button
+        if(this.state.response.type === '0'){ //is instructor
+           if (this.state.isLocked) {
+                lockDiscussionBoardQuestion = 
+                    <Segment>
+                        <Button onClick={this.handleLockDiscussion} color='green' fluid size='large'>
+                                UnLock Question Board
+                        </Button>
+                    </Segment>
+            }
+            else {
+                lockDiscussionBoardQuestion = 
+                <Segment>
+                    <Button onClick={this.handleLockDiscussion} color='red' fluid size='large'>
+                            Lock Question Board
+                    </Button>
+                </Segment>
+            }
+        }
         if (this.state.response.type === '0') {
             
             return (
-            <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle'>
-                <Grid.Column style={{maxWidth: 450}}>
-                    <Form size='large'>
+            <Grid textAlign='center' style={{height: '100vh'}, {width: '100vw'}} divided='vertically' columns={2}>
+                <Grid.Row verticalAlign='top'>
+                    <Grid.Column style={{maxWidth: '50vw'}, {maxHeight: '100vh'}} verticalAlign='left'>
 
-                        <Segment stacked textAlign="center" verticalAlign='middle'>
-                                <Header as = 'h2' color = 'grey' textAlign = 'center'>
-                                    {this.state.className}
+                            <Segment stacked maxWidth='50vw' textAlign="center" verticalAlign='middle' >
+                                    <Header as = 'h2' color = 'grey' textAlign = 'center'>
+                                        {this.state.className}
+                                    </Header>
+                                    <Header as = 'h3' color = 'grey' textAlign = 'center'>
+                                        {this.state.classDesc}
+                                    </Header>   
+                                <Modal
+                                    trigger={<Button icon='add' color='purple' ></Button>}
+                                    header='Add New Lecture'
+                                    content={
+                                        <Form>
+                                            <Form.Input
+                                                placeholder='Lecture Name'
+                                                required={true}
+                                                value={this.state.tempLectureName}
+                                                onChange={this.handleLectureNameChange}
+                                            />
+                                            <Form.Input
+                                                placeholder='Lecture Description'
+                                                required={true}
+                                                value={this.state.tempLectureDesc}
+                                                onChange={this.handleLectureDescriptionChange}
+                                            />
+                                            <Form.Input
+                                                placeholder='Lecture Section'
+                                                required={true}
+                                                value={this.state.tempLectureSection}
+                                                onChange={this.handleLectureSectionChange}
+                                            />
+                                            <Form.Input
+                                                placeholder='Lecture Video Link'
+                                                required={true}
+                                                value={this.state.tempLectureVideoLink}
+                                                onChange={this.handleLectureVideoLinkChange}
+                                            />
+                                        </Form>
+                                    }
+                                    actions={['Cancel', <Button color='purple' onClick={this.handleAddLecture}>Done</Button>]}
+                                />
+                                
+
+                            {/* Class Card */}
+                            <Segment stacked textAlign="left" verticalAlign='middle' style={{overflow: 'auto'}}>
+                            {this.state.lectureList.map((lectureList, index) => { 
+                                return(<LectureCard maxWidth='50vw' className={this.state.className} lectureId={this.state.lectureList[index].id} lectureName={this.state.lectureList[index].name} lectureDesc={this.state.lectureList[index].description} lectureSection={this.state.lectureList[index].section} lectureVideoLink={this.state.lectureList[index].video_link} type={this.state.response.type}/>)
+                            })}
+                            </Segment>
+                        </Segment>
+                    </Grid.Column>
+
+
+
+                    <Grid.Column style={{maxWidth: '50vw'}} verticalAlign='top' textAlgin='center'>
+                        {/* Column for Class Discussion Board */}
+                        <Segment>
+                            <Header as = 'h2' color = 'grey' textAlign = 'center'>
+                                Class Discussion Board
+                            </Header>
+
+                            <Segment stacked textAlign="left" style={{overflow: 'auto'}}>
+                                {this.state.classQuestionList.map((entry) =>{
+                                        return(<QuestionCard lectureId={this.state.lectureId} commenter={this.state.commenter} question={entry.question} studentFlag={1} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href} type={this.state.response.type}></QuestionCard>);                                 
+                                    })}
+                            </Segment>
+
+                            <Segment>
+                                <Header as='h2' color='grey' textAlign='center'>
+                                    Ask a question:
                                 </Header>
-                                <Header as = 'h3' color = 'grey' textAlign = 'center'>
-                                    {this.state.classDesc}
-                                </Header>   
-                            <Modal
-                                trigger={<Button icon='add' color='purple' ></Button>}
-                                header='Add New Lecture'
-                                content={
-                                    <Form>
-                                        <Form.Input
-                                            placeholder='Lecture Name'
-                                            required={true}
-                                            value={this.state.tempLectureName}
-                                            onChange={this.handleLectureNameChange}
-                                        />
-                                        <Form.Input
-                                            placeholder='Lecture Description'
-                                            required={true}
-                                            value={this.state.tempLectureDesc}
-                                            onChange={this.handleLectureDescriptionChange}
-                                        />
-                                        <Form.Input
-                                            placeholder='Lecture Section'
-                                            required={true}
-                                            value={this.state.tempLectureSection}
-                                            onChange={this.handleLectureSectionChange}
-                                        />
-                                        <Form.Input
-                                            placeholder='Lecture Video Link'
-                                            required={true}
-                                            value={this.state.tempLectureVideoLink}
-                                            onChange={this.handleLectureVideoLinkChange}
-                                        />
-                                    </Form>
-                                }
-                                actions={['Cancel', <Button color='purple' onClick={this.handleAddLecture}>Done</Button>]}
-                            />
-                            
+                                {discussionBoardLocked}
+                                {lockDiscussionBoardQuestion}
+                            </Segment> 
+
 
                         </Segment>
-
-                        {/* Class Card */}
-                        <Grid.Column style={{width: "auto"}}>
-                            {this.state.lectureList.map((lectureList, index) => { 
-                                    return(<LectureCard className={this.state.className} lectureId={this.state.lectureList[index].id} lectureName={this.state.lectureList[index].name} lectureDesc={this.state.lectureList[index].description} lectureSection={this.state.lectureList[index].section} lectureVideoLink={this.state.lectureList[index].video_link} type={this.state.response.type}/>)
-                                }
-                            )}
-                        </Grid.Column>
-
-                    </Form>
-                </Grid.Column>
+                        
+                    </Grid.Column>
+                </Grid.Row>
             </Grid>
 
 
@@ -228,6 +315,121 @@ class ClassPage extends React.Component {
     async handleLectureVideoLinkChange(event){
         const value = event.target.value;
         await this.setState({tempLectureVideoLink: value});
+    }
+
+    async getLock(){
+        await fetch('http://localhost:9000/getLectureMetadata' ,{
+        method: 'POST',
+        credentials: "include",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Credentials': true,
+        },
+        body: JSON.stringify({
+            lectureId: this.state.lectureId
+        })
+        }).then(response => response.json())
+        .then(data => {
+            let l;
+            if(data[0] != null){
+             l = data[0].discussionLock;
+            }
+            else{
+                l = 0;
+            }
+            //console.log(data)
+             
+            if(l === 1){ // locked
+                    this.setState({isLocked: true})
+            }
+            else{ //unlocked
+                    this.setState({isLocked: false})
+            }
+            
+        }); 
+    }
+    
+    async handleLockDiscussion(){
+        await fetch('http://localhost:9000/lockDiscussion/' ,{
+        method: 'POST',
+        credentials: "include",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Credentials': true,
+        },
+        body: JSON.stringify({
+            lectureId: this.state.lectureId,
+            isLocked: this.state.isLocked
+        })
+        }).then(response => response.json())
+        .then(data => {
+            // if (this.state.isLocked) {
+            //     this.setState({isLocked: false});
+            // }
+            // else {
+            //     this.setState({isLocked: true});
+            // }
+            
+        }); 
+        }
+
+    async handleQuestionChange(event) {
+        const value = event.target.value;
+        console.log(value);
+        await this.setState({newQuestion: value});
+        //console.log(event.target.value);
+    }
+    //new question
+    
+    
+    async handleNewQuestion() {
+        console.log(this.state.newQuestion);
+        console.log(this.state.classId);
+        console.log(this.state.username);
+        await fetch("http://localhost:9000/class/postClassQuestion", {
+            method: 'POST',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            },
+            body: JSON.stringify({
+                question: this.state.newQuestion,
+                classId: this.state.classId,
+                name: this.state.username
+            })
+        }).then(res => res.json()).then((data) => { 
+            console.log(data)
+            this.setState({newQuestion: ''})
+            window.location.replace('/ClassPage/' + this.state.className);
+        }).catch(console.log)
+        // this.getQuestions()
+    }
+
+    async getQuestions() {
+        console.log(this.state.classId);
+    await fetch('http://localhost:9000/class/getClassQuestions?classId=' + this.state.classId ,{
+                    method: 'GET',
+                    credentials: "include",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Credentials': true,
+                    }
+                }).then(response => response.json())
+                .then(data => {
+                    console.log("ClassQuestionList");
+                    for (var i = 0; i < data.length; i++) {
+                        console.log(data[i]);
+                        if (data[i].answer === '') {
+                            data[i].answer = '(Not Yet Answered)';
+                        }
+                    }
+                    this.setState({classQuestionList: data})
+                }).catch(console.log);
     }
 
 

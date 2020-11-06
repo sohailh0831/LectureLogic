@@ -1,8 +1,6 @@
 import React from "react";
-import {Card, CardContent, Header} from "semantic-ui-react";
-import {Link} from "react-router-dom";
+import {Card, Header} from "semantic-ui-react";
 
-import Register from './Register';
 
 
 export default class ClassDetailsCard extends React.Component{
