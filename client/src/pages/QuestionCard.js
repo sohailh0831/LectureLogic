@@ -321,7 +321,30 @@ export default class QuestionCard extends React.Component{
 
 
         //this.setState({openModal: false, comment: ''});
-        await fetch("http://localhost:9000/lecture/postComment", {
+        var link;
+        var body;
+        console.log(this.props.classId);
+        if(this.props.lectureId == 0){ // it is a class type
+            link = "http://localhost:9000/class/postComment";
+            body = JSON.stringify({
+                classId:this.props.classId,
+                commenter: this.props.commenter,
+                questionId: this.props.questionId,
+                comment: this.state.comment
+            })
+
+        }
+        else{
+            link = "http://localhost:9000/lecture/postComment";
+            body = JSON.stringify({
+                lectureId:this.props.lectureId,
+                commenter: this.props.commenter,
+                questionId: this.props.questionId,
+                comment: this.state.comment
+            })
+        }
+
+        await fetch(link, {
                 method: 'POST',
                 credentials: "include",
                 headers: {
@@ -329,12 +352,7 @@ export default class QuestionCard extends React.Component{
                     'Content-Type': 'application/json',
                     'Access-Control-Allow-Credentials': true,
                 },
-                body: JSON.stringify({
-                    lectureId: this.props.lectureId,
-                    commenter: this.props.commenter,
-                    questionId: this.props.questionId,
-                    comment: this.state.comment
-                })
+                body: body
             }).then(res => res.json()).then((data) => { 
                 console.log(data);
                 //window.location.replace(this.props.link);
