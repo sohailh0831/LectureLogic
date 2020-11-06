@@ -23,6 +23,8 @@ import ClassNotifications from "./pages/ClassNotifications";
 import ClassMessages from "./pages/ClassMessages";
 import UserMessages from "./pages/UserMessages";
 import UserNotifications from "./pages/UserNotifications";
+import ClassDiscussionBoard from "./pages/ClassDiscussionBoard";
+
 
 
 
@@ -159,6 +161,7 @@ export default class Routes extends React.Component {
                             <Route exact path ="/changeEmail" component ={ChangeEmail}/>
                             <Route path ="/LectureView/:lectureId" component={LectureView}/>
                             <Route path ="/DiscussionBoard/:lectureId" component={DiscussionBoard}/>
+                            <Route path = "/ClassDiscussionBoard/:classId" component={ClassDiscussionBoard}/>
                             <Route exact path ="/detailPage" component={DetailPage}/>
                             <Route path ="/classPage/:className" exact component={ClassPage}/>
                             <Route path ="/confidence" exact component={Confidence}/>

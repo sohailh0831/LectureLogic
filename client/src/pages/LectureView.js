@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Form, Grid, Header, Segment, Modal, List } from 'semantic-ui-react'
+import { Button, Form, Grid, Header, Segment, List } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 import ReactPlayer from "react-player";
 import QuestionCard from './QuestionCard';
@@ -194,7 +194,6 @@ class LectureView extends React.Component {
             }); // here's how u set variables u want to use later
 
 
-        let tmpId;
         await fetch('http://localhost:9000/dashboard' ,{
             method: 'GET',
             credentials: "include",
@@ -208,7 +207,6 @@ class LectureView extends React.Component {
                 this.setState({ commenter: data.username, username: data.username , name: data.name, response: data, userId: data.id  })
                 console.log(data);
                 console.log(this.state.commenter);
-                tmpId = data.id;
             }); // here's how u set variables u want to use later
 
 
@@ -274,12 +272,22 @@ class LectureView extends React.Component {
         }
         var lockDiscussionBoardQuestion;
         if(this.state.response.type === '0'){ //is instructor
-            lockDiscussionBoardQuestion = 
-                <Segment>
-                    <Button onClick={this.handleLockDiscussion} color='purple' fluid size='large'>
+            if (!this.state.isLocked) {
+                lockDiscussionBoardQuestion = 
+                    <Segment>
+                        <Button onClick={this.handleLockDiscussion} color='red' fluid size='large'>
                             Lock Question Board
-                </Button>
-                </Segment>
+                        </Button>
+                    </Segment>
+            }
+            else {
+                lockDiscussionBoardQuestion = 
+                    <Segment>
+                        <Button onClick={this.handleLockDiscussion} color='green' fluid size='large'>
+                            Unlock Question Board
+                        </Button>
+                    </Segment>
+            }
         }
         else{
         }
@@ -465,7 +473,7 @@ async getLock(){
             }
             console.log(data)
              
-            if(l == 1){ // locked
+            if(l === 1){ // locked
                     this.setState({isLocked: true})
             }
             else{ //unlocked

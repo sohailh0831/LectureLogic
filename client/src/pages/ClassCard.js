@@ -1,5 +1,5 @@
 import React from "react";
-import {Card, CardContent, Header, Modal, Button} from "semantic-ui-react";
+import {Card, Header, Modal, Button} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 
 import ClassDetailsCard from './ClassDetailsCard';
@@ -27,11 +27,10 @@ export default class ClassCard extends React.Component{
     }
 
     render() {
-        let temp = true;
         // console.log("CLAS NAME IN CLASS CARD: "+this.state.className);
         // console.log("CLAS ID IN CLASS CARD "+this.state.classId);
         // console.log("CLAS DESCRIPTION IN CLASS CARD "+this.state.classDesc);
-        if (this.props.type == 1){ // if student, hide student list button            
+        if (this.props.type === 1){ // if student, hide student list button            
             return(
                 <div>
                     <Link to ={{ pathname: './ClassPage/'+this.state.className, state: {classId: this.state.classId, classDesc: this.state.classDesc} }} > {/*params={{className: this.state.className}} >*/}

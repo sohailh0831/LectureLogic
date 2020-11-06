@@ -226,9 +226,10 @@ function getInstructorClasses(req, res) {
                 return;
             } 
         } catch (error) {
+            console.log("No user id");
             console.log("ERROR");
         }
-
+        console.log("user id===== "+req.query.user_id);
         let con = mysql.createConnection(dbInfo);
         con.query(`select * from class where instructor_id = ${mysql.escape(req.query.user_id)}`, (error, results, fields) => {
             if (error) {
@@ -247,7 +248,7 @@ function getInstructorClasses(req, res) {
             }
             con.end();
             resolve(results);
-            return;
+            return results;
         });
 
     });
@@ -312,7 +313,7 @@ function getStudentClasses(req, res) {
 
                     console.log("\nResults2: ");
                     console.log(results2);
-                    console.log(`${req.query.user_id} successfully added.`);
+                    //console.log(`${req.query.user_id} successfully added.`);
                     con.end();
                     resolve(results2);
             });
@@ -450,7 +451,7 @@ async function postClassQuestion(req, res) {
         
         let questionId = uuid.v4();
         let question = req.body.question;
-        let studentName = req.user.name;
+        let studentName = req.body.name;
         let classId = req.body.classId;
         console.log("classId: ", classId);
         //let timestamp = req.body.timestamp;
