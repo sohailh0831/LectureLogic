@@ -12,6 +12,7 @@ class ClassDiscussionBoard extends React.Component {
             userId: '',
             response: '',
             loadedQuestions: [],
+            classId: '',
             isLocked: false
 
         };
@@ -34,8 +35,9 @@ class ClassDiscussionBoard extends React.Component {
         }
 
         /* gets the ID in the path name of URL e.g /LectureView/ID*/
-//        let urlElements = window.location.pathname.split('/')
-//        this.setState({lectureId: urlElements[2]})
+       let urlElements = window.location.pathname.split('/')
+       this.setState({classId: urlElements[2]})
+        console.log("KSFALSFKJASKJFASLFKJALKSFJALSFASKLF: " + urlElements[2]);
 
 
         await fetch('http://localhost:9000/dashboard' ,{
@@ -121,7 +123,7 @@ class ClassDiscussionBoard extends React.Component {
                         <Segment stacked textAlign="left" verticalAlign='middle' style={{overflow: 'auto', maxHeight: 700 }}>
                             <List>
                                 {this.state.loadedQuestions.map((entry) =>{
-                                    return(<QuestionCard lectureId={this.state.lectureId} commenter={this.state.commenter} question={entry.question} studentFlag={1} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href} type={this.state.response.type}></QuestionCard>);                                 
+                                    return(<QuestionCard lectureId={this.state.lectureId} commenter={this.state.commenter} question={entry.question} studentFlag={1} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href} type={this.state.response.type} classId = {this.state.classId}></QuestionCard>);                                 
                                 })}
                             </List> 
                         </Segment>
