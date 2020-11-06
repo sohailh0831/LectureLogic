@@ -279,7 +279,40 @@ var app = express.Router();
     });
   });
 
-  
+  describe('answer class question', async function () {
+    describe('test bad answer class question', async function () {
+        it('answer question bad ', async function () {
+          try {
+            let req =  {body: {questionId: '4302591d-60de-4b59-94f1-317fb21a4ccb'}};
+            let response;
+            let results = await answerClassQuestion(req, response);
+            //assert
+            //assert.isNotNull(results, "not null");
+          }catch (error) {
+            //console.log(error);
+            assert.error(response.status, 400);
+          }
+        });
+    });
+  });
+  describe('answer class question', async function () {
+    describe('test bad answer class question', async function () {
+        it('answer question bad ', async function () {
+          try {
+            let req =  {body: {questionId: '4302591d-60de-4b59-94f1-317fb21a4ccb', answer: "unit test answer"}};
+            let response;
+            let results = await answerClassQuestion(req, response);
+            //assert
+            assert.isNotNull(results, "not null");
+          }catch (error) {
+            //console.log(error);
+            assert.error(error.response.status, 400);
+          }
+        });
+    });
+  });
+
+
 
 
 
