@@ -11,6 +11,7 @@
     "async-wait-until": "^1.2.4",
     "axios": "^0.19.2",
     "base-64": "^0.1.0",
+    "chart.js": "^2.9.4",
     "firebase": "^7.23.0",
     "lodash": "^4.17.20",
     "nock": "^12.0.3",
@@ -33,7 +34,8 @@
     "save-file": "^2.3.1",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.2",
-    "styled-components": "^5.1.0"
+    "styled-components": "^5.1.0",
+    "zingchart-react": "^3.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -71,4 +73,5 @@
       "\\.(css|less)$": "<rootDir>/__mocks__/styleMock.js"
     }
   }
+  
 }

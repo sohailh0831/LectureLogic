@@ -38,7 +38,9 @@ export default class LectureCard extends React.Component{
     }
 
     render() {
-        if (this.props.type === 1){ // if student, hide student list button            
+        console.log("USER TPYE: "+this.props.type);
+        if (this.props.type == 1){ // if student, hide student list button    
+            console.log("SHOWING STUDENT LECTURE CARD");        
             return(
                 <div>
                      {/* <Link to = {'/LectureView'} >  */}
@@ -68,6 +70,7 @@ export default class LectureCard extends React.Component{
 
             )//End return(...)
         } else {    // if instructor, show student list button
+            console.log("SHOWING INSTRUCTOR LECTURE CARD\n");
             return(
                 <div>
                     
@@ -162,7 +165,7 @@ export default class LectureCard extends React.Component{
 
 
     async handleEditLecture(lectureId) {
-        
+        console.log(this.props.type);
         if ( this.state.tempLectureName === '' || this.state.tempLectureName === undefined) {
             //console.log("NEW NAME UNDEFd");
             this.state.tempLectureName = this.props.lectureName;

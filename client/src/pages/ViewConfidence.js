@@ -1,6 +1,9 @@
 import React from 'react'
-import {Form, Grid, Segment, List } from 'semantic-ui-react'
+import {Form, Grid, Segment, List, Progress, Header } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
+import ZingChart from 'zingchart-react'
+import {zingchart, ZC} from 'zingchart/es6';
+import 'zingchart/modules-es6/zingchart-pareto.min.js';
 
 class Confidence extends React.Component {
     constructor(props) {
@@ -18,7 +21,7 @@ class Confidence extends React.Component {
             type: '',
             school: '',
             listReceived: false,
-            studentList: []
+            studentConfList: [],
         };
         this.handleGetConfidence = this.handleGetConfidence.bind(this);
         this.handleGetAllConfidence = this.handleGetAllConfidence.bind(this);
@@ -50,10 +53,11 @@ class Confidence extends React.Component {
                 this.setState({ username: data.username , name: data.name, response: data, userId: data.id, type: data.type, school: data.school });
                 console.log(data.class_id);
             }); // here's how u set variables u want to use later
-    
-        this.handleGetConfidence();
+        console.log('before setting vars');
+        //this.handleGetConfidence();
         this.handleGetAvgConfidence();
         this.handleGetAllConfidence();
+        console.log('after setting vars');
 
     }
 
@@ -67,41 +71,80 @@ class Confidence extends React.Component {
 
        
         // console.log(this.state.classList);
-        console.log("SCHOOL "+this.state.response);
+        console.log('SCHOOL '+this.state.response);
+        console.log('PAUL ADDED');
+        console.log(this.state.studentConfList);
             //console.log("DASH TYPE: "+this.state.response.type);
+
+            let listX = [];
+            let listY = [];
+            for (let i = 0; i < this.state.studentConfList.length; i++) {
+                console.log("In LOOP: " + this.state.studentConfList[i]);
+                listX.push(this.state.studentConfList[i].name);
+                listY.push(parseInt(JSON.parse(this.state.studentConfList[i].confidence), 10));
+            }
+            console.log("listxandy:", listX, listY);
+            let myConfig = {
+                type: 'bar',
+                title: {
+                  text: 'Confidence Levels for Quiz 1 Lecture 1',
+                  fontSize: 24,
+                },
+                scaleX: {
+                  // Set scale label
+                  label: { text: 'Student Names' },
+                  // Convert text on scale indices
+                  labels: listX //change to student names
+                },
+                scaleY: {
+                  // Scale label with unicode character
+                  label: { text: 'Confidence Levels' }
+                },
+                series: [
+                  {
+                    // plot 1 values, linear data
+                    values: listY,
+                  }
+                //   {
+                //     // plot 2 values, linear data
+                //     values: [35,42,33,49,35,47,35],
+                //     text: 'Week 2'
+                //   },
+                //   {
+                //     // plot 2 values, linear data
+                //     values: [15,22,13,33,44,27,31],
+                //     text: 'Week 3'
+                //   }
+                ]
+              };
+              console.log(this.state.results3);
+              console.log(this.state.results4);
+              console.log(this.state.studentConfList);
+              console.log(myConfig);
+
             return (
-            <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle'>
-                <Grid.Column style={{maxWidth: 450}}>
-                    <Form size='large'>
-                        <Grid.Column style={{width: "auto"}}>
-                            <Segment stacked textAlign="left" verticalAlign='left'>
-                                <p>Class Average Confidence: {this.state.response4}</p> 
-                            </Segment>
-                        </Grid.Column>
-                        <Grid.Column style={{width: "auto"}}>
-                            <Segment stacked textAlign="left" verticalAlign='left'>
-                                <p>Confidence: {this.state.response2}</p> 
-                            </Segment>
-                        </Grid.Column>
-                        {/* Class Card */}
-                        <Grid.Column style={{width: "auto"}}>
-                            <Segment stacked textAlign="left" verticalAlign='middle'>
-                                    <List>
+                <Grid textAlign='center' style={{height: '100vh'}, {_width: '100vw'}} verticalAlign='middle' columns={2}>
+                    <ZingChart data={myConfig}/>
+
+                    <Grid.Column style={{width: "auto"}}>
+                        <Segment stacked textAlign="left" verticalAlign='left'>
+                            <p>Class Average Confidence: {this.state.response4}</p> 
+                        </Segment>
+                    </Grid.Column>
+
+                    <Grid.Column style={{width: "auto"}}>
+                        <Segment stacked textAlign="left" verticalAlign='middle'>
                                     {Object.keys(this.state.response3).map(index => (
                                         <List.Item>
                                         <List.Header>Time Stamp: {index} </List.Header> 
-                                        <p>Confidence: {this.state.response3[index]}</p> 
+                                        <p>Confidence: {this.state.response3[index]}</p>
                                         </List.Item>
-                                    )
-                                        )}
-                                    </List>
-                            </Segment>
-                        </Grid.Column>
-                        
-                    </Form>
-                               
-                </Grid.Column>
-            </Grid>
+                                    ))}
+                        </Segment>
+                    </Grid.Column>
+                </Grid>
+    
+    
 
 
         ) //End return(...)
@@ -112,21 +155,9 @@ class Confidence extends React.Component {
 
 
 
-
-    async handleClassNameChange(event){
-        const value = event.target.value;
-        await this.setState({className: value});
-    }
-    async handleClassDescChange(event){
-        const value = event.target.value;
-        await this.setState({classDesc: value});
-    }
-
-
-
     async handleGetConfidence() {
         console.log("Getting confidence");
-        await fetch("http://localhost:9000/confidence?quizId=1", {
+        await fetch("http://localhost:9000/confidence?quizId=1?id=6e820d18-a523-4ea1-b987-c6b59b9f94de", {
             method: 'GET',
             credentials: "include",
             headers: {
@@ -138,7 +169,7 @@ class Confidence extends React.Component {
             console.log("data",data);
             this.setState({response3: data.record, response2: data.confidence})
             // window.location.replace('/dashboard');
-        }).catch(console.log("ok"))
+        }).catch(console.log("not working here"))
     } /* End handleAddClass(...) */
    
    
@@ -160,7 +191,7 @@ class Confidence extends React.Component {
     } /* End handleAddClass(...) */
 
     async handleGetAllConfidence() {
-        console.log("Getting all confidence");
+        console.log('Getting all confidence');
         await fetch("http://localhost:9000/allconfidence?quizId=1", {
             method: 'GET',
             credentials: "include",
@@ -170,7 +201,7 @@ class Confidence extends React.Component {
                 'Access-Control-Allow-Credentials': true,
             }
         }).then(res => res.json()).then((data) => { 
-            console.log("data",data);
+            this.setState({studentConfList: data});
             // window.location.replace('/dashboard');
         }).catch(console.log("ok"))
     } /* End handleAddClass(...) */

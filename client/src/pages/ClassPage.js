@@ -226,7 +226,7 @@ class ClassPage extends React.Component {
 
                             <Segment stacked textAlign="left" style={{overflow: 'auto'}}>
                                 {this.state.classQuestionList.map((entry) =>{
-                                        return(<QuestionCard lectureId={this.state.lectureId} commenter={this.state.commenter} question={entry.question} studentFlag={1} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href} type={this.state.response.type}></QuestionCard>);                                 
+                                        return(<QuestionCard lectureId={0} commenter={this.state.username} question={entry.question} studentFlag={1} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href} type={this.state.response.type} classId={this.state.classId}></QuestionCard>);                                 
                                     })}
                             </Segment>
 
@@ -324,7 +324,7 @@ class ClassPage extends React.Component {
 
                             <Segment stacked textAlign="left" style={{overflow: 'auto'}}>
                                 {this.state.classQuestionList.map((entry) =>{
-                                        return(<QuestionCard lectureId={this.state.lectureId} commenter={this.state.commenter} question={entry.question} studentFlag={1} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href} type={this.state.response.type}></QuestionCard>);                                 
+                                        return(<QuestionCard lectureId={0} commenter={this.state.username} question={entry.question} studentFlag={1} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href} type={this.state.response.type} classId = {this.state.classId}></QuestionCard>);                                 
                                     })}
                             </Segment>
 
