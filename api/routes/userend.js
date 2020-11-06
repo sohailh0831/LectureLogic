@@ -372,7 +372,7 @@ router.post('/postQuestionStudent', AuthenticationFunctions.ensureAuthenticated,
   console.log(question)
 
   let con = mysql.createConnection(dbInfo);
-     con.query(`INSERT INTO question VALUES(${mysql.escape(questionId)},${mysql.escape(lectureId)},${mysql.escape(studentName)},${mysql.escape(question)},${mysql.escape('')},${mysql.escape(0)},${mysql.escape(timestamp)},${mysql.escape(formattedTimestamp)},${mysql.escape('')});`, (error, results, fields) => {
+     con.query(`INSERT INTO question VALUES(${mysql.escape(questionId)},${mysql.escape(lectureId)},${mysql.escape(studentName)},${mysql.escape(question)},${mysql.escape('')},${mysql.escape(0)},${mysql.escape(timestamp)},${mysql.escape(formattedTimestamp)},${mysql.escape(0)});`, (error, results, fields) => {
       if (error) {
         console.log(error.stack);
       }
@@ -408,13 +408,50 @@ router.post('/getQuestionsStudent', AuthenticationFunctions.ensureAuthenticated,
 //get lecture metadata
 router.post('/getLectureMetadata', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
   let lectureId = req.body.lectureId;
-  console.log(lectureId)
   let con = mysql.createConnection(dbInfo);
      con.query(`SELECT * FROM lecture WHERE id=(${mysql.escape(lectureId)});`, (error, results, fields) => {
       if (error) {
         console.log(error.stack);
       }
-      console.log(results)
+      con.end();
+      res.send(results);
+      return;
+  });
+
+
+});
+
+
+//lock discussion
+router.post('/lockDiscussion', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
+  let lectureId = req.body.lectureId;
+  let isLocked = req.body.isLocked;
+  let newLock = 0;
+  if(isLocked == false)
+     newLock = 1;
+
+  let con = mysql.createConnection(dbInfo);
+     con.query(`UPDATE lecture SET discussionLock= ${mysql.escape(newLock)} WHERE id=(${mysql.escape(lectureId)});`, (error, results, fields) => {
+      if (error) {
+        console.log(error.stack);
+      }
+      con.end();
+      res.send(results);
+      return;
+  });
+
+
+});
+
+//delete question
+//lock discussion
+router.post('/deleteQuestion', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
+  let questionId = req.body.questionId;
+  let con = mysql.createConnection(dbInfo);
+     con.query(`DELETE FROM question WHERE questionId=${mysql.escape(questionId)};`, (error, results, fields) => {
+      if (error) {
+        console.log(error.stack);
+      }
       con.end();
       res.send(results);
       return;
