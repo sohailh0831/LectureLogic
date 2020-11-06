@@ -21,6 +21,8 @@ class Confidence extends React.Component {
             studentList: []
         };
         this.handleGetConfidence = this.handleGetConfidence.bind(this);
+        this.handleGetAllConfidence = this.handleGetAllConfidence.bind(this);
+        this.handleGetAvgConfidence = this.handleGetAvgConfidence.bind(this);
         // this.getClassList = this.getClassList.bind(this);
         // this.handleClassNameChange = this.handleClassNameChange.bind(this);
         // this.handleClassDescChange = this.handleClassDescChange.bind(this);
@@ -51,6 +53,7 @@ class Confidence extends React.Component {
     
         this.handleGetConfidence();
         this.handleGetAvgConfidence();
+        this.handleGetAllConfidence();
 
     }
 
@@ -154,6 +157,22 @@ class Confidence extends React.Component {
         }).then(res => res.json()).then((data) => { 
             console.log("data",data);
             this.setState({response4: data.Average})
+            // window.location.replace('/dashboard');
+        }).catch(console.log("ok"))
+    } /* End handleAddClass(...) */
+
+    async handleGetAllConfidence() {
+        console.log("Getting all confidence");
+        await fetch("http://localhost:9000/allconfidence?quizId=1", {
+            method: 'GET',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            }
+        }).then(res => res.json()).then((data) => { 
+            console.log("data",data);
             // window.location.replace('/dashboard');
         }).catch(console.log("ok"))
     } /* End handleAddClass(...) */
