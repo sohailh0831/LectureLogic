@@ -3,7 +3,7 @@ import { Button, Form, Grid, Header, Segment, List } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 import QuestionCard from './QuestionCard';
 
-class DiscussionBoard extends React.Component {
+class ClassDiscussionBoard extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -11,27 +11,10 @@ class DiscussionBoard extends React.Component {
             name: '',
             userId: '',
             response: '',
-            classList: [],
-            newClassDesc: '',
-            sliderData: 5,
-            lectureVideoLink: 'Test',
-            lectureId: '',
-            fulllectureVideoLink: '',
-            currentTimestamp: '',
-            changeFlag: false,
-            formattedTimestamp: '',
-            fullTime: '',
-            testQuestions: ['Sample Question1', 'Sample Question2', 'John', 'George', 'Ringo'],
-            newQuestion: '',
             loadedQuestions: [],
-            questionInterval: '',
-            lectureName: '',
-            lectureSections: '',
-            lectureDescription: '',
             isLocked: false
 
         };
-        this.handleChange = this.handleChange.bind(this);
         this.handleQuestionChange = this.handleQuestionChange.bind(this);
         this.handleNewQuestion = this.handleNewQuestion.bind(this);
         this.handleLectureView = this.handleLectureView.bind(this);
@@ -42,42 +25,6 @@ class DiscussionBoard extends React.Component {
 
     }
 
-    async handleChange(e) {
-        await this.setState({ sliderData: e.target.value, changeFlag: true }); 
-        console.log(this.state.sliderData); 
-    }
-
-
-     convertSeconds = function(sec) {
-        var hrs = Math.floor(sec / 3600);
-        var min = Math.floor((sec - (hrs * 3600)) / 60);
-        var seconds = sec - (hrs * 3600) - (min * 60);
-        seconds = Math.round(seconds * 100) / 100
-       
-        var result = (hrs < 10 ? "0" + hrs : hrs);
-        result += ":" + (min < 10 ? "0" + min : min);
-        result += ":" + (seconds < 10 ? "0" + seconds : seconds);
-        return result;
-     }
-
-     handleGetCurrentTime = () => {
-        if(this.player.current != null){
-            var roundedCurrentTime = Math.floor(this.player.current.getCurrentTime()); //rounds to remove decimal from seconds
-            this.setState({formattedTimestamp: this.convertSeconds(roundedCurrentTime)}); // formats in hr:min:sec format
-            this.setState({currentTimestamp: roundedCurrentTime})
-        }
-      }
-
-
-      componentDidUpdate(){
-        window.onpopstate = e => {
-            console.log("backbutton pressed");
-            clearInterval(this.state.questionInterval)
-        }
-
-      }
-
-
 
     async componentDidMount() { // this is function called before render() ... use it to fetch any info u need
         // Simple GET request using fetch
@@ -87,33 +34,10 @@ class DiscussionBoard extends React.Component {
         }
 
         /* gets the ID in the path name of URL e.g /LectureView/ID*/
-        let urlElements = window.location.pathname.split('/')
-        this.setState({lectureId: urlElements[2]})
+//        let urlElements = window.location.pathname.split('/')
+//        this.setState({lectureId: urlElements[2]})
 
 
-        await fetch('http://localhost:9000/getLectureVideoLink' ,{
-            method: 'POST',
-            credentials: "include",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Credentials': true,
-            },
-            body: JSON.stringify({
-                lectureId: urlElements[2]
-            })
-        }).then(response => response.json())
-            .then(data => {
-                let fullVidLink = data.lectureVideoLink;
-                let embedLink =data.lectureVideoLink.split("watch?v=")[1];
-                this.setState({ lectureVideoLink: embedLink });
-                this.setState({ fullLectureVideoLink: fullVidLink });
-                console.log("lec " + this.state.lectureVideoLink)
-                //console.log(data);
-            }); // here's how u set variables u want to use later
-
-
-        
         await fetch('http://localhost:9000/dashboard' ,{
             method: 'GET',
             credentials: "include",
@@ -129,14 +53,6 @@ class DiscussionBoard extends React.Component {
             }); // here's how u set variables u want to use later
 
 
-         this.setState({questionInterval: setInterval(() => {
-            this.getLock()
-            this.getQuestions()
-          }, 1000) })
-
-
-        
-             
     }
 
 
@@ -154,22 +70,22 @@ class DiscussionBoard extends React.Component {
         else{
             discussionBoardLocked =
             <Form size='large'>
-            <Segment stacked>
-                <Form.Input
-                    placeholder='Question'
-                    required={true}
-                    value={this.state.newQuestion}
-                    onChange={this.handleQuestionChange}
-                />
+                <Segment stacked>
+                    <Form.Input
+                        placeholder='Question'
+                        required={true}
+                        value={this.state.newQuestion}
+                        onChange={this.handleQuestionChange}
+                    />
 
 
-                <Button onClick={this.handleNewQuestion} color='purple' fluid size='large'>
-                    Ask Question
-                </Button>
-                
-                
-            </Segment>
-        </Form>
+                    <Button onClick={this.handleNewQuestion} color='purple' fluid size='large'>
+                        Ask Question
+                    </Button>
+                    
+                    
+                </Segment>
+            </Form>
         }
 
         var lockDiscussionBoardQuestion;    //use the state of isLocked to determine color of the button
@@ -219,8 +135,6 @@ class DiscussionBoard extends React.Component {
                         <Segment>
                             <Header>Class: sampleClass</Header>
                             <Header>Instructor: sampleInt</Header>
-                            <Header>Lecture: sampleLecture</Header>
-                            <Header>Sections Covered: sampleSections</Header>
                         </Segment>
                         <Segment>
                             <Header as='h2' color='grey' textAlign='center'>
@@ -228,11 +142,6 @@ class DiscussionBoard extends React.Component {
                             </Header>
                             {discussionBoardLocked}
                         </Segment> 
-                        <Segment>
-                            <Button onClick={this.handleLectureView} color='purple' fluid size='large'>
-                                Go to Lecture Discussion Board
-                            </Button>
-                        </Segment>
                     </Grid.Column>
                 
                 </Grid.Row>
@@ -245,16 +154,13 @@ class DiscussionBoard extends React.Component {
     } //End render{}(...)
 
     async handleQuestionChange(event) {
-        const value = event.target.value;
-        await this.setState({newQuestion: value});
-        //console.log(event.target.value);
+        await this.setState({newQuestion: event.target.value});
     }
-    //new question
 
 
 async handleNewQuestion() {
     await this.handleGetCurrentTime()
-    await fetch("http://localhost:9000/postQuestionStudent", {
+    await fetch("http://localhost:9000/postQuestionStudent", {  //ASK LEUER FOR THE LINK
         method: 'POST',
         credentials: "include",
         headers: {
@@ -272,13 +178,12 @@ async handleNewQuestion() {
     }).then(res => res.json()).then((data) => { 
         this.setState({newQuestion: ''})
     }).catch(console.log)
-    // this.getQuestions()
 }
 
 
 async getQuestions(){
     await this.handleGetCurrentTime()
-    await fetch("http://localhost:9000/getQuestionsStudent", {
+    await fetch("http://localhost:9000/getQuestionsStudent", { //ASK LEUER FOR THE LINK
         method: 'POST',
         credentials: "include",
         headers: {
@@ -290,14 +195,10 @@ async getQuestions(){
             lectureId: this.state.lectureId, 
         })
     }).then(res => res.json()).then((data) => { 
-        //need to remove based on timestamp
-        //need to mark unanswered questions
+        //set all unanswered questions to a default answer
         for (var i = data.length - 1; i >= 0; i--) {
             if(data[i].answer === '')
                     data[i].answer = '(Not Yet Answered)'
-            // if (this.state.currentTimestamp < data[i].timestamp) { 
-            //     data.splice(i, 1);
-            // }
         }
         this.setState({loadedQuestions: data})
     }).catch(console.log)
@@ -351,19 +252,14 @@ async handleLockDiscussion(){
     })
     }).then(response => response.json())
     .then(data => {
-        // if (this.state.isLocked) {
-        //     this.setState({isLocked: false});
-        // }
-        // else {
-        //     this.setState({isLocked: true});
-        // }
+        if (this.state.isLocked) {
+            this.setState({isLocked: false});
+        }
+        else {
+            this.setState({isLocked: true});
+        }
         
     }); 
-    }
-
-    async handleLectureView() {
-        var link = "/LectureView/" + this.state.lectureId
-        window.location.replace(link);
-    }
+}
     
-} export default DiscussionBoard
+} export default ClassDiscussionBoard

@@ -3,6 +3,7 @@ import { Button, Form, Grid, Header, Segment, Modal } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 //import ClassCard from './ClassCard';
 import LectureCard from './LectureCard';
+import ClassQuestionCard from './ClassQuestionCard';
 
 class ClassPage extends React.Component {
     constructor(props) {
@@ -26,11 +27,13 @@ class ClassPage extends React.Component {
             tmepLectureVideo: '',
             lectureDesc: '',
             lectureSection: '',
-            lectureVideoLink: ''
+            lectureVideoLink: '',
+            loadedQuestions: []
         };
         this.handleAddLecture = this.handleAddLecture.bind(this);
         // this.getClassList = this.getClassList.bind(this);
         this.getLectureList = this.getLectureList.bind(this);
+        this.getQuestions = this.getQuestions.bind(this);
         this.handleLectureNameChange = this.handleLectureNameChange.bind(this);
         this.handleLectureDescriptionChange = this.handleLectureDescriptionChange.bind(this);
         this.handleLectureSectionChange = this.handleLectureSectionChange.bind(this);
@@ -75,6 +78,8 @@ class ClassPage extends React.Component {
         this.getLectureList();
         console.log(this.state.lectureList);
 
+        this.getQuestions();
+
         
     }
 
@@ -93,64 +98,81 @@ class ClassPage extends React.Component {
         if (this.state.response.type === '0') {
             
             return (
-            <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle'>
-                <Grid.Column style={{maxWidth: 450}}>
-                    <Form size='large'>
+            <Grid textAlign='center' style={{height: '100vh'}, {width: '100vw'}} divided='vertically' columns={2}>
+                <Grid.Row verticalAlign='top'>
+                    <Grid.Column style={{maxWidth: '50vw'}, {maxHeight: '100vh'}} verticalAlign='left'>
 
-                        <Segment stacked textAlign="center" verticalAlign='middle'>
-                                <Header as = 'h2' color = 'grey' textAlign = 'center'>
-                                    {this.state.className}
-                                </Header>
-                                <Header as = 'h3' color = 'grey' textAlign = 'center'>
-                                    {this.state.classDesc}
-                                </Header>   
-                            <Modal
-                                trigger={<Button icon='add' color='purple' ></Button>}
-                                header='Add New Lecture'
-                                content={
-                                    <Form>
-                                        <Form.Input
-                                            placeholder='Lecture Name'
-                                            required={true}
-                                            value={this.state.tempLectureName}
-                                            onChange={this.handleLectureNameChange}
-                                        />
-                                        <Form.Input
-                                            placeholder='Lecture Description'
-                                            required={true}
-                                            value={this.state.tempLectureDesc}
-                                            onChange={this.handleLectureDescriptionChange}
-                                        />
-                                        <Form.Input
-                                            placeholder='Lecture Section'
-                                            required={true}
-                                            value={this.state.tempLectureSection}
-                                            onChange={this.handleLectureSectionChange}
-                                        />
-                                        <Form.Input
-                                            placeholder='Lecture Video Link'
-                                            required={true}
-                                            value={this.state.tempLectureVideoLink}
-                                            onChange={this.handleLectureVideoLinkChange}
-                                        />
-                                    </Form>
-                                }
-                                actions={['Cancel', <Button color='purple' onClick={this.handleAddLecture}>Done</Button>]}
-                            />
-                            
+                            <Segment stacked maxWidth='50vw' textAlign="center" verticalAlign='middle' >
+                                    <Header as = 'h2' color = 'grey' textAlign = 'center'>
+                                        {this.state.className}
+                                    </Header>
+                                    <Header as = 'h3' color = 'grey' textAlign = 'center'>
+                                        {this.state.classDesc}
+                                    </Header>   
+                                <Modal
+                                    trigger={<Button icon='add' color='purple' ></Button>}
+                                    header='Add New Lecture'
+                                    content={
+                                        <Form>
+                                            <Form.Input
+                                                placeholder='Lecture Name'
+                                                required={true}
+                                                value={this.state.tempLectureName}
+                                                onChange={this.handleLectureNameChange}
+                                            />
+                                            <Form.Input
+                                                placeholder='Lecture Description'
+                                                required={true}
+                                                value={this.state.tempLectureDesc}
+                                                onChange={this.handleLectureDescriptionChange}
+                                            />
+                                            <Form.Input
+                                                placeholder='Lecture Section'
+                                                required={true}
+                                                value={this.state.tempLectureSection}
+                                                onChange={this.handleLectureSectionChange}
+                                            />
+                                            <Form.Input
+                                                placeholder='Lecture Video Link'
+                                                required={true}
+                                                value={this.state.tempLectureVideoLink}
+                                                onChange={this.handleLectureVideoLinkChange}
+                                            />
+                                        </Form>
+                                    }
+                                    actions={['Cancel', <Button color='purple' onClick={this.handleAddLecture}>Done</Button>]}
+                                />
+                                
 
+                            {/* Class Card */}
+                            <Segment stacked textAlign="left" verticalAlign='middle' style={{overflow: 'auto'}}>
+                            {this.state.lectureList.map((lectureList, index) => { 
+                                return(<LectureCard maxWidth='50vw' className={this.state.className} lectureId={this.state.lectureList[index].id} lectureName={this.state.lectureList[index].name} lectureDesc={this.state.lectureList[index].description} lectureSection={this.state.lectureList[index].section} lectureVideoLink={this.state.lectureList[index].video_link} type={this.state.response.type}/>)
+                            })}
+                            </Segment>
                         </Segment>
 
-                        {/* Class Card */}
-                        <Grid.Column style={{width: "auto"}}>
-                            {this.state.lectureList.map((lectureList, index) => { 
-                                    return(<LectureCard className={this.state.className} lectureId={this.state.lectureList[index].id} lectureName={this.state.lectureList[index].name} lectureDesc={this.state.lectureList[index].description} lectureSection={this.state.lectureList[index].section} lectureVideoLink={this.state.lectureList[index].video_link} type={this.state.response.type}/>)
-                                }
-                            )}
-                        </Grid.Column>
 
-                    </Form>
-                </Grid.Column>
+                    </Grid.Column>
+
+
+
+                    <Grid.Column style={{maxWidth: '50vw'}} verticalAlign='top' textAlgin='center'>
+                        {/* Column for Class Discussion Board */}
+                        <Segment>
+                            <Header as = 'h2' color = 'grey' textAlign = 'center'>
+                                Class Discussion Board
+                            </Header>
+
+                            <Segment stacked textAlign="left" style={{overflow: 'auto'}}>
+                                {this.state.loadedQuestions.map((entry) =>{
+                                        return(<ClassQuestionCard lectureId={this.state.lectureId} commenter={this.state.commenter} question={entry.question} studentFlag={1} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href} type={this.state.response.type}></ClassQuestionCard>);                                 
+                                    })}
+                            </Segment>
+                        </Segment>
+                        
+                    </Grid.Column>
+                </Grid.Row>
             </Grid>
 
 
@@ -228,6 +250,10 @@ class ClassPage extends React.Component {
     async handleLectureVideoLinkChange(event){
         const value = event.target.value;
         await this.setState({tempLectureVideoLink: value});
+    }
+
+    async getQuestions() {
+        console.log("here");
     }
 
 

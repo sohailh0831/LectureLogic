@@ -272,12 +272,22 @@ class LectureView extends React.Component {
         }
         var lockDiscussionBoardQuestion;
         if(this.state.response.type === '0'){ //is instructor
-            lockDiscussionBoardQuestion = 
-                <Segment>
-                    <Button onClick={this.handleLockDiscussion} color='purple' fluid size='large'>
+            if (!this.state.isLocked) {
+                lockDiscussionBoardQuestion = 
+                    <Segment>
+                        <Button onClick={this.handleLockDiscussion} color='red' fluid size='large'>
                             Lock Question Board
-                </Button>
-                </Segment>
+                        </Button>
+                    </Segment>
+            }
+            else {
+                lockDiscussionBoardQuestion = 
+                    <Segment>
+                        <Button onClick={this.handleLockDiscussion} color='green' fluid size='large'>
+                            Unlock Question Board
+                        </Button>
+                    </Segment>
+            }
         }
         else{
         }
