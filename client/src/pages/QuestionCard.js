@@ -11,7 +11,8 @@ export default class QuestionCard extends React.Component{
             openCommentModel: false,
             answer: this.props.answer,
             commentList: [],
-            comment: ''
+            comment: '',
+            c: []
             
         }
         this.handleOpenModal = this.handleOpenModal.bind(this);
@@ -33,7 +34,7 @@ export default class QuestionCard extends React.Component{
 
     render() {  
          let temp; 
-         if ( this.props.answer === '(Not Yet Answered)' )  {   // && this.props.studentFlag === 0
+         if ( this.props.answer === '(Not Yet Answered)' && this.props.type == 0)  {   // && this.props.studentFlag === 0
             temp = <Input placeholder='Click to answer question' onClick={this.handleOpenModal}/>;
          }  else {
             temp = this.props.answer;
@@ -56,13 +57,18 @@ export default class QuestionCard extends React.Component{
 
             //instructor deleting answer
             let deleteButton;
-            if(this.props.type === 0){
+            
+            if(this.props.type == 0){ //  instructor
                 deleteButton = 
                 <div className="left aligned">
                 <Button onClick={this.deleteQuestion}>
                     Delete
                 </Button>
                 </div>
+
+
+            }
+            else{ //student
             }
 
         return(           
@@ -90,10 +96,26 @@ export default class QuestionCard extends React.Component{
                                 <Modal.Content>
                                     <Modal.Description>
                                     <Header> Answer: {this.props.answer} </Header>
-                                    
+                                        Comments: 
+                                        <div class="ui inverted segment">
+                                        <div class="ui inverted relaxed divided list">
+                                        {this.state.c.map((index) => { return (
+                                                <div class="item">
+                                                    <div class="content">
+                                                        <div class="header">{index.comment}</div>
+                                                        {index.commenter}
+                                                    </div>
+                                                    </div>
+                                                     )})}
+                                        </div>
+                                        </div>
+
+{/* 
                                         <List>
-                                            {this.state.commentList.map((index) => { return (<List.Item>{index}</List.Item>) })}
-                                        </List>
+                                            {this.state.c.map((index) => { return (<List.Item>
+                                                "{index.comment}" - {index.commenter}
+                                                </List.Item>) })}
+                                        </List> */}
 
                                     
                                         <Form.Input
@@ -264,7 +286,7 @@ export default class QuestionCard extends React.Component{
     async handleGetComments() {
         console.log('Getting comments for question: '+this.state.questionId);
         this.setState({openCommentModal: false});
-        await fetch("http://localhost:9000/lecture/responses?questionId=" + this.props.questionId, {
+        await fetch("http://localhost:9000/lecture/getComments?questionId=" + this.props.questionId, {
                 method: 'GET',
                 credentials: "include",
                 headers: {
@@ -275,6 +297,7 @@ export default class QuestionCard extends React.Component{
             }).then(res => res.json()).then((data) => { 
                 console.log(data);
                 this.setState({comments: data})
+                this.setState({c: data})
                 //window.location.replace(this.props.link);
             }).catch(console.log)
     }
@@ -306,6 +329,8 @@ export default class QuestionCard extends React.Component{
                 //window.location.replace(this.props.link);
             }).catch(console.log)
 
+        await this.handleGetComments()
+
     }
 
     async deleteQuestion(){
@@ -321,7 +346,7 @@ export default class QuestionCard extends React.Component{
                     questionId: this.props.questionId
                 })
             }).then(res => res.json()).then((data) => { 
-                
+
             }).catch(console.log)
     }
 
