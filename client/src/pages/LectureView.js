@@ -84,7 +84,7 @@ class LectureView extends React.Component {
 
 
 
-
+ 
     async sendSliderData(e) {
         // this.handleGetCurrentTime()
         const interval = setInterval( async () => {

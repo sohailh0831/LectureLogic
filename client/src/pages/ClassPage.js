@@ -35,6 +35,8 @@ class ClassPage extends React.Component {
         this.handleLectureDescriptionChange = this.handleLectureDescriptionChange.bind(this);
         this.handleLectureSectionChange = this.handleLectureSectionChange.bind(this);
         this.handleLectureVideoLinkChange = this.handleLectureVideoLinkChange.bind(this);
+        this.handleGetNotifications = this.handleGetNotifications.bind(this);
+        this.handleNotificationPage = this.handleNotificationPage.bind(this);
         
 
     }
@@ -67,18 +69,18 @@ class ClassPage extends React.Component {
 
         const {classId} = this.props.location.state;
         this.setState({classId: classId});
-        console.log("classID in class page: "+classId);
+        console.log("classID in class page: "+ classId);
         const {classDesc} = this.props.location.state;
         this.setState({classDesc: classDesc});
         console.log("class desc in class page: "+ classDesc);
 
         this.getLectureList();
         console.log(this.state.lectureList);
+        this.handleGetNotifications();
 
         
     }
 
-    compo
 
 
     render() {
@@ -93,7 +95,7 @@ class ClassPage extends React.Component {
         if (this.state.response.type === '0') {
             
             return (
-            <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle'>
+            <Grid padded style={{height: '100vh'}} columns={2}>
                 <Grid.Column style={{maxWidth: 450}}>
                     <Form size='large'>
 
@@ -148,8 +150,12 @@ class ClassPage extends React.Component {
                                 }
                             )}
                         </Grid.Column>
-
                     </Form>
+                </Grid.Column>
+                <Grid.Column style={{maxWidth: 450}}>
+                    <Button onClick={this.handleNotificationPage} color='purple' fluid size='large'>
+                        {this.state.notifications} Notifications
+                    </Button>
                 </Grid.Column>
             </Grid>
 
@@ -161,7 +167,7 @@ class ClassPage extends React.Component {
         else {
             
             return (
-                <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle'>
+                <Grid padded style={{height: '100vh'}} columns={2}>
                     <Grid.Column style={{maxWidth: 450}}>
                         <Form size='large'>
     
@@ -199,6 +205,11 @@ class ClassPage extends React.Component {
     
                         </Form>
                     </Grid.Column>
+                    <Grid.Column style={{maxWidth: 450}}>
+                    <Button onClick={this.handleNotificationPage} color='purple' fluid size='large'>
+                        {this.state.notifications} Notifications
+                    </Button>
+                </Grid.Column>
                 </Grid>
     
     
@@ -263,7 +274,10 @@ class ClassPage extends React.Component {
 
 
 
-
+    async handleNotificationPage(){
+        var link = "/classNotifications/" + this.state.classId
+        window.location.replace(link);
+    }
 
 
 
@@ -290,6 +304,26 @@ class ClassPage extends React.Component {
         console.log("LIST");
         console.log(this.state.lectureList);
     } /* End getLectureList(...) */
+
+    async handleGetNotifications() {
+        await fetch(`http://localhost:9000/classnotifications?class=${this.state.classId}`, {
+            method: 'GET',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            }
+        }).then(res => res.json()).then((data) => { 
+            console.log("data",data);
+            if (data.notifications) this.setState({notifications: data.notifications.length });
+            else this.setState({notifications: 0 });
+            
+            // window.location.replace('/dashboard');
+        }).catch(console.log("ok"))
+    } /* End handleGetNotifications(...) */
+
+
     // async getClassList() { //dont fuck with this... doesnt work
     //     if (!this.state.listReceived) {
     //         if (this.state.type === '1') { //----------IF STUDENT----------
