@@ -137,6 +137,45 @@ return new Promise(resolve => {
 }
 
 
+function getAllConfidence(req, res) {
+    return new Promise(resolve => {
+        console.log(req.user, req.query)
+        try{
+            // req.checkBody('quizId', 'quizId field is required.').notEmpty();
+        } catch (error) {
+            console.log("ERROR");
+        }
+    
+        let con = mysql.createConnection(dbInfo);
+        con.query(`select confidence, name from quiz LEFT JOIN user ON quiz.uuid = user.id WHERE lecId = ${req.query.quizId}`, (error, results, fields) => { 
+            if (error) {
+                console.log(error.stack);
+                con.end();
+                res.status(400).json({status:400, message: "Query to request list failed."});
+                resolve();
+                return;
+            } 
+            if (results) {
+                var i = 0;
+                var confidences = []
+                
+                for (i; i<results.length; i++){
+                    let confidence = JSON.parse(results[i].confidence);
+                    if (!confidence) continue;
+                    confidences.push({name: results[i].name, confidence: results[i].confidence})
+                }
+    
+                console.log(confidences)
+                resolve(confidences);
+                return;
+            }
+            con.end();
+            resolve(results);
+            return;
+        });
+    });
+    }
+
 function getAvgConfidence(req, res) {
 return new Promise(resolve => {
     console.log(req.user, req.body)
@@ -175,4 +214,4 @@ return new Promise(resolve => {
 });
 }
 
-module.exports = {updateConfidence, getConfidence, getAvgConfidence}
+module.exports = {updateConfidence, getConfidence, getAvgConfidence, getAllConfidence}
