@@ -1,11 +1,6 @@
 import React from 'react'
-import { Button, Form, Grid, Header, Segment, Popup, Label, Modal,FormField } from 'semantic-ui-react'
+import { Button, Form, Grid, Header, Segment, List } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
-import ClassCard from './ClassCard';
-import { Image, Embed, List, Accordion } from 'semantic-ui-react'
-import Typography from '@material-ui/core/Typography';
-import Slider from '@material-ui/core/Slider';
-import ReactPlayer from "react-player";
 import QuestionCard from './QuestionCard';
 
 class DiscussionBoard extends React.Component {
@@ -118,7 +113,7 @@ class DiscussionBoard extends React.Component {
             }); // here's how u set variables u want to use later
 
 
-        let tmpId;
+        
         await fetch('http://localhost:9000/dashboard' ,{
             method: 'GET',
             credentials: "include",
@@ -131,29 +126,7 @@ class DiscussionBoard extends React.Component {
             .then(data => {
                 this.setState({ username: data.username , name: data.name, response: data, userId: data.id  })
                 console.log(data);
-                tmpId = data.id;
             }); // here's how u set variables u want to use later
-
-
-
-
-
-
-        await fetch('http://localhost:9000/dashboard' ,{
-            method: 'GET',
-            credentials: "include",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Credentials': true,
-            }
-        }).then(response => response.json())
-            .then(data => {
-                this.setState({ username: data.username , name: data.name, response: data, userId: data.id  })
-                console.log(data);
-                tmpId = data.id;
-            }); // here's how u set variables u want to use later
-
 
 
          this.setState({questionInterval: setInterval(() => {
@@ -197,62 +170,70 @@ class DiscussionBoard extends React.Component {
         </Form>
         }
 
-        var lockDiscussionBoardQuestion;
+        var lockDiscussionBoardQuestion;    //use the state of isLocked to determine color of the button
         if(this.state.response.type === '0'){ //is instructor
-            lockDiscussionBoardQuestion = 
-                <Segment>
-                    <Button onClick={this.handleLockDiscussion} color='purple' fluid size='large'>
-                            Lock Question Board
-                </Button>
-                </Segment>
-        }
-        else{
+            if (this.state.isLocked) {
+                lockDiscussionBoardQuestion = 
+                    <Segment>
+                        <Button onClick={this.handleLockDiscussion} color='green' fluid size='large'>
+                                Lock Question Board
+                        </Button>
+                    </Segment>
+            }
+            else {
+                if (!this.state.isLocked) {
+                    lockDiscussionBoardQuestion = 
+                    <Segment>
+                        <Button onClick={this.handleLockDiscussion} color='red' fluid size='large'>
+                                Lock Question Board
+                        </Button>
+                    </Segment>
+                }
+            }
         }
 
     
         return (
             <div>
             <Grid padded style={{height: '100vh'}} columns={2} >
-                    <Grid.Row style={{height: '70%'}} textAlign = 'left' >
-                        <Grid.Column style={{width: 1000}}>  
-                                {/* Question list component */}
-                                <Header as='h2' color='grey' textAlign='center'>
-                                        Question Board 
-                                    </Header>
-                                <Segment stacked textAlign="left" verticalAlign='middle' style={{overflow: 'auto', maxHeight: 700 }}>
-                                <List>
-                                                {this.state.loadedQuestions.map((entry) =>{
-                                                                return(<QuestionCard lectureId={this.state.lectureId} commenter={this.state.commenter} question={entry.question} studentFlag={1} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href} type={this.state.response.type}></QuestionCard>);    
-                                                                
-                                                        })}
-                                    </List> 
-
-                                    </Segment>
-
-
-                                        </Grid.Column>
-                                        <Grid.Column style={{width: 400}}>
-                                        {lockDiscussionBoardQuestion}
-                                        <Segment>
-                                            <Header>Class: sampleClass</Header>
-                                            <Header>Instructor: sampleInt</Header>
-                                            <Header>Lecture: sampleLecture</Header>
-                                            <Header>Sections Covered: sampleSections</Header>
-                                        </Segment>
-                                        <Segment>
-                                    <Header as='h2' color='grey' textAlign='center'>
-                                        Ask a question:
-                                    </Header>
-                                    {discussionBoardLocked}
-                                            </Segment> 
-                                            <Segment>
-                                            <Button onClick={this.handleLectureView} color='purple' fluid size='large'>
-                                                Go to Lecture Discussion Board
-                                            </Button>
+                <Grid.Row style={{height: '70%'}} textAlign = 'left' >
+                    <Grid.Column style={{width: 1000}}>  
+                        {/* Question list component */}
+                        <Header as='h2' color='grey' textAlign='center'>
+                                Question Board 
+                        </Header>
+                        <Segment stacked textAlign="left" verticalAlign='middle' style={{overflow: 'auto', maxHeight: 700 }}>
+                            <List>
+                                {this.state.loadedQuestions.map((entry) =>{
+                                    return(<QuestionCard lectureId={this.state.lectureId} commenter={this.state.commenter} question={entry.question} studentFlag={1} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href} type={this.state.response.type}></QuestionCard>);                                 
+                                })}
+                            </List> 
                         </Segment>
-                                        
-                                      
-                                        </Grid.Column>
+
+                    </Grid.Column>
+                                    
+                                    
+                    <Grid.Column style={{width: 400}}> 
+                        {/* */}
+                        {lockDiscussionBoardQuestion}
+                        <Segment>
+                            <Header>Class: sampleClass</Header>
+                            <Header>Instructor: sampleInt</Header>
+                            <Header>Lecture: sampleLecture</Header>
+                            <Header>Sections Covered: sampleSections</Header>
+                        </Segment>
+                        <Segment>
+                            <Header as='h2' color='grey' textAlign='center'>
+                                Ask a question:
+                            </Header>
+                            {discussionBoardLocked}
+                        </Segment> 
+                        <Segment>
+                            <Button onClick={this.handleLectureView} color='purple' fluid size='large'>
+                                Go to Lecture Discussion Board
+                            </Button>
+                        </Segment>
+                    </Grid.Column>
                 
                 </Grid.Row>
             </Grid>
@@ -345,7 +326,7 @@ async getLock(){
         }
         console.log(data)
          
-        if(l == 1){ // locked
+        if(l === 1){ // locked
                 this.setState({isLocked: true})
         }
         else{ //unlocked

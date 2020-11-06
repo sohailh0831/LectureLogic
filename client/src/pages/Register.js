@@ -256,7 +256,7 @@ export default class Register extends React.Component {
             })
         }).then(res => res.json()).then((data) => { 
             console.log(data)
-            if(data == "OK"){ //successfully logged in
+            if(data === "OK"){ //successfully logged in
                 window.location.replace('/login'); //redirect to login page 
                 this.setState({response: data})
             }

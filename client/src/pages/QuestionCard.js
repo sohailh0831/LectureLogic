@@ -1,6 +1,5 @@
 import React from "react";
-import {Card, CardContent, Header, Modal, Button, Form, Checkbox, Input, List, Segment} from "semantic-ui-react";
-import {Link} from "react-router-dom";
+import {Card, Header, Modal, Button, Form, Checkbox, Input, List} from "semantic-ui-react";
 
 
 export default class QuestionCard extends React.Component{
@@ -47,17 +46,17 @@ export default class QuestionCard extends React.Component{
             // show resolved or not based on isAnsweredValue
             //console.log("RESOLVE "+this.props.isResolved);
             let temp2;
-            if ( this.props.isAnswered == 1) {
+            if ( this.props.isAnswered === 1) {
                 //checked=true;
-                temp2 = <Checkbox label='Mark as unresolved' onClick={this.handleResolve} checked={this.props.isAnswered==1} />;
+                temp2 = <Checkbox label='Mark as unresolved' onClick={this.handleResolve} checked={this.props.isAnswered===1} />;
             } else {
                 //checked=false;
-                temp2 = <Checkbox label='Mark as resolved' onClick={this.handleResolve} checked={this.props.isAnswered==1}/>
+                temp2 = <Checkbox label='Mark as resolved' onClick={this.handleResolve} checked={this.props.isAnswered===1}/>
             }
 
             //instructor deleting answer
             let deleteButton;
-            if(this.props.type == 0){
+            if(this.props.type === 0){
                 deleteButton = 
                 <div className="left aligned">
                 <Button onClick={this.deleteQuestion}>

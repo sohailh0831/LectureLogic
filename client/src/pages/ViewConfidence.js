@@ -1,7 +1,6 @@
 import React from 'react'
-import { Button, Form, Grid, Header, Segment, Popup, Modal, List } from 'semantic-ui-react'
+import {Form, Grid, Segment, List } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
-import ClassCard from './ClassCard';
 
 class Confidence extends React.Component {
     constructor(props) {
@@ -35,7 +34,7 @@ class Confidence extends React.Component {
         if(localStorage.getItem("authenticated") !== "authenticated"){
             window.location.replace('/login'); //redirects to login if not already logged in
         }
-        let tmpId;
+        //let tmpId;
         await fetch('http://localhost:9000/dashboard' ,{
             method: 'GET',
             credentials: "include",
@@ -59,9 +58,9 @@ class Confidence extends React.Component {
 
     render() {
         /* decided what popup message to present */
-        let popUpMessage;
+        //let popUpMessage;
 
-        popUpMessage = 'Create New Class';
+        //popUpMessage = 'Create New Class';
 
        
         // console.log(this.state.classList);
