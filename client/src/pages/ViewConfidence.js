@@ -94,10 +94,8 @@ class Confidence extends React.Component {
                                         </List.Item>
                                     )
                                         )}
-                                    
                                     </List>
                             </Segment>
-                            
                         </Grid.Column>
                         
                     </Form>

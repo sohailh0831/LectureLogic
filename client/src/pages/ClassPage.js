@@ -30,7 +30,8 @@ class ClassPage extends React.Component {
             loadedQuestions: [],
             classQuestionList: [],
             isLocked: false,
-            newQuestion: ''
+            newQuestion: '',
+            message: ''
         };
         this.handleAddLecture = this.handleAddLecture.bind(this);
         // this.getClassList = this.getClassList.bind(this);
@@ -42,11 +43,13 @@ class ClassPage extends React.Component {
         this.handleLectureVideoLinkChange = this.handleLectureVideoLinkChange.bind(this);
         this.handleGetNotifications = this.handleGetNotifications.bind(this);
         this.handleNotificationPage = this.handleNotificationPage.bind(this);
+        this.handleMessagePage = this.handleMessagePage.bind(this);
         this.handleLockDiscussion = this.handleLockDiscussion.bind(this)
         this.getLock = this.getLock.bind(this)
         this.handleQuestionChange = this.handleQuestionChange.bind(this);
         this.handleNewQuestion = this.handleNewQuestion.bind(this);
-        
+        this.handleSendMessage = this.handleSendMessage.bind(this);
+        this.handleMessageChange = this.handleMessageChange.bind(this);
 
     }
 
@@ -244,6 +247,24 @@ class ClassPage extends React.Component {
                     <Button onClick={this.handleNotificationPage} color='purple' fluid size='large'>
                         {this.state.notifications} Notifications
                     </Button>
+                    <Button onClick={this.handleMessagePage} color='purple' fluid size='large'>
+                        All Messages
+                    </Button>
+                    <Segment stacked>
+                        <Form.Input
+                            placeholder='Message'
+                            required={true}
+                            value={this.state.message}
+                            onChange={this.handleMessageChange}
+                        />
+
+
+                        <Button onClick={this.handleSendMessage} color='purple' fluid size='large'>
+                            Send Message
+                        </Button>
+                        
+                        
+                    </Segment>
                 </Grid.Column>
                 </Grid.Row>
             </Grid>
@@ -319,10 +340,29 @@ class ClassPage extends React.Component {
                         </Segment>
                         
                     </Grid.Column>
-                    <Grid.Column style={{maxWidth: '10vw'}}>
+                    <Grid.Column style={{maxWidth: '25vw'}}>
                     <Button onClick={this.handleNotificationPage} color='purple' fluid size='large'>
                         {this.state.notifications} Notifications
                     </Button>
+                    <Button onClick={this.handleMessagePage} color='purple' fluid size='large'>
+                        All Messages
+                    </Button>
+                    <Segment stacked>
+                        <Form.Input
+                            placeholder='Message'
+                            required={true}
+                            value={this.state.message}
+                            onChange={this.handleMessageChange}
+                            style = {{maxWidth: '25vw', maxHeight: '10vw' }}
+                        />
+
+
+                        <Button onClick={this.handleSendMessage} color='purple' fluid size='large'>
+                            Ask Question
+                        </Button>
+                        
+                        
+                    </Segment>
                 </Grid.Column>
                 </Grid>
     
@@ -419,6 +459,12 @@ class ClassPage extends React.Component {
         await this.setState({newQuestion: value});
         //console.log(event.target.value);
     }
+    async handleMessageChange(event) {
+        const value = event.target.value;
+        console.log(value);
+        await this.setState({message: value});
+        //console.log(event.target.value);
+    }
     //new question
     
     
@@ -507,6 +553,10 @@ class ClassPage extends React.Component {
         var link = "/classNotifications/" + this.state.classId
         window.location.replace(link);
     }
+    async handleMessagePage(){
+        var link = "/classMessages/" + this.state.classId
+        window.location.replace(link);
+    }
 
 
 
@@ -545,7 +595,7 @@ class ClassPage extends React.Component {
             }
         }).then(res => res.json()).then((data) => { 
             console.log("data",data);
-            if (data.notifications) this.setState({notifications: data.notifications.length });
+            if (data) this.setState({notifications: data.length });
             else this.setState({notifications: 0 });
             
             // window.location.replace('/dashboard');
@@ -553,6 +603,41 @@ class ClassPage extends React.Component {
     } /* End handleGetNotifications(...) */
 
 
+    async handleSendMessage() {
+        if (!this.state.type){
+            console.log(this.state.userId, this.state.message, this.state.classId)
+            await fetch(`http://localhost:9000/messages`, {
+                method: 'POST',
+                credentials: "include",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Credentials': true,
+                },
+                body: JSON.stringify({
+                    sender: this.state.userId,
+                    content: this.state.message,
+                    id: this.state.classId
+                })
+            }).catch(console.log("ok"))
+        }
+        else {
+            await fetch(`http://localhost:9000/studentmessages`, {
+                method: 'POST',
+                credentials: "include",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Credentials': true,
+                },
+                body: JSON.stringify({
+                    sender: this.state.userId,
+                    content: this.state.message,
+                    id: this.state.classId
+                })
+            }).catch(console.log("ok"))
+        } /* End handleGetNotifications(...) */
+    }
     // async getClassList() { //dont fuck with this... doesnt work
     //     if (!this.state.listReceived) {
     //         if (this.state.type === '1') { //----------IF STUDENT----------

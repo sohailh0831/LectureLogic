@@ -110,7 +110,7 @@ return new Promise(resolve => {
     }
 
     let con = mysql.createConnection(dbInfo);
-    con.query(`select confidence, record from quiz WHERE uuid = '${req.user.id}' AND lecId = ${req.query.quizId}`, (error, results, fields) => { 
+    con.query(`select confidence, record from quiz WHERE uuid = '${req.query.id}' AND lecId = ${req.query.quizId}`, (error, results, fields) => { 
         if (error) {
             console.log(error.stack);
             con.end();

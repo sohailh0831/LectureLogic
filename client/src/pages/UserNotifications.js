@@ -19,7 +19,7 @@ class UserNotifications extends React.Component {
             studentList: []
         };
         this.handleGetNotifications = this.handleGetNotifications.bind(this);
-
+        this.handleClearNotifications = this.handleClearNotifications.bind(this);
         
 
     }
@@ -56,18 +56,19 @@ class UserNotifications extends React.Component {
 
         console.log("SCHOOL "+this.state.response);
             return (
-            <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle'>
+            <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle' columns={2}>
                 <Grid.Column style={{maxWidth: 450}}>
                     <Form size='large'>
                         {/* Class Card */}
                         <Grid.Column style={{width: "auto"}}>
+                            <Segment stacked textAlign="left" verticalAlign='middle'> Notifications </Segment>
                             <Segment stacked textAlign="left" verticalAlign='middle'>
                                     <List>
                                     {this.state.notifications.map(index => (
                                         <List.Item>
                                         <List.Header>From: {index.class} </List.Header> 
-                                        <p>Message: {index.timestamp}</p> 
-                                        <p>Timestamp: {index.timestamp}</p> 
+                                        <p>Message: {index.content}</p> 
+                                        <p>Timestamp: {index.time}</p> 
                                         </List.Item>
                                     )
                                         )}
@@ -80,6 +81,11 @@ class UserNotifications extends React.Component {
                     </Form>
                                
                 </Grid.Column>
+                <Grid.Column style={{maxWidth: 450}}>                       
+                <Button onClick={this.handleClearNotifications} color='purple' fluid size='large'>
+                        Clear Notifications
+                    </Button>
+                </Grid.Column>                
             </Grid>
 
 
@@ -100,8 +106,20 @@ class UserNotifications extends React.Component {
             }
         }).then(res => res.json()).then((data) => { 
             console.log("data",data);
-            this.setState({notifications: data.notifications })
+            this.setState({notifications: data || [] })
             // window.location.replace('/dashboard');
+        }).catch(console.log("ok"))
+    } /* End handleGetNotifications(...) */
+   
+    async handleClearNotifications() {
+        await fetch(`http://localhost:9000/clearnotifications`, {
+            method: 'PUT',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            }
         }).catch(console.log("ok"))
     } /* End handleGetNotifications(...) */
    
