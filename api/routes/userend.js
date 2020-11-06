@@ -239,7 +239,8 @@ router.get('/logout', AuthenticationFunctions.ensureAuthenticated, (req, res) =>
 });
 
 router.post('/reqestClass', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
-  console.log("VERY COOL", req.query)
+  console.log("VERY COOL", req.query);
+  await addStudentToClass(req,res);
   let results = await addStudentRequest(req, res);
   //let results2 = await addStudentToClass(req, res);
 
