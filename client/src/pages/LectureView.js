@@ -271,7 +271,10 @@ class LectureView extends React.Component {
         </Form>
         }
         var lockDiscussionBoardQuestion;
+        var confidenceFlag;
         if(this.state.response.type === '0'){ //is instructor
+            //confidenceFlag;
+            // confidenceFlag = <Form.Input label={`Confidence Level:  `}  min={1}  max={10} name='Confidence Level'  onChange={this.handleChange}  step={1}  type='range'  value={this.state.sliderValue} />;
             if (!this.state.isLocked) {
                 lockDiscussionBoardQuestion = 
                     <Segment>
@@ -288,8 +291,22 @@ class LectureView extends React.Component {
                         </Button>
                     </Segment>
             }
-        }
-        else{
+        } else {
+            confidenceFlag = <Segment stacked textAlign="center" verticalAlign='middle'>
+                                <Form.Input
+                                    label={`Confidence Level:  `}
+                                    min={1}
+                                    max={10}
+                                    name='Confidence Level'
+                                    onChange={this.handleChange}
+                                    step={1}
+                                    type='range'
+                                    value={this.state.sliderValue}
+                                />
+                                    {/* {confidenceFlag} */}
+                                </Segment>;
+            //<Form.Input label={`Confidence Level:  `}  min={1}  max={10} name='Confidence Level'  onChange={this.handleChange}  step={1}  type='range'  value={this.state.sliderValue} />;
+
         }
 
             this.sendSliderData();
@@ -359,18 +376,20 @@ class LectureView extends React.Component {
                                             
                                                     
                                                         </Segment>
-                                                        <Segment stacked textAlign="center" verticalAlign='middle'>
-                                    <Form.Input
-                                        label={`Confidence Level:  `}
-                                        min={1}
-                                        max={10}
-                                        name='Confidence Level'
-                                        onChange={this.handleChange}
-                                        step={1}
-                                        type='range'
-                                        value={this.state.sliderValue}
-                                    />
-                                </Segment>
+                                                        {/* <Segment stacked textAlign="center" verticalAlign='middle'>
+                                                                <Form.Input
+                                                                    label={`Confidence Level:  `}
+                                                                    min={1}
+                                                                    max={10}
+                                                                    name='Confidence Level'
+                                                                    onChange={this.handleChange}
+                                                                    step={1}
+                                                                    type='range'
+                                                                    value={this.state.sliderValue}
+                                                                />
+                                                         { {confidenceFlag} }
+                                                        </Segment> */}
+                                                        {confidenceFlag}
                                     
                                     {/* <Grid.Column style={{width: "auto"}}>
                                         {this.state.classList.map((classList, index) => {

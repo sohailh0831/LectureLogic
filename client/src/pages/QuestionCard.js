@@ -24,6 +24,7 @@ export default class QuestionCard extends React.Component{
         this.handleSubmitComment = this.handleSubmitComment.bind(this);
         this.handleCommentChange = this.handleCommentChange.bind(this);
         this.deleteQuestion = this.deleteQuestion.bind(this);
+        this.handleCloseCommentModal = this.handleCloseCommentModal.bind(this);
 
     }
 
@@ -122,12 +123,18 @@ export default class QuestionCard extends React.Component{
                                             placeholder='Leave a Comment!'
                                             value={this.state.comment}
                                             onChange={this.handleCommentChange}
-                                    />
+                                        />
 
                                     </Modal.Description>
                                 </Modal.Content>
                                 <Modal.Actions>
-                                    
+                                    <Button
+                                        content="Close"
+                                        labelPosition='left'
+                                        icon='x'
+                                        onClick={this.handleCloseCommentModal}
+                                        negative
+                                    />
                                     <Button
                                         content="Submit"
                                         labelPosition='right'
@@ -212,7 +219,7 @@ export default class QuestionCard extends React.Component{
         console.log(event.target.value);
         this.setState({answer: event.target.value});
     }
-
+    
     handleCommentChange(event) {
         console.log(event.target.value);
         this.setState({comment: event.target.value});
@@ -285,7 +292,7 @@ export default class QuestionCard extends React.Component{
 
     async handleGetComments() {
         console.log('Getting comments for question: '+this.state.questionId);
-        this.setState({openCommentModal: false});
+        //this.setState({openCommentModal: false});
         await fetch("http://localhost:9000/lecture/getComments?questionId=" + this.props.questionId, {
                 method: 'GET',
                 credentials: "include",
@@ -301,6 +308,10 @@ export default class QuestionCard extends React.Component{
                 //window.location.replace(this.props.link);
             }).catch(console.log)
     }
+    async handleCloseCommentModal() {
+        console.log("Close comment");
+        this.setState({openCommentModal: false, comment: ''});
+    }
 
     async handleSubmitComment() {
         console.log('SubmitComment: ' + this.state.comment);
@@ -309,7 +320,7 @@ export default class QuestionCard extends React.Component{
         console.log(this.props.questionId);
 
 
-        this.setState({openModal: false, comment: ''});
+        //this.setState({openModal: false, comment: ''});
         await fetch("http://localhost:9000/lecture/postComment", {
                 method: 'POST',
                 credentials: "include",
@@ -327,6 +338,7 @@ export default class QuestionCard extends React.Component{
             }).then(res => res.json()).then((data) => { 
                 console.log(data);
                 //window.location.replace(this.props.link);
+                this.state.comment = "";
             }).catch(console.log)
 
         await this.handleGetComments()
