@@ -9,12 +9,13 @@ const { resetEmail } =  require("../store/reset");
 const { addStudentRequest, getStudentRequests, addStudentToClass } =  require("../store/class");
 const { updateConfidence, getAvgConfidence, getConfidence, getAllConfidence } =  require("../store/quiz");
 const { postMessage, 
+        postStudentMessage,
         clearNotifications, 
         clearNotificationsByClass, 
         getMessages, 
         getMessagesByClass, 
         getNotifications,
-        getNotificationsByClass
+        getNotificationsByClass,
       } = require("../store/notification")
 //for passport
 const LocalStrategy = require('passport-local').Strategy;
@@ -484,7 +485,19 @@ router.post('/deleteQuestion', AuthenticationFunctions.ensureAuthenticated, (req
 
 
 router.post('/messages', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  console.log("EEEEEE",req.body)
   let results = await postMessage(req, res);
+  console.log('\n\n\nresults:', results,'\n\n\n')
+  if (results) {
+
+      return res.status(200).send(results);
+  } else {
+      return res.status(400).send(results);//json({status:400, message: "error"});
+  }
+});
+router.post('/studentmessages', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  console.log("EEEEEE",req.body)
+  let results = await postStudentMessage(req, res);
   console.log('\n\n\nresults:', results,'\n\n\n')
   if (results) {
 
@@ -503,7 +516,7 @@ router.get('/messages', AuthenticationFunctions.ensureAuthenticated, async funct
       return res.status(400).send(results);//json({status:400, message: "error"});
   }
 });
-router.get('/classmessage', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+router.get('/classmessages', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
   let results = await getMessagesByClass(req, res);
   console.log('\n\n\nresults:', results,'\n\n\n')
   if (results) {
