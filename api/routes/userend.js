@@ -7,7 +7,7 @@ const mysql = require("mysql");
 const bcrypt = require('bcrypt');
 const { resetEmail } =  require("../store/reset");
 const { addStudentRequest, getStudentRequests, addStudentToClass } =  require("../store/class");
-const { updateConfidence, getAvgConfidence, getConfidence } =  require("../store/quiz");
+const { updateConfidence, getAvgConfidence, getConfidence, getAllConfidence } =  require("../store/quiz");
 const { postMessage, 
         clearNotifications, 
         clearNotificationsByClass, 
@@ -285,6 +285,17 @@ router.put('/confidence', AuthenticationFunctions.ensureAuthenticated, async fun
 
 router.get('/confidence', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
   let results = await getConfidence(req, res);
+  console.log('\n\n\nresults:', results,'\n\n\n')
+  if (results) {
+    
+      return res.status(200).send(results);
+  } else {
+      return res.status(400).send(results);//json({status:400, message: "error"});
+  }
+});
+
+router.get('/allconfidence', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  let results = await getAllConfidence(req, res);
   console.log('\n\n\nresults:', results,'\n\n\n')
   if (results) {
     
