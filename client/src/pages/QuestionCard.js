@@ -23,6 +23,7 @@ export default class QuestionCard extends React.Component{
         this.handleGetComments = this.handleGetComments.bind(this);
         this.handleSubmitComment = this.handleSubmitComment.bind(this);
         this.handleCommentChange = this.handleCommentChange.bind(this);
+        this.deleteQuestion = this.deleteQuestion.bind(this);
 
     }
 
@@ -53,6 +54,18 @@ export default class QuestionCard extends React.Component{
                 //checked=false;
                 temp2 = <Checkbox label='Mark as resolved' onClick={this.handleResolve} checked={this.props.isAnswered==1}/>
             }
+
+            //instructor deleting answer
+            let deleteButton;
+            if(this.props.type == 0){
+                deleteButton = 
+                <div className="left aligned">
+                <Button onClick={this.deleteQuestion}>
+                    Delete
+                </Button>
+                </div>
+            }
+
         return(           
             <div>
                 {/* <Link onClick={this.handleOpenModal} >  */}
@@ -62,6 +75,8 @@ export default class QuestionCard extends React.Component{
                             {/* <Checkbox label='Mark as resolved' onClick={this.handleResolve} /> */}
                             {temp2}
                             </div>
+                            {deleteButton}
+
                             <div className="right aligned">
                                 {/* Add variable to change name on button from Click to respond to Click to see responces */}
                                 <Button onClick={this.handleOpenCommentModal} > See All Comments </Button>
@@ -292,6 +307,23 @@ export default class QuestionCard extends React.Component{
                 //window.location.replace(this.props.link);
             }).catch(console.log)
 
+    }
+
+    async deleteQuestion(){
+        await fetch("http://localhost:9000/deleteQuestion", {
+                method: 'POST',
+                credentials: "include",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Credentials': true,
+                },
+                body: JSON.stringify({
+                    questionId: this.props.questionId
+                })
+            }).then(res => res.json()).then((data) => { 
+                
+            }).catch(console.log)
     }
 
     

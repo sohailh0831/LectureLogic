@@ -18,6 +18,7 @@ import LectureView from './pages/LectureView.js'
 import DetailPage from './pages/Details';
 import ClassPage from './pages/ClassPage';
 import Confidence from './pages/ViewConfidence';
+import DiscussionBoard from "./pages/DiscussionBoard";
 
 
 
@@ -154,6 +155,7 @@ export default class Routes extends React.Component {
                             <Route exact path ="/changePassword" component ={ChangePassword}/>
                             <Route exact path ="/changeEmail" component ={ChangeEmail}/>
                             <Route path ="/LectureView/:lectureId" component={LectureView}/>
+                            <Route path ="/DiscussionBoard/:lectureId" component={DiscussionBoard}/>
                             <Route exact path ="/detailPage" component={DetailPage}/>
                             <Route path ="/classPage/:className" exact component={ClassPage}/>
                             <Route path ="/confidence" exact component={Confidence}/>
