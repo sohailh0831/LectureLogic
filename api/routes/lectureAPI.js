@@ -12,7 +12,7 @@ const { addLecture } = require("../store/lecture");
 const { removeLecture } = require("../store/lecture");
 const { editLecture } = require("../store/lecture");
 const { answerQuestion } = require("../store/lecture");
-const { resolveQuestion, unresolveQuestion, getComments, postComment } = require("../store/lecture");
+const { resolveQuestion, unresolveQuestion, getComments, postComment, setViewedFlag } = require("../store/lecture");
 
 const AuthenticationFunctions = require('../Authentication.js');
 
@@ -170,6 +170,20 @@ router.post('/postComment', AuthenticationFunctions.ensureAuthenticated, async f
         return res.json({status:200, message: "success"});
     } else {
         req.flash('error', 'Failed to post comment.');
+        console.log("IN NO RESULTS");
+        return res.status(400).send(results);//son({status:400, message: "error"});
+    }
+});
+
+router.post('/setViewedFlag', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+    let results = await setViewedFlag(req, res);
+    
+    if (results) {
+        req.flash('success', 'Successfully setViewedFlag.');
+        console.log("IN results");
+        return res.json({status:200, message: "success"});
+    } else {
+        req.flash('error', 'Failed set view flag.');
         console.log("IN NO RESULTS");
         return res.status(400).send(results);//son({status:400, message: "error"});
     }
