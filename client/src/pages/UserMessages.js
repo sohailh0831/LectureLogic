@@ -61,13 +61,15 @@ class UserMessages extends React.Component {
                     <Form size='large'>
                         {/* Class Card */}
                         <Grid.Column style={{width: "auto"}}>
+                            <Segment stacked textAlign="left" verticalAlign='middle'> Messages </Segment>
+
                             <Segment stacked textAlign="left" verticalAlign='middle'>
                                     <List>
                                     {this.state.notifications.map(index => (
                                         <List.Item>
                                         <List.Header>From: {index.class} </List.Header> 
-                                        <p>Message: {index.timestamp}</p> 
-                                        <p>Timestamp: {index.timestamp}</p> 
+                                        <p>Message: {index.content}</p> 
+                                        <p>Timestamp: {index.time}</p> 
                                         </List.Item>
                                     )
                                         )}
@@ -100,7 +102,7 @@ class UserMessages extends React.Component {
             }
         }).then(res => res.json()).then((data) => { 
             console.log("data",data);
-            this.setState({notifications: data.notifications })
+            this.setState({notifications: data || [] })
             // window.location.replace('/dashboard');
         }).catch(console.log("ok"))
     } /* End handleGetNotifications(...) */
