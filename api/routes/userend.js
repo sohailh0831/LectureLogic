@@ -7,7 +7,7 @@ const mysql = require("mysql");
 const bcrypt = require('bcrypt');
 const { resetEmail } =  require("../store/reset");
 const { addStudentRequest, getStudentRequests, addStudentToClass } =  require("../store/class");
-const { updateConfidence, getAvgConfidence, getConfidence, getAllConfidence } =  require("../store/quiz");
+const { updateConfidence, getAvgConfidence, getConfidence, getAllConfidence, setDueDate, getStudentsQuizzes } =  require("../store/quiz");
 const { postMessage, 
         postStudentMessage,
         clearNotifications, 
@@ -481,26 +481,6 @@ router.post('/deleteQuestion', AuthenticationFunctions.ensureAuthenticated, (req
 
 });
 
-router.get('/userQuestions', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
-  //let results = await getNotificationsByClass(req, res);
-  let username = req.query.username;
-  let con = mysql.createConnection(dbInfo);
-
-  con.query(`select * FROM question WHERE studentName=${mysql.escape(username)};`, (error, results, fields) => {
-    if (error) {
-      console.log(error.stack);
-      con.end();
-      return res.status(400).send(results); 
-    }
-    console.log('\n\n\nresults:', results,'\n\n\n');
-    con.end();
-    return res.status(200).send(results);
-  }); 
-});
-
-
-
-
 router.post('/messages', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
   console.log("EEEEEE",req.body)
   let results = await postMessage(req, res);
@@ -584,10 +564,44 @@ router.put('/clearclassnotifications', AuthenticationFunctions.ensureAuthenticat
   }
 });
 
+router.get('/userQuestions', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  //let results = await getNotificationsByClass(req, res);
+  let username = req.query.username;
+  let con = mysql.createConnection(dbInfo);
 
+  con.query(`select * FROM question WHERE studentName=${mysql.escape(username)};`, (error, results, fields) => {
+    if (error) {
+      console.log(error.stack);
+      con.end();
+      return res.status(400).send(results); 
+    }
+    console.log('\n\n\nresults:', results,'\n\n\n');
+    con.end();
+    return res.status(200).send(results);
+  }); 
+});
 
+router.post('/setQuizDueDate', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  let results = await setDueDate(req, res);
+  console.log('\n\n\nresults:', results,'\n\n\n')
+  if (results) {
+    
+      return res.status(200).send(results);
+  } else {
+      return res.status(400).send(results);//json({status:400, message: "error"});
+  }
+});
 
-
+router.post('/getStudentsQuizzes', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  let results = await getStudentsQuizzes(req, res);
+  console.log('\n\n\nresults:', results,'\n\n\n')
+  if (results) {
+    
+      return res.status(200).send(results);
+  } else {
+      return res.status(400).send(results);//json({status:400, message: "error"});
+  }
+});
 
 
 module.exports = router;
