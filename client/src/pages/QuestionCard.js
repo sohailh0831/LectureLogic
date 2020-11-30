@@ -268,6 +268,22 @@ export default class QuestionCard extends React.Component{
     }
 
     async handleSubmitAnswer() {
+        // await fetch(`http://localhost:9000/messages`, {
+        //         method: 'POST',
+        //         credentials: "include",
+        //         headers: {
+        //             'Accept': 'application/json',
+        //             'Content-Type': 'application/json',
+        //             'Access-Control-Allow-Credentials': true,
+        //         },
+        //         body: JSON.stringify({
+        //             sender: this.props.userId,
+        //             content: 'Your Instructor has answered a question!',
+        //             id: this.props.classId
+        //         })
+        //     }).catch(console.log("ok"))
+
+
         console.log('Submit: ' + this.state.answer);
         this.setState({openModal: false});
         await fetch("http://localhost:9000/lecture/answerQuestion", {

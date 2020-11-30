@@ -20,6 +20,7 @@ class ClassNotifications extends React.Component {
             classId: ''
         };
         this.handleGetNotifications = this.handleGetNotifications.bind(this);
+        this.handleClearNotifications = this.handleClearNotifications.bind(this);
 
         
 
@@ -58,7 +59,7 @@ class ClassNotifications extends React.Component {
     render() {
 
             return (
-            <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle'>
+            <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle' columns={2}>
                 <Grid.Column style={{maxWidth: 450}}>
                     <Form size='large'>
                         <Grid.Column style={{width: "auto"}}>
@@ -82,6 +83,11 @@ class ClassNotifications extends React.Component {
                     </Form>
                                
                 </Grid.Column>
+                <Grid.Column style={{maxWidth: 450}}>                       
+                <Button onClick={this.handleClearNotifications} color='purple' fluid size='large'>
+                        Clear Notifications
+                    </Button>
+                </Grid.Column>   
             </Grid>
 
 
@@ -106,6 +112,17 @@ class ClassNotifications extends React.Component {
             // window.location.replace('/dashboard');
         }).catch(console.log("ok"))
     } /* End handleGetNotifications(...) */
-   
+
+    async handleClearNotifications() {
+        await fetch(`http://localhost:9000/clearclassnotifications?class=${this.state.classId}`, {
+            method: 'PUT',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            }
+        }).catch(console.log("ok"))
+    } /* End handleGetNotifications(...) */
    
 } export default ClassNotifications

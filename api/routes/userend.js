@@ -7,14 +7,15 @@ const mysql = require("mysql");
 const bcrypt = require('bcrypt');
 const { resetEmail } =  require("../store/reset");
 const { addStudentRequest, getStudentRequests, addStudentToClass } =  require("../store/class");
-const { updateConfidence, getAvgConfidence, getConfidence, getAllConfidence } =  require("../store/quiz");
+const { updateConfidence, getAvgConfidence, getConfidence, getAllConfidence, setDueDate, getStudentsQuizzes } =  require("../store/quiz");
 const { postMessage, 
+        postStudentMessage,
         clearNotifications, 
         clearNotificationsByClass, 
         getMessages, 
         getMessagesByClass, 
         getNotifications,
-        getNotificationsByClass
+        getNotificationsByClass,
       } = require("../store/notification")
 //for passport
 const LocalStrategy = require('passport-local').Strategy;
@@ -468,7 +469,7 @@ router.post('/lockDiscussion', AuthenticationFunctions.ensureAuthenticated, (req
 router.post('/deleteQuestion', AuthenticationFunctions.ensureAuthenticated, (req, res) => {
   let questionId = req.body.questionId;
   let con = mysql.createConnection(dbInfo);
-     con.query(`DELETE FROM question WHERE questionId=${mysql.escape(questionId)};`, (error, results, fields) => {
+  con.query(`DELETE FROM question WHERE questionId=${mysql.escape(questionId)};`, (error, results, fields) => {
       if (error) {
         console.log(error.stack);
       }
@@ -480,11 +481,20 @@ router.post('/deleteQuestion', AuthenticationFunctions.ensureAuthenticated, (req
 
 });
 
-
-
-
 router.post('/messages', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  console.log("EEEEEE",req.body)
   let results = await postMessage(req, res);
+  console.log('\n\n\nresults:', results,'\n\n\n')
+  if (results) {
+
+      return res.status(200).send(results);
+  } else {
+      return res.status(400).send(results);//json({status:400, message: "error"});
+  }
+});
+router.post('/studentmessages', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  console.log("EEEEEE",req.body)
+  let results = await postStudentMessage(req, res);
   console.log('\n\n\nresults:', results,'\n\n\n')
   if (results) {
 
@@ -503,7 +513,7 @@ router.get('/messages', AuthenticationFunctions.ensureAuthenticated, async funct
       return res.status(400).send(results);//json({status:400, message: "error"});
   }
 });
-router.get('/classmessage', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+router.get('/classmessages', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
   let results = await getMessagesByClass(req, res);
   console.log('\n\n\nresults:', results,'\n\n\n')
   if (results) {
@@ -554,10 +564,44 @@ router.put('/clearclassnotifications', AuthenticationFunctions.ensureAuthenticat
   }
 });
 
+router.get('/userQuestions', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  //let results = await getNotificationsByClass(req, res);
+  let username = req.query.username;
+  let con = mysql.createConnection(dbInfo);
 
+  con.query(`select * FROM question WHERE studentName=${mysql.escape(username)};`, (error, results, fields) => {
+    if (error) {
+      console.log(error.stack);
+      con.end();
+      return res.status(400).send(results); 
+    }
+    console.log('\n\n\nresults:', results,'\n\n\n');
+    con.end();
+    return res.status(200).send(results);
+  }); 
+});
 
+router.post('/setQuizDueDate', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  let results = await setDueDate(req, res);
+  console.log('\n\n\nresults:', results,'\n\n\n')
+  if (results) {
+    
+      return res.status(200).send(results);
+  } else {
+      return res.status(400).send(results);//json({status:400, message: "error"});
+  }
+});
 
-
+router.post('/getStudentsQuizzes', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  let results = await getStudentsQuizzes(req, res);
+  console.log('\n\n\nresults:', results,'\n\n\n')
+  if (results) {
+    
+      return res.status(200).send(results);
+  } else {
+      return res.status(400).send(results);//json({status:400, message: "error"});
+  }
+});
 
 
 module.exports = router;

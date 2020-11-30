@@ -337,6 +337,37 @@ function postComment(req, res) {
     });
 }
 
+function setViewedFlag(req, res) {
+    return new Promise(resolve => {
+        try{
+            //req.checkBody('classId', 'classId field is required.').notEmpty();
+            req.checkBody('lectureId', 'lectureId field is required.').notEmpty();
+
+            if (req.validationErrors()) {
+                resolve();
+                return;
+            }
+        } catch (error) {
+
+        }
+        
+        //let classId = req.body.classId;
+        let lectureId = req.body.lectureId;
+        let con = mysql.createConnection(dbInfo);
+        con.query(`update lecture set viewedFlag = 1 where id = ${mysql.escape(lectureId)}`, (error, results, fields) => {
+            if (error) {
+                console.log(error.stack);
+                con.end();
+                resolve();
+                return;
+            }
+            
+            console.log(`successfully updated viewed flag.`);
+            con.end();
+            resolve(results);
+        });
+    });
+}
 
 
-module.exports = {getLectures, addLecture, removeLecture, editLecture, answerQuestion, resolveQuestion, unresolveQuestion, getComments, postComment}
+module.exports = {getLectures, addLecture, removeLecture, editLecture, answerQuestion, resolveQuestion, unresolveQuestion, getComments, postComment, setViewedFlag}

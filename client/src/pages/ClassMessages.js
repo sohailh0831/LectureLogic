@@ -28,6 +28,8 @@ class ClassMessages extends React.Component {
     async componentDidMount() { // this is function called before render() ... use it to fetch any info u need
         // Simple GET request using fetch
         //console.log(localStorage.getItem("authenticated"))
+        let urlElements = window.location.pathname.split('/')
+        this.setState({classId: urlElements[2]})
         if(localStorage.getItem("authenticated") !== "authenticated"){
             window.location.replace('/login'); //redirects to login if not already logged in
         }
@@ -45,8 +47,7 @@ class ClassMessages extends React.Component {
                 this.setState({ username: data.username , name: data.name, response: data, userId: data.id, type: data.type, school: data.school });
                 console.log(data.class_id);
             }); // here's how u set variables u want to use later
-        let urlElements = window.location.pathname.split('/')
-        this.setState({classId: urlElements[2]})
+        
         this.handleGetNotifications();
 
 
@@ -63,13 +64,15 @@ class ClassMessages extends React.Component {
                     <Form size='large'>
                         {/* Class Card */}
                         <Grid.Column style={{width: "auto"}}>
+                            <Segment stacked textAlign="left" verticalAlign='middle'> Messages </Segment>
+
                             <Segment stacked textAlign="left" verticalAlign='middle'>
                                     <List>
                                     {this.state.notifications.map(index => (
                                         <List.Item>
                                         <List.Header>From: {index.class} </List.Header> 
-                                        <p>Message: {index.timestamp}</p> 
-                                        <p>Timestamp: {index.timestamp}</p> 
+                                        <p>Message: {index.content}</p> 
+                                        <p>Timestamp: {index.time}</p> 
                                         </List.Item>
                                     )
                                         )}
@@ -102,7 +105,7 @@ class ClassMessages extends React.Component {
             }
         }).then(res => res.json()).then((data) => { 
             console.log("data",data);
-            this.setState({notifications: data.notifications })
+            this.setState({notifications: data || [] })
             // window.location.replace('/dashboard');
         }).catch(console.log("ok"))
     } /* End handleGetNotifications(...) */

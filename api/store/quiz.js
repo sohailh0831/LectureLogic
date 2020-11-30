@@ -214,4 +214,73 @@ return new Promise(resolve => {
 });
 }
 
-module.exports = {updateConfidence, getConfidence, getAvgConfidence, getAllConfidence}
+function setDueDate(req, res) {
+    return new Promise(resolve => {
+        try{
+            //req.checkBody('classId', 'classId field is required.').notEmpty();
+            req.checkBody('quizId', 'quizId field is required.').notEmpty();
+            req.checkBody('dueDate', 'dueDate field is required.').notEmpty();
+
+            if (req.validationErrors()) {
+                resolve();
+                return;
+            }
+        } catch (error) {
+
+        }
+        
+        //let classId = req.body.classId;
+        let quizId = req.body.quizId;
+        let dueDate = req.body.dueDate;
+        let con = mysql.createConnection(dbInfo);
+        con.query(`update quiz set dueDate = ${mysql.escape(dueDate)} where id = ${mysql.escape(quizId)}`, (error, results, fields) => {
+            if (error) {
+                console.log(error.stack);
+                con.end();
+                resolve();
+                return;
+            }
+            
+            console.log(`successfully updated due date.`);
+            con.end();
+            resolve(results);
+        });
+    });
+}
+
+function getStudentsQuizzes(req, res) {
+    return new Promise(resolve => {
+        try{   
+            
+            if ( isNull(req.query.studentId) ) {
+                console.log("NO STUDENT ID SPECIFIED");
+                resolve();
+                return;
+            } 
+        } catch (error) {
+            
+        }
+        
+        //let questionId = req.body.questionId;
+        console.log("userId: "+req.query.studentId);
+        let con = mysql.createConnection(dbInfo);
+        con.query(`select * from quiz where uuid = ${mysql.escape(req.query.studentId)} order by lecId, dueDate ASC`, (error, results, fields) => { 
+            if (error) {
+                console.log(error.stack);
+                con.end();
+                res.status(400).json({status:400, message: "Failed to get classList."});
+                resolve();
+                return;
+            } 
+
+            con.end();
+            resolve(results);
+            return;
+  
+        });
+    });
+}
+
+
+
+module.exports = {updateConfidence, getConfidence, getAvgConfidence, getAllConfidence, setDueDate, getStudentsQuizzes}

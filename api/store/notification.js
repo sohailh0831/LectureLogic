@@ -27,9 +27,8 @@ function postMessage(req, res) {
         } catch (error) {
             console.log("ERROR");
         }
-    
         let con = mysql.createConnection(dbInfo);
-        con.query(`insert into message (sender, receiver, content, type, status, class) VALUES (${req.body.sender}, ${req.body.receiver}, ${req.body.content}, ${req.body.type}, ${true}, ${req.body.class})`, async (error, results, fields1) => { 
+        con.query(`SELECT student_list FROM class WHERE id = ${req.body.id}` , async (error, results, fields1) => { 
             if (error) {
                 console.log(error.stack);
                 con.end();
@@ -38,8 +37,28 @@ function postMessage(req, res) {
                 return;
             } 
             if (results){
+                console.log(results)
+
+                var list = JSON.parse(results[0].student_list);
+                var i = 0;
+                for(i; i < list.length; i++){
+                    console.log("EEEEEEEEEE", i, "eeeeeeeeeee")
+                    await con.query(`insert into message (sender, receiver, content, status, class) VALUES ('${req.body.sender}', '${list[i]}', '${req.body.content}', 1, '${req.body.id}')`, async (error, results, fields1) => { 
+                        console.log(error)
+                        if (error) {
+                            console.log(error.stack);
+                            con.end();
+                            res.status(400).json({status:400, message: "Insert to message table failed."});
+                            resolve();
+                            return;
+                        } 
+                        res.status(200)
+                      
+                    });
+                }
+                
                 con.end();
-                resolve("OK");
+                resolve();
                 return;
             } else {
                 con.end();
@@ -48,8 +67,93 @@ function postMessage(req, res) {
                 return;
             }
         });
+        
     });
     }
+
+
+    function postStudentMessage(req, res) {
+        return new Promise(resolve => {
+            console.log(req.user, req.query)
+            try{
+                // req.checkBody('quizId', 'quizId field is required.').notEmpty();
+            } catch (error) {
+                console.log("ERROR");
+            }
+            let con = mysql.createConnection(dbInfo);
+            con.query(`SELECT instructor_id FROM class WHERE id = ${req.body.id}` , async (error, results, fields1) => { 
+                if (error) {
+                    console.log(error.stack);
+                    con.end();
+                    res.status(400).json({status:400, message: "Insert to message table failed."});
+                    resolve();
+                    return;
+                } 
+                if (results){
+                        console.log(results.instructor_id)
+                        await con.query(`insert into message (sender, receiver, content, status, class) VALUES ('${req.body.sender}', '${results[0].instructor_id}', '${req.body.content}', 1, '${req.body.id}')`, async (error, results, fields1) => { 
+                            console.log(error)
+                            if (error) {
+                                console.log(error.stack);
+                                con.end();
+                                res.status(400).json({status:400, message: "Insert to message table failed."});
+                                resolve();
+                                return;
+                            } 
+                            res.status(200)
+                          
+                        });
+                    
+                    con.end();
+                    resolve();
+                    return;
+                } else {
+                    con.end();
+                    res.status(400).json({status:400, message: "Class does not exist."});
+                    resolve();
+                    return;
+                }
+            });
+            
+        });
+        }
+
+        // function postMessageToStudent(req, res) {
+        //     return new Promise(resolve => {
+        //         console.log(req.user, req.query)
+        //         try{
+        //             // req.checkBody('quizId', 'quizId field is required.').notEmpty();
+        //         } catch (error) {
+        //             console.log("ERROR");
+        //         }
+        //         let con = mysql.createConnection(dbInfo);
+        //             if (results){
+        //                     console.log(results.instructor_id)
+        //                     await con.query(`insert into message (sender, receiver, content, status, class) VALUES ('${req.body.sender}', '${results[0].instructor_id}', '${req.body.content}', 1, '${req.body.id}')`, async (error, results, fields1) => { 
+        //                         console.log(error)
+        //                         if (error) {
+        //                             console.log(error.stack);
+        //                             con.end();
+        //                             res.status(400).json({status:400, message: "Insert to message table failed."});
+        //                             resolve();
+        //                             return;
+        //                         } 
+        //                         res.status(200)
+                              
+        //                     });
+                        
+        //                 con.end();
+        //                 resolve();
+        //                 return;
+        //             } else {
+        //                 con.end();
+        //                 res.status(400).json({status:400, message: "Class does not exist."});
+        //                 resolve();
+        //                 return;
+        //             }                
+        //     });
+        //     }
+
 
 function getMessages(req, res) {
     return new Promise(resolve => {
@@ -61,7 +165,7 @@ function getMessages(req, res) {
         }
     
         let con = mysql.createConnection(dbInfo);
-        con.query(`select content, sender, time from message WHERE receiver = '${req.user.id}' ORDER BY id DESC`, async (error, results, fields1) => { 
+        con.query(`select content, sender, time, class from message WHERE receiver = '${req.user.id}' ORDER BY id DESC`, async (error, results, fields1) => { 
             if (error) {
                 console.log(error.stack);
                 con.end();
@@ -93,7 +197,7 @@ return new Promise(resolve => {
     }
 
     let con = mysql.createConnection(dbInfo);
-    con.query(`select content, sender, time from message WHERE receiver = '${req.user.id}' AND status = 1 ORDER BY id DESC`, async (error, results, fields1) => { 
+    con.query(`select content, sender, time, class from message WHERE receiver = '${req.user.id}' AND status = 1 ORDER BY id DESC`, async (error, results, fields1) => { 
         if (error) {
             console.log(error.stack);
             con.end();
@@ -124,7 +228,7 @@ return new Promise(resolve => {
     }
 
     let con = mysql.createConnection(dbInfo);
-    con.query(`select content, sender, time from message WHERE receiver = '${req.user.id}' AND status = 1 AND class = '${req.query.class}' ORDER BY id DESC`, async (error, results, fields1) => { 
+    con.query(`select content, sender, time, class from message WHERE receiver = '${req.user.id}' AND status = 1 AND class = '${req.query.class}' ORDER BY id DESC`, async (error, results, fields1) => { 
         if (error) {
             console.log(error.stack);
             con.end();
@@ -155,7 +259,7 @@ return new Promise(resolve => {
     }
 
     let con = mysql.createConnection(dbInfo);
-    con.query(`select content, sender, time from message WHERE receiver = '${req.user.id}' AND class = '${req.query.class}' ORDER BY id DESC`, async (error, results, fields1) => { 
+    con.query(`select content, sender, time, class from message WHERE receiver = '${req.user.id}' AND class = '${req.query.class}' ORDER BY id DESC`, async (error, results, fields1) => { 
         if (error) {
             console.log(error.stack);
             con.end();
@@ -187,7 +291,7 @@ function clearNotifications(req, res) {
         }
     
         let con = mysql.createConnection(dbInfo);
-        con.query(`update quiz SET status = 0 WHERE receiver = '${req.user.id}' AND sataus = 1 ORDER BY id DESC`, async (error, results, fields1) => { 
+        con.query(`UPDATE message SET status = 0 WHERE receiver='${req.user.id}' AND status=1 ORDER BY id DESC`, async (error, results, fields1) => { 
             if (error) {
                 console.log(error.stack);
                 con.end();
@@ -213,7 +317,7 @@ function clearNotificationsByClass(req, res) {
         }
     
         let con = mysql.createConnection(dbInfo);
-        con.query(`update message SET status = 0 WHERE receiver = '${req.user.id}' AND class = '${req.query.class}' AND sataus = 1 ORDER BY id DESC`, async (error, results, fields1) => { 
+        con.query(`UPDATE message SET status = 0 WHERE receiver='${req.user.id}' AND class='${req.query.class}' AND status=1 ORDER BY id DESC`, async (error, results, fields1) => { 
             if (error) {
                 console.log(error.stack);
                 con.end();
@@ -235,4 +339,4 @@ function clearNotificationsByClass(req, res) {
 
 
 
-module.exports = {postMessage, getMessages, getNotifications, getMessagesByClass, getNotificationsByClass, clearNotifications, clearNotificationsByClass}
+module.exports = {postMessage, postStudentMessage, getMessages, getNotifications, getMessagesByClass, getNotificationsByClass, clearNotifications, clearNotificationsByClass}
