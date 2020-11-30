@@ -5,7 +5,7 @@ const dotenv = require('dotenv').config();
 const mysql = require("mysql");
 const { addStudentToClass } = require("../store/class");
 const { classList } = require("../store/class");
-const { addClass, getStudentClasses, getInstructorClasses, postClassQuestion, getClassQuestions, answerClassQuestion, postComment, getComments } = require("../store/class");
+const { addClass, getStudentClasses, getInstructorClasses, postClassQuestion, getClassQuestions, answerClassQuestion, postComment, getComments, updateHideFlag } = require("../store/class");
 const { officialSchools, instructorSchools } = require("../store/school");
 const AuthenticationFunctions = require('../Authentication.js');
 
@@ -198,6 +198,21 @@ router.post('/postComment', AuthenticationFunctions.ensureAuthenticated, async f
         req.flash('error', 'Failed to post comment.');
         console.log("IN NO RESULTS");
         return res.status(400).send(results);//son({status:400, message: "error"});
+    }
+});
+
+router.post('/updateHideFlag', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+    //console.log("GETTING STUDENT QUIZZWES\n");
+    let results = await updateHideFlag(req, res);
+
+    if (results) {
+        req.flash('success', 'Successfully updated hide flag.');
+        console.log("IN RESULTS");
+        return res.status(200).send(results);
+    } else {
+        req.flash('error', 'Something went wrong. Try again.');
+        console.log("IN NO RESULTS");
+        return res.status(400).send(results);//.json({status:400, message: "error"});
     }
 });
 

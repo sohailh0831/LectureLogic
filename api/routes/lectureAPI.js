@@ -12,7 +12,7 @@ const { addLecture } = require("../store/lecture");
 const { removeLecture } = require("../store/lecture");
 const { editLecture } = require("../store/lecture");
 const { answerQuestion } = require("../store/lecture");
-const { resolveQuestion, unresolveQuestion, getComments, postComment, setViewedFlag } = require("../store/lecture");
+const { resolveQuestion, unresolveQuestion, getComments, postComment, setViewedFlag, updateHideFlag } = require("../store/lecture");
 
 const AuthenticationFunctions = require('../Authentication.js');
 
@@ -189,4 +189,18 @@ router.post('/setViewedFlag', AuthenticationFunctions.ensureAuthenticated, async
     }
 });
 
+router.post('/updateHideFlag', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+    //console.log("GETTING STUDENT QUIZZWES\n");
+    let results = await updateHideFlag(req, res);
+
+    if (results) {
+        req.flash('success', 'Successfully updated hide flag.');
+        console.log("IN RESULTS");
+        return res.status(200).send(results);
+    } else {
+        req.flash('error', 'Something went wrong. Try again.');
+        console.log("IN NO RESULTS");
+        return res.status(400).send(results);//.json({status:400, message: "error"});
+    }
+});
 module.exports = router;

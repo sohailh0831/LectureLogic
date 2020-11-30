@@ -615,4 +615,36 @@ async function getComments(req, res) {
     });
 }
 
-module.exports = {addStudentToClass, classList, addClass, getStudentClasses, getInstructorClasses, addStudentRequest, getStudentRequests, postClassQuestion, getClassQuestions, answerClassQuestion, postComment, getComments}
+function updateHideFlag(req, res) {
+    return new Promise(resolve => {
+        try{
+            req.checkBody('classId', 'classId field is required.').notEmpty();
+            req.checkBody('hideFlag', 'hideFlag field is required.').notEmpty();
+
+            if (req.validationErrors()) {
+                resolve();
+                return;
+            }
+        } catch (error) {
+
+        }
+        
+        let classId = req.body.classId;
+        let hideFlag = req.body.hideFlag;
+        let con = mysql.createConnection(dbInfo);
+        con.query(`update class set hiddenFlag = ${mysql.escape(hideFlag)} where id = ${mysql.escape(classId)}`, (error, results, fields) => {
+            if (error) {
+                console.log(error.stack);
+                con.end();
+                resolve();
+                return;
+            }
+            
+            console.log(`successfully hid class.`);
+            con.end();
+            resolve(results);
+        });
+    });
+}
+
+module.exports = {addStudentToClass, classList, addClass, getStudentClasses, getInstructorClasses, addStudentRequest, getStudentRequests, postClassQuestion, getClassQuestions, answerClassQuestion, postComment, getComments, updateHideFlag}
