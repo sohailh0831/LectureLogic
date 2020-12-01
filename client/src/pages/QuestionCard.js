@@ -216,12 +216,12 @@ export default class QuestionCard extends React.Component{
     // }
 
     handleAnswerChange(event) {
-        console.log(event.target.value);
+        // console.log(event.target.value);
         this.setState({answer: event.target.value});
     }
     
     handleCommentChange(event) {
-        console.log(event.target.value);
+        // console.log(event.target.value);
         this.setState({comment: event.target.value});
     }
 
@@ -264,6 +264,8 @@ export default class QuestionCard extends React.Component{
                 //window.location.replace(this.props.link);
             }).catch(console.log)
         }
+
+        window.location.replace(this.props.link);
 
     }
 
