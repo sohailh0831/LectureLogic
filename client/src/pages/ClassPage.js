@@ -27,6 +27,7 @@ class ClassPage extends React.Component {
             lectureDesc: '',
             lectureSection: '',
             lectureVideoLink: '',
+            lectureViewedFlag: '',
             loadedQuestions: [],
             classQuestionList: [],
             isLocked: false,
@@ -308,7 +309,7 @@ class ClassPage extends React.Component {
                             {/* Class Card */}
                             <Grid.Column style={{width: "auto"}}>
                                 {this.state.lectureList.map((lectureList, index) => {
-                                        return(<LectureCard className={this.state.className} lectureId={this.state.lectureList[index].id} lectureName={this.state.lectureList[index].name} lectureDesc={this.state.lectureList[index].description} lectureSection={this.state.lectureList[index].section} lectureVideoLink={this.state.lectureList[index].video_link} type={this.state.response.type}/>)
+                                        return(<LectureCard className={this.state.className} lectureId={this.state.lectureList[index].id} lectureName={this.state.lectureList[index].name} lectureDesc={this.state.lectureList[index].description} lectureSection={this.state.lectureList[index].section} lectureVideoLink={this.state.lectureList[index].video_link} lectureViewedFlag={this.state.lectureList[index].viewedFlag} type={this.state.response.type}/>)
                                     }
                                 )}
                             </Grid.Column>

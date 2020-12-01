@@ -1,5 +1,5 @@
 import React from "react";
-import {Card, Header, Modal, Button, Form} from "semantic-ui-react";
+import {Card, Header, Modal, Button, Form, Popup, Dimmer, Segment} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 
 
@@ -14,7 +14,8 @@ export default class LectureCard extends React.Component{
             tempLectureName: '',
             tempLectureDesc: '',
             tempLectureSection: '',
-            tmepLectureVideo: ''
+            tmepLectureVideo: '',
+            dimmed: true
         }
         this.handleGetStudentList = this.handleGetStudentList.bind(this);
         this.handleEditLecture = this.handleEditLecture.bind(this);
@@ -23,6 +24,7 @@ export default class LectureCard extends React.Component{
         this.handleLectureDescriptionChange = this.handleLectureDescriptionChange.bind(this);
         this.handleLectureSectionChange = this.handleLectureSectionChange.bind(this);
         this.handleLectureVideoLinkChange = this.handleLectureVideoLinkChange.bind(this);
+        this.handleDimmer = this.handleDimmer.bind(this);
     }
 
     async componentDidMount(){
@@ -33,42 +35,84 @@ export default class LectureCard extends React.Component{
             lectureName: this.props.lectureName,
             lectureDesc: this.props.lectureDesc,
             lectureVideoLink: this.props.lectureVideoLink,
+            lectureViewedFlag: this.props.lectureViewedFlag,
             temp: this.props.type
         });
     }
 
     render() {
         console.log("USER TPYE: "+this.props.type);
-        if (this.props.type == 1){ // if student, hide student list button    
-            console.log("SHOWING STUDENT LECTURE CARD");        
-            return(
-                <div>
-                     {/* <Link to = {'/LectureView'} >  */}
-                     {/* <Link to ={{ pathname: './ClassPage/'+this.state.className, state: {classId: this.state.classId, classDesc: this.state.classDesc} }} ></Link> */}
-                     <Link to ={{ pathname: '/LectureView/'+this.props.lectureId, state: {lectureId: this.props.lectureId, lectureDesc: this.props.lectureDesc, lectureSection: this.props.lectureSection, lectureVideoLink: this.props.lectureVideoLink} }} >
-                        <Card style={{width: "500px"}} centered >
-                            <Card.Content>
-                                <Header as="h4" textAlign="left" dividing>
-                                    <div lecturename="left aligned">
-                                        <Header.Content>
-                                            {this.props.lectureName}
-                                            <div lecturename="meta">
-                                                <p style={{fontSize: "75%"}} data-testid={"Lecture Description"}>({this.props.lectureDesc})</p>
-                                                <p style={{fontSize: "75%"}} data-testid={"Lecture Section"}>Section: {this.props.lectureSection}</p>
-                                                {/* <p style={{fontSize: "75%"}} data-testid={"Class Id"}>({this.props.classId})</p> */}
+        if (this.props.type == 1){ // if student, hide student list button
+            console.log("SHOWING STUDENT LECTURE CARD");
+            if ( this.props.lectureViewedFlag == 1 ) {
+                console.log("NEED TO GREY OUT LECTURE");
+                
+                    
+                return(
+                    <div>
+                        {/* <Link to = {'/LectureView'} >  */}
+                        {/* <Link to ={{ pathname: './ClassPage/'+this.state.className, state: {classId: this.state.classId, classDesc: this.state.classDesc} }} ></Link> */}
+                        {/* <Popup trigger={ */}
+                        <Dimmer.Dimmable as={Segment} dimmed={this.state.dimmed}>
+                            <Link to ={{ pathname: '/LectureView/'+this.props.lectureId, state: {lectureId: this.props.lectureId, lectureDesc: this.props.lectureDesc, lectureSection: this.props.lectureSection, lectureVideoLink: this.props.lectureVideoLink} }} >
+                                <Card background-color={'grey'} style={{width: "500px"}} centered >
+                                    <Card.Content >
+                                        <Header as="h4" textAlign="left" dividing>
+                                            <div lecturename="left aligned">
+                                                <Header.Content>
+                                                    {this.props.lectureName}
+                                                    <div lecturename="meta">
+                                                        <p style={{fontSize: "75%"}} data-testid={"Lecture Description"}>({this.props.lectureDesc})</p>
+                                                        <p style={{fontSize: "75%"}} data-testid={"Lecture Section"}>Section: {this.props.lectureSection}</p>
+                                                        {/* <p style={{fontSize: "75%"}} data-testid={"Class Id"}>({this.props.classId})</p> */}
+                                                    </div>
+                                                    
+                                                
+                                                </Header.Content>
                                             </div>
-                                            
+                                        </Header>
                                         
-                                        </Header.Content>
-                                    </div>
-                                </Header>
-                                
-                            </Card.Content>
-                        </Card>
-                    </Link>
-                </div>
+                                    </Card.Content>
+                                </Card>
+                            </Link>
+                            <Dimmer active={this.state.dimmed} onClickOutside={this.handleDimmer}>
+                                Viewed!
+                            </Dimmer>
+                        </Dimmer.Dimmable>
+                        {/* }>Viewed</Popup> */}
+                    </div>
 
-            )//End return(...)
+                )//End return(...)
+            } else {
+                return(
+                    <div>
+                        {/* <Link to = {'/LectureView'} >  */}
+                        {/* <Link to ={{ pathname: './ClassPage/'+this.state.className, state: {classId: this.state.classId, classDesc: this.state.classDesc} }} ></Link> */}
+                        <Link to ={{ pathname: '/LectureView/'+this.props.lectureId, state: {lectureId: this.props.lectureId, lectureDesc: this.props.lectureDesc, lectureSection: this.props.lectureSection, lectureVideoLink: this.props.lectureVideoLink} }} >
+                            <Card style={{width: "500px"}} centered >
+                                <Card.Content>
+                                    <Header as="h4" textAlign="left" dividing>
+                                        <div lecturename="left aligned">
+                                            <Header.Content>
+                                                {this.props.lectureName}
+                                                <div lecturename="meta">
+                                                    <p style={{fontSize: "75%"}} data-testid={"Lecture Description"}>({this.props.lectureDesc})</p>
+                                                    <p style={{fontSize: "75%"}} data-testid={"Lecture Section"}>Section: {this.props.lectureSection}</p>
+                                                    {/* <p style={{fontSize: "75%"}} data-testid={"Class Id"}>({this.props.classId})</p> */}
+                                                </div>
+                                                
+                                            
+                                            </Header.Content>
+                                        </div>
+                                    </Header>
+                                    
+                                </Card.Content>
+                            </Card>
+                        </Link>
+                    </div>
+
+                )//End return(...)
+            }
         } else {    // if instructor, show student list button
             console.log("SHOWING INSTRUCTOR LECTURE CARD\n");
             return(
@@ -161,6 +205,10 @@ export default class LectureCard extends React.Component{
     }
     async handleLectureVideoLinkChange(event){
         await this.setState({tempLectureVideoLink: event.target.value});
+    }
+
+    async handleDimmer(event){
+        await this.setState({dimmed: false});
     }
 
 
