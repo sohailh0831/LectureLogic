@@ -369,5 +369,36 @@ function setViewedFlag(req, res) {
     });
 }
 
+function updateHideFlag(req, res) {
+    return new Promise(resolve => {
+        try{
+            req.checkBody('lectureId', 'lectureId field is required.').notEmpty();
+            req.checkBody('hideFlag', 'hideFlag field is required.').notEmpty();
 
-module.exports = {getLectures, addLecture, removeLecture, editLecture, answerQuestion, resolveQuestion, unresolveQuestion, getComments, postComment, setViewedFlag}
+            if (req.validationErrors()) {
+                resolve();
+                return;
+            }
+        } catch (error) {
+
+        }
+        
+        let lectureId = req.body.lectureId;
+        let hideFlag = req.body.hideFlag;
+        let con = mysql.createConnection(dbInfo);
+        con.query(`update lecture set hiddenFlag = ${mysql.escape(hideFlag)} where id = ${mysql.escape(lectureId)}`, (error, results, fields) => {
+            if (error) {
+                console.log(error.stack);
+                con.end();
+                resolve();
+                return;
+            }
+            
+            console.log(`successfully hid class.`);
+            con.end();
+            resolve(results);
+        });
+    });
+}
+
+module.exports = {getLectures, addLecture, removeLecture, editLecture, answerQuestion, resolveQuestion, unresolveQuestion, getComments, postComment, setViewedFlag, updateHideFlag}

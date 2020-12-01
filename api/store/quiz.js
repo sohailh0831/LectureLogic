@@ -233,7 +233,7 @@ function setDueDate(req, res) {
         let quizId = req.body.quizId;
         let dueDate = req.body.dueDate;
         let con = mysql.createConnection(dbInfo);
-        con.query(`update quiz set dueDate = ${mysql.escape(dueDate)} where id = ${mysql.escape(quizId)}`, (error, results, fields) => {
+        con.query(`update quizzes set dueDate = ${mysql.escape(dueDate)} where quizId = ${mysql.escape(quizId)}`, (error, results, fields) => {
             if (error) {
                 console.log(error.stack);
                 con.end();
@@ -247,7 +247,7 @@ function setDueDate(req, res) {
         });
     });
 }
-
+//TODO need to get class list and parse
 function getStudentsQuizzes(req, res) {
     return new Promise(resolve => {
         try{   
@@ -261,14 +261,77 @@ function getStudentsQuizzes(req, res) {
             
         }
         
-        //let questionId = req.body.questionId;
-        console.log("userId: "+req.query.studentId);
+        //get classes
+        console.log("studentId: "+req.query.studentId);
+        let classList = "";
         let con = mysql.createConnection(dbInfo);
-        con.query(`select * from quiz where uuid = ${mysql.escape(req.query.studentId)} order by lecId, dueDate ASC`, (error, results, fields) => { 
+        con.query(`select class_list from user where id = ${mysql.escape(req.query.studentId)}`, (error, results, fields) => { 
             if (error) {
                 console.log(error.stack);
                 con.end();
                 res.status(400).json({status:400, message: "Failed to get classList."});
+                resolve();
+                return;
+            } 
+
+            con.end();
+            //resolve(results);
+            //return;
+            console.log("classList: ");
+            console.log(results[0].class_list);
+            classList = JSON.stringify(results[0].class_list);
+            classList = classList.substring(2, classList.length-2);
+            classList = "("+classList+")";
+            classList = classList.replace(/"/g, '');
+            classList = classList.replace(/\\/g, '');
+
+            console.log("Class list: "+classList);
+
+            let con2 = mysql.createConnection(dbInfo);
+            con2.query(`select * from quizzes, quizQuestionTable where classId in `+classList+` order by classId, dueDate ASC`, (error, results2, fields) => { 
+                if (error) {
+                    console.log(error.stack);
+                    con2.end();
+                    res.status(400).json({status:400, message: "Failed to get classList."});
+                    resolve();
+                    return;
+                } 
+
+                con2.end();
+                resolve(results2);
+                return;
+    
+            });
+
+            //con2.end();
+            
+        });
+        
+    });
+}
+
+//get student grades
+function getStudentGrades(req, res) {
+    return new Promise(resolve => {
+        try{   
+            
+            if ( isNull(req.query.studentId) ) {
+                console.log("NO studentId ID SPECIFIED");
+                resolve();
+                return;
+            } 
+        } catch (error) {
+            
+        }
+        
+        //let questionId = req.body.questionId;
+        console.log("studentId: "+req.query.studentId);
+        let con = mysql.createConnection(dbInfo);
+        con.query(`select * from quizGradeStudents where studentId = ${mysql.escape(req.query.studentId)} order by classId, quizId`, (error, results, fields) => { 
+            if (error) {
+                console.log(error.stack);
+                con.end();
+                res.status(400).json({status:400, message: "Failed to get classgrades."});
                 resolve();
                 return;
             } 
@@ -281,6 +344,159 @@ function getStudentsQuizzes(req, res) {
     });
 }
 
+function getClassGrades(req, res) {
+    return new Promise(resolve => {
+        try{   
+            
+            if ( isNull(req.query.classId) ) {
+                console.log("NO class ID SPECIFIED");
+                resolve();
+                return;
+            } 
+        } catch (error) {
+            
+        }
+        
+        //let questionId = req.body.questionId;
+        console.log("classId: "+req.query.classId);
+        let con = mysql.createConnection(dbInfo);
+        con.query(`select * from quizGradeStudents where classId = ${mysql.escape(req.query.classId)} order by quizId, studentId`, (error, results, fields) => { 
+            if (error) {
+                console.log(error.stack);
+                con.end();
+                res.status(400).json({status:400, message: "Failed to get classgrades."});
+                resolve();
+                return;
+            } 
+
+            con.end();
+            resolve(results);
+            return;
+  
+        });
+    });
+}
+
+function getStudentAverageClassGrade(req, res) {
+    return new Promise(resolve => {
+        try{   
+            
+            if ( isNull(req.query.classId) ) {
+                console.log("NO class ID SPECIFIED");
+                resolve();
+                return;
+            } 
+            if ( isNull(req.query.studentId) ) {
+                console.log("NO class ID SPECIFIED");
+                resolve();
+                return;
+            } 
+        } catch (error) {
+            
+        }
+        
+        //let questionId = req.body.questionId;
+        console.log("classId: "+req.query.classId);
+        console.log("studentId: "+req.query.studentId);
+        let con = mysql.createConnection(dbInfo);
+        con.query(`select avg(score) as avgGrade from quizGradeStudents where classId = ${mysql.escape(req.query.classId)} and studentId = ${mysql.escape(req.query.studentId)} group by classId, studentId`, (error, results, fields) => { 
+            if (error) {
+                console.log(error.stack);
+                con.end();
+                res.status(400).json({status:400, message: "Failed to get studentsGrades."});
+                resolve();
+                return;
+            } 
+            console.log("average grade ");
+            console.log(results);
+            // let avg = 0;
+            // let iter = 0;
+            // while( 1 == 1 ){
+            //     if(results[iter] === undefined) {
+            //         // console.log("UNDEF BREAKING");
+            //         break;
+            //     }
+            //     // console.log("grade: "+results[iter].grade);
+            //     avg += results[iter].grade;
+            //     iter++;
+            // }
+
+            // avg = avg/iter;
+            // console.log("avg: "+avg);
+            con.end();
+            //resolve(JSON.stringify({'average': avg}));
+            resolve(results);
+            return;
+  
+        });
+    });
+}
+
+function updateGrade(req, res) {
+    return new Promise(resolve => {
+        try{
+            req.checkBody('quizId', 'quizId field is required.').notEmpty();
+            req.checkBody('grade', 'grade field is required.').notEmpty();
+            req.checkBody('studentId', 'studentId is required').notEmpty();
+
+            if (req.validationErrors()) {
+                resolve();
+                return;
+            }
+        } catch (error) {
+
+        }
+        
+        let grade = req.body.grade;
+        let quizId = req.body.quizId;
+        let studentId = req.body.studentId;
+        let con = mysql.createConnection(dbInfo);
+        con.query(`update quizGradeStudents set score = ${mysql.escape(grade)} where quizId = ${mysql.escape(quizId)} and studentId = ${mysql.escape(studentId)}`, (error, results, fields) => {
+            if (error) {
+                console.log(error.stack);
+                con.end();
+                resolve();
+                return;
+            }
+            
+            console.log(`successfully updated quiz grade.`);
+            con.end();
+            resolve(results);
+        });
+    });
+}
+
+function updateHideFlag(req, res) {
+    return new Promise(resolve => {
+        try{
+            req.checkBody('quizId', 'quizId field is required.').notEmpty();
+            req.checkBody('hideFlag', 'hideFlag field is required.').notEmpty();
+
+            if (req.validationErrors()) {
+                resolve();
+                return;
+            }
+        } catch (error) {
+
+        }
+        
+        let quizId = req.body.quizId;
+        let hideFlag = req.body.hideFlag;
+        let con = mysql.createConnection(dbInfo);
+        con.query(`update quizzes set hiddenFlag = ${mysql.escape(hideFlag)} where quizId = ${mysql.escape(quizId)}`, (error, results, fields) => {
+            if (error) {
+                console.log(error.stack);
+                con.end();
+                resolve();
+                return;
+            }
+            
+            console.log(`successfully hid quiz.`);
+            con.end();
+            resolve(results);
+        });
+    });
+}
 
 
-module.exports = {updateConfidence, getConfidence, getAvgConfidence, getAllConfidence, setDueDate, getStudentsQuizzes}
+module.exports = {updateConfidence, getConfidence, getAvgConfidence, getAllConfidence, setDueDate, getStudentsQuizzes, getStudentGrades, getClassGrades, getStudentAverageClassGrade, updateGrade, updateHideFlag}
