@@ -75,16 +75,19 @@ class Dashboard extends React.Component {
         if (this.state.response.type === '0') {
             //console.log("DASH TYPE: "+this.state.response.type);
             return (
-            <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle' columns={2}>
-                <Grid.Column style={{maxWidth: 450}} horizontalAlign='left'>
-                    {/* <Form size='large'> */}
+                <Grid style={{maxWidth: '100vw', maxHeight: '100vh'}} textAlign='center' rows={2}>
+                    <Grid.Row style={{height: '10vh'}} textAlign='center'>     {/* Name of College */}
+                        <br/>
+                        <Header as = 'h2' color = 'grey' textAlign = 'center' horizontalAlign='center'>
+                            {this.state.school}
+                        </Header>
+                    </Grid.Row>
 
-                        <Segment stacked textAlign="center" verticalAlign='middle'>
-                            <Header as = 'h2' color = 'grey' textAlign = 'center'>
-                                {/* {popUpMessage} */}
-                                {this.state.school}
+                    <Grid.Row style={{height: '90vh'}} columns={2}>             {/* Main body of screen */}
+                        <Grid.Column style={{width: '50vw'}}>
+                            <Header as = 'h2' color = 'grey' textAlign = 'center' horizontalAlign='center'>
+                                ClassList
                             </Header>
-
                             <Modal
                                 trigger={<Button icon='add' color='purple' ></Button>}
                                 header='Add New Class'
@@ -106,23 +109,28 @@ class Dashboard extends React.Component {
                                 }
                                 actions={['Close', <Button color='purple' onClick={this.handleAddClass}> done</Button>]}
                             />
-                            
 
-                        </Segment>
+                            <br/>   {/* Need two \n's to have a space after the modal and before the actual classlist */}
+                            <br/>
 
-                        {/* Class Card */}
-                        {/* <Grid.Column style={{width: "auto"}}> */}
-                        {/* <Segment> */}
-                            {this.state.classList.map((classList, index) => { 
-                                    return(<ClassCard classId={this.state.classList[index].id} className={this.state.classList[index].name} classDesc={this.state.classList[index].description} type={this.state.response.type}/>)
+                            {this.state.classList.map((classList, index) => {
+                                    return(<ClassCard classId={this.state.classList[index].id} className={this.state.classList[index].name} classDesc={this.state.classList[index].description } type={this.state.response.type}/>)
                                 }
                             )}
-                        {/* </Segment> */}
-                        {/* </Grid.Column> */}
+                        </Grid.Column >
+                            
+                            {/* use a column here to add another column like on the student page. Example below copied from student dashboard */}
+                        {/* <Grid.Column style={{width: '50vw'}}>
+                            <Header as = 'h2' color = 'grey' textAlign = 'center' horizontalAlign='center'>
+                                Your Questions
+                            </Header>
 
-                    {/* </Form> */}
-                </Grid.Column>
-            </Grid>
+                            {yourQuestions}
+
+                        </Grid.Column> */}
+                    </Grid.Row>
+
+                </Grid>
 
 
         ) //End return(...)
