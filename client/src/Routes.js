@@ -24,6 +24,7 @@ import ClassMessages from "./pages/ClassMessages";
 import UserMessages from "./pages/UserMessages";
 import UserNotifications from "./pages/UserNotifications";
 import ClassDiscussionBoard from "./pages/ClassDiscussionBoard";
+import Quiz from "./pages/Quiz";
 
 
 
@@ -169,6 +170,7 @@ export default class Routes extends React.Component {
                             <Route path ="/classMessages/:classId" exact component={ClassMessages}/>
                             <Route path ="/userNotifications" exact component={UserNotifications}/>
                             <Route path ="/userMessages" exact component={UserMessages}/>
+                            <Route path ="/quizzes/:classId/:quizId" exaxt component ={Quiz}/>
                             <Redirect to="/404" />
                           </Switch>
 
