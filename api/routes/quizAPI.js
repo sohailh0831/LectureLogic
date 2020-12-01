@@ -3,7 +3,7 @@ const { isNull } = require("lodash");
 var router = express.Router();
 const dotenv = require('dotenv').config();
 const mysql = require("mysql");
- const { getStudentsQuizzes, getClassGrades, getStudentAverageClassGrade, updateGrade, updateHideFlag } = require("../store/quiz");
+ const { getStudentsQuizzes, getStudentGrades, getClassGrades, getStudentAverageClassGrade, updateGrade, updateHideFlag } = require("../store/quiz");
 
 const AuthenticationFunctions = require('../Authentication.js');
 
@@ -17,9 +17,24 @@ let dbInfo = {
     multipleStatements: true
 };
 
-router.get('/getStudentQuizResults', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+router.get('/getStudentQuizzes', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
     console.log("GETTING STUDENT QUIZZWES\n");
     let results = await getStudentsQuizzes(req, res);
+
+    if (results) {
+        req.flash('success', 'Successfully got students quizzes.');
+        console.log("IN RESULTS");
+        return res.status(200).send(results);
+    } else {
+        req.flash('error', 'Something went wrong. Try again.');
+        console.log("IN NO RESULTS");
+        return res.status(400).send(results);//.json({status:400, message: "error"});
+    }
+});
+
+router.get('/getStudentQuizResults', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+    console.log("GETTING STUDENT QUIZZWES\n");
+    let results = await getStudentGrades(req, res);
 
     if (results) {
         req.flash('success', 'Successfully got students quizzes.');
