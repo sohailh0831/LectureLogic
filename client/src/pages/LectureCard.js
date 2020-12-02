@@ -25,6 +25,7 @@ export default class LectureCard extends React.Component{
         this.handleLectureSectionChange = this.handleLectureSectionChange.bind(this);
         this.handleLectureVideoLinkChange = this.handleLectureVideoLinkChange.bind(this);
         this.handleDimmer = this.handleDimmer.bind(this);
+        this.handleUpdateHideFlag = this.handleUpdateHideFlag.bind(this);
     }
 
     async componentDidMount(){
@@ -115,9 +116,23 @@ export default class LectureCard extends React.Component{
             }
         } else {    // if instructor, show student list button
             console.log("SHOWING INSTRUCTOR LECTURE CARD\n");
+            //hide button logic
+            var hideButton;
+            if (this.props.hidden == 0) { //if lecture is supposed to be visible
+                hideButton=
+                <Button color='blue' onClick={this.handleUpdateHideFlag}>
+                    Hide
+                </Button>
+            }
+            else {
+                hideButton=
+                <Button color='red' onClick={this.handleUpdateHideFlag}>
+                    Make Visible
+                </Button>
+            }
+
             return(
                 <div>
-                    
                         <Card style={{width: "500px"}} centered >                
                             <Card.Content>
                                 <Header as="h4" textAlign="left" dividing> 
@@ -178,6 +193,9 @@ export default class LectureCard extends React.Component{
                                             <Button basic color='red' onClick={() => {this.handleRemoveLecture(this.props.lectureId)}}>
                                                 Delete
                                             </Button>
+
+                                            {hideButton} {/* See functionality above... if the object is supposed to be hidden, it should have a make visible button, else a hide button */}
+
                                             {/* {<Button content='Delete' ></Button>} */}
                                         {/* </Dropdown.Menu> */}
                                     {/* </Dropdown> */}
@@ -298,4 +316,32 @@ export default class LectureCard extends React.Component{
                 console.log(Object.keys(data.results)[0]);
             }); // here's how u set variables u want to use later
     }
+
+    async handleUpdateHideFlag(){
+        let tmpHide = this.props.hidden;
+        if (tmpHide === 1) {
+            tmpHide = 0;
+        }
+        else {
+            tmpHide = 1;
+        }
+        await fetch("http://localhost:9000/lecture/updateHideFlag", {
+            method: 'POST',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            },
+            body: JSON.stringify({
+                lectureId: this.props.lectureId,
+                hideFlag: tmpHide
+            })
+        }).then(res => res.json()).then((data) => { 
+            console.log(data);
+            this.setState({response: data});
+            window.location.replace('/ClassPage/'+this.props.className);
+        }).catch(console.log)
+    }
+
 };

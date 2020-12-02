@@ -158,7 +158,7 @@ class ClassPage extends React.Component {
                 </Segment>
             }
         }
-        if (this.state.response.type === '0') {
+        if (this.state.response.type === '0') { //instructor
             
             return (
             <Grid textAlign='center' style={{height: '100vh'}, {width: '100vw'}} divided='vertically' columns={2}>
@@ -210,7 +210,7 @@ class ClassPage extends React.Component {
                             {/* Class Card */}
                             <Segment stacked textAlign="left" verticalAlign='middle' style={{overflow: 'auto'}}>
                             {this.state.lectureList.map((lectureList, index) => { 
-                                return(<LectureCard maxWidth='50vw' className={this.state.className} lectureId={this.state.lectureList[index].id} lectureName={this.state.lectureList[index].name} lectureDesc={this.state.lectureList[index].description} lectureSection={this.state.lectureList[index].section} lectureVideoLink={this.state.lectureList[index].video_link} type={this.state.response.type}/>)
+                                return(<LectureCard maxWidth='50vw' hidden ={this.state.lectureList[index].hiddenFlag} className={this.state.className} lectureId={this.state.lectureList[index].id} lectureName={this.state.lectureList[index].name} lectureDesc={this.state.lectureList[index].description} lectureSection={this.state.lectureList[index].section} lectureVideoLink={this.state.lectureList[index].video_link} type={this.state.response.type}/>)
                             })}
                             </Segment>
                         </Segment>
@@ -275,7 +275,7 @@ class ClassPage extends React.Component {
             //return(<ClassCard className={this.state.classList.name} classDesc={this.state.description} />);// -- ideally this works first shot but honestly prolly not lol
         
         } 
-        else {
+        else { //student
             
             return (
                 <Grid padded style={{height: '100vh'}} columns={3}>
@@ -309,7 +309,9 @@ class ClassPage extends React.Component {
                             {/* Class Card */}
                             <Grid.Column style={{width: "auto"}}>
                                 {this.state.lectureList.map((lectureList, index) => {
-                                        return(<LectureCard className={this.state.className} lectureId={this.state.lectureList[index].id} lectureName={this.state.lectureList[index].name} lectureDesc={this.state.lectureList[index].description} lectureSection={this.state.lectureList[index].section} lectureVideoLink={this.state.lectureList[index].video_link} lectureViewedFlag={this.state.lectureList[index].viewedFlag} type={this.state.response.type}/>)
+                                        if (this.state.lectureList[index].hiddenFlag == 0) { //if statement to hide lecture if the instructor has declared the lecture hidden
+                                            return(<LectureCard className={this.state.className} lectureId={this.state.lectureList[index].id} lectureName={this.state.lectureList[index].name} lectureDesc={this.state.lectureList[index].description} lectureSection={this.state.lectureList[index].section} lectureVideoLink={this.state.lectureList[index].video_link} lectureViewedFlag={this.state.lectureList[index].viewedFlag} type={this.state.response.type}/>)
+                                        }
                                     }
                                 )}
                             </Grid.Column>
