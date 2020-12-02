@@ -214,4 +214,35 @@ router.post('/getAllQuizQuestions', AuthenticationFunctions.ensureAuthenticated,
 
 
 
+
+router.post('/deleteQuizQuestion', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
+    let questionId = req.body.questionId;
+    let con = mysql.createConnection(dbInfo);
+    con.query(`DELETE FROM quizQuestionTable WHERE quizQuestionId = ${mysql.escape(questionId)};`, (error, results, fields) => {
+        if (error) {
+            console.log(error.stack);
+        }
+            con.end();
+        res.send(results);
+        return;
+});
+
+});
+
+router.post('/publishQuiz', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
+    let quizId = req.body.quizId;
+    let con = mysql.createConnection(dbInfo);
+    con.query(`UPDATE quizzes SET isPublished = 1 WHERE quizId = ${mysql.escape(quizId)};`, (error, results, fields) => {
+        if (error) {
+            console.log(error.stack);
+        }
+            con.end();
+            res.send("\"OK\"");
+        return;
+});
+
+});
+
+
+
 module.exports = router;

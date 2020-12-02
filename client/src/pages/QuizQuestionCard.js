@@ -82,6 +82,23 @@ export default class QuizQuestionCard extends React.Component{
 
   async handleDeleteQuestion(){
       //TODO
+      await fetch('http://localhost:9000/quiz/deleteQuizQuestion' ,{
+        method: 'POST',
+        credentials: "include",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Credentials': true,
+        },
+        body: JSON.stringify({
+            questionId: this.props.quizQuestionId
+        })
+        }).then(response => response.json())
+        .then(data => {
+            console.log("Deleted question")
+        });
+        window.location.reload();
+
   } 
 
 

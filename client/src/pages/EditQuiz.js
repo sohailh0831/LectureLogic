@@ -29,6 +29,8 @@ class EditQuiz extends React.Component {
             newQuestionCorrectAnswer: '',
             newQuestionPointValue: '',
             questionList:[],
+            sH: "False", // show answers boolean
+            isPublished: 0
         };
 
 
@@ -43,6 +45,7 @@ class EditQuiz extends React.Component {
         this.handleOpenNewQuestionModal = this.handleOpenNewQuestionModal.bind(this);
         this.handleSubmitNewQuestion = this.handleSubmitNewQuestion.bind(this);
         this.handleGetQuestions = this.handleGetQuestions.bind(this);
+        this.handlePublishQuiz = this.handlePublishQuiz.bind(this);
 
     }
 
@@ -95,10 +98,12 @@ class EditQuiz extends React.Component {
             })
         }).then(response => response.json())
             .then(data => {
-                this.setState({ quizName: data.quizName , quizStartDate: data.startDate, quizDueDate: data.dueDate, quizShowAnswers: data.showAnswers })
+                this.setState({ quizName: data.quizName , quizStartDate: data.startDate, quizDueDate: data.dueDate, quizShowAnswers: data.showAnswers, isPublished: data.isPublished })
+                if(data.showAnswers == 1){
+                    this.state.sH = "True";
+                }
                 console.log(data);
             });
-
 
         this.handleGetQuestions();
 
@@ -111,6 +116,15 @@ class EditQuiz extends React.Component {
 
         if(this.state.type === '1'){ // if not instructor redirect them to dashboard
             window.location.replace("/");
+        }
+        var showPublish;
+        if(this.state.isPublished == 1){
+            showPublish = <Header>Quiz is published</Header>
+        }
+        else{
+            showPublish = <Button onClick={this.handlePublishQuiz} color='green' fluid size='large'>
+            Publish Quiz
+    </Button>
         }
 
     
@@ -155,7 +169,7 @@ class EditQuiz extends React.Component {
                         <Header> Quiz Name: {this.state.quizName}</Header>
                         <Header> Quiz Start Date: {this.state.quizStartDate}</Header>
                         <Header> Quiz Due Date: {this.state.quizDueDate}</Header>
-                        <Header> Show Answers for Quizzes?: {this.state.quizShowAnswers}</Header>
+                        <Header> Show Answers for Quizzes?: {this.state.sH}</Header>
                         
                         </Segment>
 
@@ -166,7 +180,7 @@ class EditQuiz extends React.Component {
                         </List>  */}
                     </Segment> 
                     <Segment>
-                <Button onClick={this.handleOpenNewQuestionModal} color='green' fluid size='large'>
+                <Button onClick={this.handleOpenNewQuestionModal} color='purple' fluid size='large'>
                         Add a new question
                 </Button>
                 <Modal
@@ -242,6 +256,9 @@ class EditQuiz extends React.Component {
                                 </Modal.Actions>
                             </Modal>
                 
+            </Segment>
+            <Segment>
+                    {showPublish}
             </Segment>
                     </Grid.Column>
                 
@@ -343,6 +360,26 @@ class EditQuiz extends React.Component {
                this.setState({questionList: data});
             }); 
 
+    }
+
+    async handlePublishQuiz(){
+        await fetch('http://localhost:9000/quiz/publishQuiz' ,{
+            method: 'POST',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            },
+            body: JSON.stringify({
+                quizId: this.state.quizId,
+            })
+            }).then(response => response.json())
+            .then(data => {
+                console.log("Published quiz")
+            }); 
+
+            window.location.reload();
     }
 
 
