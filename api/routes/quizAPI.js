@@ -182,7 +182,6 @@ router.post('/newQuizQuestionCreation', AuthenticationFunctions.ensureAuthentica
     answerChoicesList.push({D: newQuestionAnswerD});
 
     let answerChoicesJSON = JSON.stringify(answerChoicesList);
-    console.log(answerChoicesJSON);
 
     let con = mysql.createConnection(dbInfo);
     con.query(`INSERT INTO quizQuestionTable (quizId,quizQuestion,quizQuestionAnswer,answerChoices,pointValue) VALUES(${mysql.escape(quizId)},${mysql.escape(newQuestion)},${mysql.escape(newQuestionCorrectAnswer)},${mysql.escape(answerChoicesJSON)},${mysql.escape(newQuestionPointValue)});`, (error, results, fields) => {
@@ -231,8 +230,13 @@ router.post('/deleteQuizQuestion', AuthenticationFunctions.ensureAuthenticated, 
 
 router.post('/publishQuiz', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
     let quizId = req.body.quizId;
+    let current = req.body.isPublished;
+    let update =0;
+    if(current == 0){
+        update = 1; //if publish is 0 make it 1
+    }
     let con = mysql.createConnection(dbInfo);
-    con.query(`UPDATE quizzes SET isPublished = 1 WHERE quizId = ${mysql.escape(quizId)};`, (error, results, fields) => {
+    con.query(`UPDATE quizzes SET isPublished = ${mysql.escape(update)} WHERE quizId = ${mysql.escape(quizId)};`, (error, results, fields) => {
         if (error) {
             console.log(error.stack);
         }
@@ -242,6 +246,63 @@ router.post('/publishQuiz', AuthenticationFunctions.ensureAuthenticated, async f
 });
 
 });
+
+
+router.post('/saveQuizScores', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
+    let quizId = req.body.quizId;
+    let userId = req.body.userId;
+    let selections = JSON.parse(req.body.selections);
+    let questionList = JSON.parse(req.body.questionList);
+
+    // var i;
+    console.log("HERE")
+    console.log(selections['11']);
+    console.log(questionList[0].quizQuestionId);
+
+    for (var key in selections) { //loop through all of user's selections
+        // check if the property/key is defined in the object itself, not in parent
+        if (selections.hasOwnProperty(key)) {           
+            //key is the questionId
+            //selections[key] is users answer choice (e.g. A,B,C,D)
+
+            var index;
+            var correctAnswer;
+            var isCorrect =0;
+            for(index=0; index < questionList.length; index++){
+                //console.log(questionList[index].quizQuestionId.toString());
+                if(questionList[index].quizQuestionId.toString().localeCompare(key)){
+                    correctAnswer = questionList[index].quizQuestionAnswer;
+                    if(correctAnswer == selections[key]){ //if answer is correct
+                        isCorrect =1;
+                        console.log("Correct Answer");
+                    }
+                 //insert selections into DB
+                 //insert into question table (studentId = userId, quizId = quizId, studentAnswer = selections[key], questionId = questionList[index].quizQuestionId, isCorrect)
+
+                }
+            }
+        }
+    }
+
+//     let con = mysql.createConnection(dbInfo);
+//     con.query(`UPDATE quizzes SET isPublished = ${mysql.escape(update)} WHERE quizId = ${mysql.escape(quizId)};`, (error, results, fields) => {
+//         if (error) {
+//             console.log(error.stack);
+//         }
+//             con.end();
+//             res.send("\"OK\"");
+//         return;
+// });
+    res.send("\"OK\"");
+});
+
+
+function insertStudentAnswer(studentId, quizId, studentAnswer, questionId, isCorrect){
+    
+
+
+}
+
 
 
 
