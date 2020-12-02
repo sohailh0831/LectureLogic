@@ -148,22 +148,70 @@ router.post('/newQuizCreation', AuthenticationFunctions.ensureAuthenticated, asy
 
 
 router.post('/getQuizDetails', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
-    console.log("HEREHREH");
     let quizId = req.body.quizId;
-    console.log(quizId);
     let con = mysql.createConnection(dbInfo);
     con.query(`SELECT * FROM quizzes WHERE quizId = ${mysql.escape(quizId)};`, (error, results, fields) => {
         if (error) {
             console.log(error.stack);
         }
             con.end();
-        console.log(results[0]);
         res.send(results[0]);
         return;
 });
 
 
 });
+
+
+router.post('/newQuizQuestionCreation', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
+    let quizId = req.body.quizId;
+    let instructorId = req.body.instructorId;
+    let classId = req.body.classId;
+    let newQuestion = req.body.newQuestion;
+    let newQuestionCorrectAnswer = req.body.newQuestionCorrectAnswer;
+    let newQuestionPointValue = req.body.newQuestionPointValue;
+    let newQuestionAnswerA = req.body.newQuestionAnswerA;
+    let newQuestionAnswerB = req.body.newQuestionAnswerB;
+    let newQuestionAnswerC = req.body.newQuestionAnswerC;
+    let newQuestionAnswerD = req.body.newQuestionAnswerD;
+
+    let answerChoicesList = [];
+    answerChoicesList.push({A: newQuestionAnswerA});
+    answerChoicesList.push({B: newQuestionAnswerB});
+    answerChoicesList.push({C: newQuestionAnswerC});
+    answerChoicesList.push({D: newQuestionAnswerD});
+
+    let answerChoicesJSON = JSON.stringify(answerChoicesList);
+    console.log(answerChoicesJSON);
+
+    let con = mysql.createConnection(dbInfo);
+    con.query(`INSERT INTO quizQuestionTable (quizId,quizQuestion,quizQuestionAnswer,answerChoices,pointValue) VALUES(${mysql.escape(quizId)},${mysql.escape(newQuestion)},${mysql.escape(newQuestionCorrectAnswer)},${mysql.escape(answerChoicesJSON)},${mysql.escape(newQuestionPointValue)});`, (error, results, fields) => {
+        if (error) {
+          console.log(error.stack);
+        }
+        con.end();
+        res.send("\"OK\"");
+        return;
+    });
+
+
+});
+
+
+router.post('/getAllQuizQuestions', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
+    let quizId = req.body.quizId;
+    let con = mysql.createConnection(dbInfo);
+    con.query(`SELECT * FROM quizQuestionTable WHERE quizId = ${mysql.escape(quizId)};`, (error, results, fields) => {
+        if (error) {
+            console.log(error.stack);
+        }
+            con.end();
+        res.send(results);
+        return;
+});
+
+});
+
 
 
 module.exports = router;

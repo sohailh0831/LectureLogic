@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button, Form, Grid, Header, Segment, List,Modal} from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
-import QuizCard from './QuizCard';
+import QuizQuestionCard from './QuizQuestionCard';
 
 class EditQuiz extends React.Component {
     constructor(props) {
@@ -28,7 +28,7 @@ class EditQuiz extends React.Component {
             newQuestionAnswerD: '',
             newQuestionCorrectAnswer: '',
             newQuestionPointValue: '',
-            questionList: []
+            questionList:[],
         };
 
 
@@ -42,6 +42,7 @@ class EditQuiz extends React.Component {
         this.handleCloseNewQuestionModal = this.handleCloseNewQuestionModal.bind(this);
         this.handleOpenNewQuestionModal = this.handleOpenNewQuestionModal.bind(this);
         this.handleSubmitNewQuestion = this.handleSubmitNewQuestion.bind(this);
+        this.handleGetQuestions = this.handleGetQuestions.bind(this);
 
     }
 
@@ -99,6 +100,9 @@ class EditQuiz extends React.Component {
             });
 
 
+        this.handleGetQuestions();
+
+
     }
 
 
@@ -121,11 +125,18 @@ class EditQuiz extends React.Component {
                         <Header>
                             Quiz Questions
                         </Header>
-                        <List>
-                                {this.state.testQuestions.map((entry) =>{
-                                        return(<QuizCard quizName={entry} quizStartDate={entry.startDate} quizDueDate={entry.dueDate} studentFlag={1} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href} type={this.state.response.type}></QuizCard>) ;    
+                         <List>
+                                {this.state.questionList.map((entry) =>{
+                                        return(<QuizQuestionCard quizQuestion={entry.quizQuestion} quizQuestionId={entry.quizQuestionId} quizQuestionAnswer={entry.quizQuestionAnswer} quizAnswerChoices={entry.answerChoices} quizPointValue={entry.pointValue}  type={this.state.response.type}></QuizQuestionCard>) ;    
                                     })}
-                        </List> 
+                        </List>  
+
+{/* <List>
+                                {this.state.questionList.map((entry) =>{
+                                    return(<li>{entry.quizId} {entry.quizQuestionId} {entry.quizQuestion} {entry.quizQuestionAnswer} {entry.answerChoices}</li>)
+                                    })}
+                        </List> */}
+
 
 
 
@@ -280,25 +291,20 @@ class EditQuiz extends React.Component {
     }
 
     async handleSubmitNewQuestion(){ 
-        /*
-            need to update for QUESTIONS!!!!!!
-        */
-        console.log(this.state.newQuizName,this.state.newQuizStartDate,this.state.newQuizDueDate,this.state.newQuizShowAnswers);
-        this.setState({openNewQuizModal: false});
-        var link = "http://localhost:9000/quiz/newQuizCreation";
-        var sA = 0;
-        if("True".localeCompare(this.state.showAnswers)){
-            sA = 1;
-        }
-        console.log(sA)
+
+        this.setState({openNewQuestionModal: false});
+        var link = "http://localhost:9000/quiz/newQuizQuestionCreation";
         var body = JSON.stringify({
-            quizName: this.state.newQuizName,
+            newQuestion: this.state.newQuestion,
             classId: this.state.classId,
+            quizId: this.state.quizId,
             instructorId: this.state.userId,
-            quizStartDate: this.state.quizStartDate,
-            quizDueDate: this.state.quizDueDate,
-            showAnswers: sA
-            
+            newQuestionCorrectAnswer: this.state.newQuestionCorrectAnswer,
+            newQuestionPointValue: this.state.newQuestionPointValue,
+            newQuestionAnswerA: this.state.newQuestionAnswerA,
+            newQuestionAnswerB: this.state.newQuestionAnswerB,
+            newQuestionAnswerC: this.state.newQuestionAnswerC,
+            newQuestionAnswerD: this.state.newQuestionAnswerD
         })
         
         await fetch(link, {
@@ -312,14 +318,34 @@ class EditQuiz extends React.Component {
             body: body
         }).then(res => res.json()).then((data) => { 
             console.log(data);
-            this.setState({newQuizName: '', newQuizStartDate: '', newQuizDueDate: '', newQuizShowAnswers: ''})
+            this.setState({newQuestion: '', newQuestionCorrectAnswer: '', newQuestionPointValue: '', newQuestionAnswerA: '',newQuestionAnswerB: '',newQuestionAnswerC: '',newQuestionAnswerD: ''})
         }).catch(console.log)
 
-        this.handleGetQuizzes();
+       this.handleGetQuestions();
+    }
 
 
+    async handleGetQuestions(){
+        //TODO
+        await fetch('http://localhost:9000/quiz/getAllQuizQuestions' ,{
+            method: 'POST',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            },
+            body: JSON.stringify({
+                quizId: this.state.quizId,
+            })
+            }).then(response => response.json())
+            .then(data => {
+               this.setState({questionList: data});
+            }); 
 
     }
+
+
 
     // handleQuestionNameChange(event) {
     //     this.setState({newQuizName: event.target.value});
