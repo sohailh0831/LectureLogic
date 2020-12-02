@@ -172,7 +172,7 @@ export default class Routes extends React.Component {
                             <Route path ="/userNotifications" exact component={UserNotifications}/>
                             <Route path ="/userMessages" exact component={UserMessages}/>
                             <Route path ="/quizzes/:classId" exaxt component ={Quiz}/>
-                            <Route path = "/quizzes/editQuiz/:classId/:quizId" exact component ={EditQuiz}/>
+                            <Route path = "/editQuiz/:classId/:quizId" exact component ={EditQuiz}/>
                             <Redirect to="/404" />
                           </Switch>
 

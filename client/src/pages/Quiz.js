@@ -169,7 +169,7 @@ class Quiz extends React.Component {
                         </Header>
                         <List>
                                 {this.state.quizList.map((entry) =>{
-                                        return(<QuizCard quizName={entry.quizName} quizStartDate={entry.startDate} quizDueDate={entry.dueDate} studentFlag={1} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href} type={this.state.response.type}></QuizCard>) ;    
+                                        return(<QuizCard quizName={entry.quizName} quizStartDate={entry.startDate} quizDueDate={entry.dueDate} quizId={entry.quizId} link={window.location.href} type={this.state.response.type} classId={this.state.classId}></QuizCard>) ;    
                                     })}
                         </List> 
 

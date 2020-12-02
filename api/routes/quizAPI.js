@@ -147,4 +147,23 @@ router.post('/newQuizCreation', AuthenticationFunctions.ensureAuthenticated, asy
 });
 
 
+router.post('/getQuizDetails', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
+    console.log("HEREHREH");
+    let quizId = req.body.quizId;
+    console.log(quizId);
+    let con = mysql.createConnection(dbInfo);
+    con.query(`SELECT * FROM quizzes WHERE quizId = ${mysql.escape(quizId)};`, (error, results, fields) => {
+        if (error) {
+            console.log(error.stack);
+        }
+            con.end();
+        console.log(results[0]);
+        res.send(results[0]);
+        return;
+});
+
+
+});
+
+
 module.exports = router;

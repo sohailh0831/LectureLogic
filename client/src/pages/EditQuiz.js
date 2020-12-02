@@ -13,41 +13,38 @@ class EditQuiz extends React.Component {
             classId: '',
             response: '',
             type: '',
-            classList: [],
-            newClassDesc: '',
-            changeFlag: false,
-            formattedTimestamp: '',
-            fullTime: '',
             testQuestions: ['Sample Question1', 'Sample Question2', 'John', 'George', 'Ringo'],
             questionInterval: '',
-            lectureName: '',
-            lectureSections: '',
-            lectureDescription: '',
-            openNewQuizModal: false,
-            isLocked: false,
-            newQuizName: '',
-            newQuizStartDate: '',
-            newQuizDueDate: '',
-            newQuizShowAnswers: '',
-            quizList: []
-
+            openNewQuestionModal: false,
+            quizId: '',
+            quizName: '',
+            quizStartDate: '',
+            quizDueDate: '',
+            quizShowAnswers: '',
+            newQuestion: '',
+            newQuestionAnswerA: '',
+            newQuestionAnswerB: '',
+            newQuestionAnswerC: '',
+            newQuestionAnswerD: '',
+            newQuestionCorrectAnswer: '',
+            newQuestionPointValue: '',
+            questionList: []
         };
-        this.handleChange = this.handleChange.bind(this);
-        this.handleGetQuizzes = this.handleGetQuizzes.bind(this);
-        this.handleOpenNewQuizModal = this.handleOpenNewQuizModal.bind(this);
-        this.handleCloseNewQuizModal = this.handleCloseNewQuizModal.bind(this);
-        this.handleQuizNameChange = this.handleQuizNameChange.bind(this);
-        this.handleQuizStartDateChange = this.handleQuizStartDateChange.bind(this);
-        this.handleQuizDueDateChange = this.handleQuizDueDateChange.bind(this);
-        this.handleQuizShowAnswersChange = this.handleQuizShowAnswersChange.bind(this);
-        this.handleSubmitNewQuiz = this.handleSubmitNewQuiz.bind(this);
+
+
+        this.handlQuestionChange = this.handleQuestionChange.bind(this);
+        this.handleQuestionAnswerA = this.handleQuestionAnswerA.bind(this);
+        this.handleQuestionAnswerB = this.handleQuestionAnswerB.bind(this);
+        this.handleQuestionAnswerC = this.handleQuestionAnswerC.bind(this);
+        this.handleQuestionAnswerD = this.handleQuestionAnswerD.bind(this);
+        this.handleQuestionCorrectAnswer = this.handleQuestionCorrectAnswer.bind(this);
+        this.handleQuestionPointValue = this.handleQuestionPointValue.bind(this);
+        this.handleCloseNewQuestionModal = this.handleCloseNewQuestionModal.bind(this);
+        this.handleOpenNewQuestionModal = this.handleOpenNewQuestionModal.bind(this);
+        this.handleSubmitNewQuestion = this.handleSubmitNewQuestion.bind(this);
 
     }
 
-    async handleChange(e) {
-        await this.setState({ sliderData: e.target.value, changeFlag: true }); 
-        console.log(this.state.sliderData); 
-    }
 
 
 
@@ -63,6 +60,7 @@ class EditQuiz extends React.Component {
         /* gets the ID in the path name of URL e.g /LectureView/ID*/
         let urlElements = window.location.pathname.split('/')
         this.setState({classId: urlElements[2]})
+        this.setState({quizId: urlElements[3]})
 
 
 
@@ -82,54 +80,136 @@ class EditQuiz extends React.Component {
             }); // here's how u set variables u want to use later
 
 
-        this.handleGetQuizzes();
-   
+
+        await fetch('http://localhost:9000/quiz/getQuizDetails' ,{
+            method: 'POST',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            },
+            body: JSON.stringify({
+                quizId : this.state.quizId,
+            })
+        }).then(response => response.json())
+            .then(data => {
+                this.setState({ quizName: data.quizName , quizStartDate: data.startDate, quizDueDate: data.dueDate, quizShowAnswers: data.showAnswers })
+                console.log(data);
+            });
+
+
     }
 
 
     render() {
         /* decided what popup message to present */
-        var addQuizSegment;  
-        if(this.state.type === '0'){ //instructor 
-                addQuizSegment = 
-            <Segment>
-                <Button onClick={this.handleOpenNewQuizModal} color='green' fluid size='large'>
-                        Add a new quiz
-                </Button>
 
+        if(this.state.type === '1'){ // if not instructor redirect them to dashboard
+            window.location.replace("/");
+        }
+
+    
+        return (
+            <div>
+            
+            <Grid padded style={{height: '100vh'}} columns={2} >
+                <Grid.Row style={{height: '70%'}} textAlign = 'left' >
+                    <Grid.Column style={{width: 1000}}>  
+                        {/* Question list component */}
+                        <Segment>
+                        <Header>
+                            Quiz Questions
+                        </Header>
+                        <List>
+                                {this.state.testQuestions.map((entry) =>{
+                                        return(<QuizCard quizName={entry} quizStartDate={entry.startDate} quizDueDate={entry.dueDate} studentFlag={1} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href} type={this.state.response.type}></QuizCard>) ;    
+                                    })}
+                        </List> 
+
+
+
+
+                    </Segment>
+                    </Grid.Column>
+
+                                    
+                                    
+                    <Grid.Column style={{width: 400}}> 
+                    <Segment>
+                        <Header as='h2' color='grey' textAlign='center'>
+                                Quiz Details
+                        </Header>
+                        <Segment>
+                        <Header> Quiz Name: {this.state.quizName}</Header>
+                        <Header> Quiz Start Date: {this.state.quizStartDate}</Header>
+                        <Header> Quiz Due Date: {this.state.quizDueDate}</Header>
+                        <Header> Show Answers for Quizzes?: {this.state.quizShowAnswers}</Header>
+                        
+                        </Segment>
+
+                        {/* <List>
+                                {this.state.testQuestions.map((entry) =>{
+                                        return(<QuizCard quizName={entry} quizStartDate={entry.startDate} quizDueDate={entry.dueDate} studentFlag={1} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href} type={this.state.response.type}></QuizCard>) ;    
+                                    })}
+                        </List>  */}
+                    </Segment> 
+                    <Segment>
+                <Button onClick={this.handleOpenNewQuestionModal} color='green' fluid size='large'>
+                        Add a new question
+                </Button>
                 <Modal
-                                    onClose={() => this.setState({openNewQuizModal: false})}
-                                    onOpen={() => this.setState({openNewQuizModal: true})}
-                                    open={this.state.openNewQuizModal}
-                                    //close={!this.state.openModal}
+                                    onClose={() => this.setState({openNewQuestionModal: false})}
+                                    onOpen={() => this.setState({openNewQuestionModal: true})}
+                                    open={this.state.openNewQuestionModal}
                                 >
-                                <Modal.Header>New Quiz</Modal.Header>
+                                <Modal.Header>New Question</Modal.Header>
                                 <Modal.Content>
                                     <Modal.Description>
-                                        Quiz Name
+                                    Question
                                     <Form.Input
-                                            placeholder='Enter Quiz Name Here'
-                                            value={this.state.newQuizName}
-                                            onChange={this.handleQuizNameChange}
+                                            placeholder='Enter Question Here'
+                                            value={this.state.newQuestion}
+                                            onChange={this.handlQuestionChange}
                                         />
-                                     Start Date
+                                    Answer Choice "A": 
                                      <Form.Input
-                                            placeholder='Enter Time (1/2/20 05:40:00'
-                                            value={this.state.newQuizStartDate}
-                                            onChange={this.handleQuizStartDateChange}
+                                            placeholder=''
+                                            value={this.state.newQuestionAnswerA}
+                                            onChange={this.handleQuestionAnswerA}
                                     />
-                                    Due Date
+                                    Answer Choice "B": 
                                      <Form.Input
-                                            placeholder='Enter Time (1/2/20 05:40:00'
-                                            value={this.state.newQuizDueDate}
-                                            onChange={this.handleQuizDueDateChange}
+                                            placeholder=''
+                                            value={this.state.newQuestionAnswerB}
+                                            onChange={this.handleQuestionAnswerB}
                                     />
-                                    Show Answers to Students
+                                    Answer Choice "C": 
                                      <Form.Input
-                                            placeholder='Enter True or False'
-                                            value={this.state.newQuizShowAnswers}
-                                            onChange={this.handleQuizShowAnswersChange}
+                                            placeholder=''
+                                            value={this.state.newQuestionAnswerC}
+                                            onChange={this.handleQuestionAnswerC}
                                     />
+                                    Answer Choice "D": 
+                                     <Form.Input
+                                            placeholder=''
+                                            value={this.state.newQuestionAnswerD}
+                                            onChange={this.handleQuestionAnswerD}
+                                    />
+                                    Correct Answer: 
+                                     <Form.Input
+                                            placeholder='Enter A,B,C,D'
+                                            value={this.state.newQuestionCorrectAnswer}
+                                            onChange={this.handleQuestionCorrectAnswer}
+                                    />
+                                    Question Point Value:
+                                    <Form.Input
+                                            placeholder='Enter point value here'
+                                            value={this.state.newQuestionPointValue}
+                                            onChange={this.handleQuestionPointValue}
+                                    />
+
+
 
                                     </Modal.Description>
                                 </Modal.Content>
@@ -138,49 +218,20 @@ class EditQuiz extends React.Component {
                                         content="Close"
                                         labelPosition='left'
                                         icon='x'
-                                        onClick={this.handleCloseNewQuizModal}
+                                        onClick={this.handleCloseNewQuestionModal}
                                         negative
                                     />
                                     <Button
                                         content="Submit"
                                         labelPosition='right'
                                         icon='checkmark'
-                                        onClick={this.handleSubmitNewQuiz}
+                                        onClick={this.handleSubmitNewQuestion}
                                         positive
                                     />
                                 </Modal.Actions>
                             </Modal>
                 
             </Segment>
-        }
-
-
-
-    
-        return (
-            <div>
-            <Grid padded style={{height: '100vh'}} columns={2} >
-                <Grid.Row style={{height: '70%'}} textAlign = 'left' >
-                    <Grid.Column style={{width: 1000}}>  
-                        {/* Question list component */}
-                        <Segment>
-                        <Header as='h2' color='grey' textAlign='center'>
-                                Quizzes
-                        </Header>
-                        <List>
-                                {this.state.quizList.map((entry) =>{
-                                        return(<QuizCard quizName={entry.quizName} quizStartDate={entry.startDate} quizDueDate={entry.dueDate} studentFlag={1} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href} type={this.state.response.type}></QuizCard>) ;    
-                                    })}
-                        </List> 
-
-
-
-                    </Segment>      
-                    </Grid.Column>
-                                    
-                                    
-                    <Grid.Column style={{width: 400}}> 
-                    {addQuizSegment}
                     </Grid.Column>
                 
                 </Grid.Row>
@@ -196,31 +247,42 @@ class EditQuiz extends React.Component {
 
 
 
-    handleOpenNewQuizModal() {
-        console.log('Opening new quiz model: ' );
-       // this.handleGetComments();
-        this.setState({openNewQuizModal: true});
+
+    handleOpenNewQuestionModal() {
+        this.setState({openNewQuestionModal: true});
     }
 
-    async handleCloseNewQuizModal() {
-        console.log("Close quiz model");
-        this.setState({openNewQuizModal: false});
+    async handleCloseNewQuestionModal() {
+        this.setState({openNewQuestionModal: false});
     }
 
-    handleQuizNameChange(event) {
-        this.setState({newQuizName: event.target.value});
+    handleQuestionChange(event){
+        this.setState({newQuestion: event.target.value});
     }
-    handleQuizStartDateChange(event) {
-        this.setState({newQuizStartDate: event.target.value});
+    handleQuestionAnswerA(event){
+        this.setState({newQuestionAnswerA: event.target.value})
     }
-    handleQuizDueDateChange(event) {
-        this.setState({newQuizDueDate: event.target.value});
+    handleQuestionAnswerB(event){
+        this.setState({newQuestionAnswerB: event.target.value})
     }
-    handleQuizShowAnswersChange(event){
-        this.setState({newQuizShowAnswers: event.target.value})
+    handleQuestionAnswerC(event){
+        this.setState({newQuestionAnswerC: event.target.value})
+    }
+    handleQuestionAnswerD(event){
+        this.setState({newQuestionAnswerD: event.target.value})
     }
 
-    async handleSubmitNewQuiz(){
+    handleQuestionCorrectAnswer(event){
+        this.setState({newQuestionCorrectAnswer: event.target.value});
+    }
+    handleQuestionPointValue(event){
+        this.setState({newQuestionPointValue: event.target.value});
+    }
+
+    async handleSubmitNewQuestion(){ 
+        /*
+            need to update for QUESTIONS!!!!!!
+        */
         console.log(this.state.newQuizName,this.state.newQuizStartDate,this.state.newQuizDueDate,this.state.newQuizShowAnswers);
         this.setState({openNewQuizModal: false});
         var link = "http://localhost:9000/quiz/newQuizCreation";
@@ -256,30 +318,21 @@ class EditQuiz extends React.Component {
         this.handleGetQuizzes();
 
 
+
     }
 
-
-
-    async handleGetQuizzes(){
-        await fetch('http://localhost:9000/quiz/getAllQuizzes' ,{
-        method: 'POST',
-        credentials: "include",
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Credentials': true,
-        },
-        body: JSON.stringify({
-            classId: this.state.classId,
-        })
-        }).then(response => response.json())
-        .then(data => {
-            this.setState({quizList: data});
-        }); 
-    }
-
-
-
+    // handleQuestionNameChange(event) {
+    //     this.setState({newQuizName: event.target.value});
+    // }
+    // handleQuizStartDateChange(event) {
+    //     this.setState({newQuizStartDate: event.target.value});
+    // }
+    // handleQuizDueDateChange(event) {
+    //     this.setState({newQuizDueDate: event.target.value});
+    // }
+    // handleQuizShowAnswersChange(event){
+    //     this.setState({newQuizShowAnswers: event.target.value})
+    // }
 
     
 } export default EditQuiz
