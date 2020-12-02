@@ -1,5 +1,5 @@
 import React from "react";
-import {Card, Header, Modal, Button, Form, Popup, Dimmer, Segment} from "semantic-ui-react";
+import {Card, Header, Modal, Button, Form, Popup, Dimmer, Segment, Input} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 
 export default class GradesCard extends React.Component{
@@ -12,9 +12,11 @@ export default class GradesCard extends React.Component{
             classId: '',
             quizName: '',
             grade: '',
-            type: ''
+            type: '',
+            updatedGrade: ''
         }
-
+        this.handleUpdateGrade = this.handleUpdateGrade.bind(this);
+        this.handleInputChange = this.handleInputChange.bind(this);
     }
 
     async componentDidMount(){
@@ -32,7 +34,7 @@ export default class GradesCard extends React.Component{
     render() {
         if (this.props.type == 1){ // if student, hide student list button
             return (
-                <Card background-color={'grey'} style={{width: "500px"}} centered >
+                <Card background-color={'grey'} style={{width: "400px"}} centered >
                     <Card.Content >
                         <Header as="h4" textAlign="left" dividing>
                             <div quizName="left aligned">
@@ -61,7 +63,7 @@ export default class GradesCard extends React.Component{
             )
         } else { // if teacher
             return (
-                <Card background-color={'grey'} style={{width: "500px"}} centered >
+                <Card background-color={'grey'} style={{width: "400px"}} centered >
                     <Card.Content >
                         <Header as="h4" textAlign="left" dividing>
                             <div quizName="left aligned">
@@ -80,6 +82,21 @@ export default class GradesCard extends React.Component{
                                         content="NEED TO HAVE QUIZ QUESTIONS: question, student answer, correct answer"
                                         actions={['Close']}
                                     />
+                                    <Modal                                                
+                                        trigger={<Button color='red' >Edit Grade</Button>}
+                                        header={'Quiz: ' + this.state.quizName}
+                                        //TODO Content needs to have question, student answer, correct answer
+                                        content={
+                                            <Input action={{
+                                                content: 'Submit Change',
+                                                onClick: this.handleUpdateGrade
+                                                }} 
+                                                placeholder={this.state.grade}
+                                                onChange = {this.handleInputChange}
+                                            />
+                                        }
+                                        actions={['Close']}
+                                    />
                                     </div>
                                 </Header.Content>
                                 
@@ -90,4 +107,31 @@ export default class GradesCard extends React.Component{
             )
         }
     }
+
+    async handleInputChange(event){
+        const value = event.target.value;
+        await this.setState({updatedGrade: value});
+    }
+
+    async handleUpdateGrade() {
+            //console.log("Instructor adding class");
+            await fetch("http://localhost:9000/quiz/updateGrade", {
+                method: 'POST',
+                credentials: "include",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Credentials': true,
+                },
+                body: JSON.stringify({
+                    quizId: this.state.quizId,
+                    studentId: this.state.studentId,
+                    grade: this.state.updatedGrade,
+                })
+            }).then(res => res.json()).then((data) => { 
+                this.setState({response: data});
+                window.location.replace(window.location.href);
+            }).catch(console.log)
+    };
+
 };

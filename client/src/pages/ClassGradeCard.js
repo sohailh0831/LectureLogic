@@ -59,13 +59,13 @@ export default class ClassGradeCard extends React.Component{
                                     </div>
                                 </Header.Content>
                             </div>
-                            <Segment stacked textAlign="left" verticalAlign='middle' style={{overflow: 'auto'}}>
+                            {/* <Segment stacked textAlign="left" verticalAlign='middle' style={{overflow: 'auto'}}> */}
                                 {this.state.gradesList.map((gradesList, index) => {
                                     if(this.state.gradesList[index].classId == this.props.classId) {
                                         return(<GradesCard maxWidth='50vw' type={this.state.type} studentId={this.props.studentId} quizId={this.state.gradesList[index].quizId} classId={this.state.gradesList[index].classId} quizName={this.state.gradesList[index].quizName} grade={this.state.gradesList[index].score} />)
                                     }
                                 })}
-                            </Segment>
+                            {/* </Segment> */}
                         </Header>
                     </Card.Content>
                 </Card>

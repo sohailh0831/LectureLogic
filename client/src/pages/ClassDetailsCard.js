@@ -1,5 +1,5 @@
 import React from "react";
-import {Card, Header, Modal, Button} from "semantic-ui-react";
+import {Card, Header, Modal, Button, Grid} from "semantic-ui-react";
 import GradesCard from './GradesCard.js';
 
 
@@ -11,10 +11,12 @@ export default class ClassDetailsCard extends React.Component{
             // className: '',
             // classDesc: ''
             gradesList: [],
-            studentId: ''
+            studentId: '',
+            avgGrade: ''
         }
         this.handleGetGrades = this.handleGetGrades.bind(this);
         this.handleGetStudentId = this.handleGetStudentId.bind(this);
+        this.handleGetAverageGrade = this.handleGetAverageGrade.bind(this);
     }
 
     async componentDidMount(){
@@ -54,8 +56,7 @@ export default class ClassDetailsCard extends React.Component{
             )//End return(...)
         } else {
             return(
-                <div>
-                    
+                <div>                  
                     <Card style={{width: "500px"}} centered >
                         <Card.Content>
                             <Header as="h4" textAlign="left" dividing>
@@ -68,14 +69,22 @@ export default class ClassDetailsCard extends React.Component{
                                         <Modal         
                                             trigger={<Button color='blue' onClick={this.handleGetStudentId}>{this.props.studentName}'s Grades</Button>}
                                             header={this.props.studentName+'\'s grades for ' + this.props.className}
-                                            content={this.state.gradesList.map((gradesList, index) => {
-                                                console.log("class id prop: "+this.props.classId);
-                                                console.log("classId from list: "+this.state.gradesList[index].classId);
-                                                if(this.state.gradesList[index].classId == this.props.classId) {
-                                                    return(<GradesCard maxWidth='50vw' type={this.props.type} studentId={this.state.studentId} quizId={this.state.gradesList[index].quizId} classId={this.state.gradesList[index].classId} quizName={this.state.gradesList[index].quizName} grade={this.state.gradesList[index].score} />)
-                                                }
-                                            })}
-                                            //content="hey"
+                                            content={
+                                                <Grid columns={2}>
+                                                    <Grid.Column verticalAlign='right' textAlign='center'>
+                                                        {this.state.gradesList.map((gradesList, index) => {
+                                                            console.log("class id prop: "+this.props.classId);
+                                                            console.log("classId from list: "+this.state.gradesList[index].classId);
+                                                            if(this.state.gradesList[index].classId == this.props.classId) {
+                                                                return(<GradesCard maxWidth='50vw' type={this.props.type} studentId={this.state.studentId} quizId={this.state.gradesList[index].quizId} classId={this.state.gradesList[index].classId} quizName={this.state.gradesList[index].quizName} grade={this.state.gradesList[index].score} />)
+                                                            }
+                                                        })}
+                                                    </Grid.Column>
+                                                    <Grid.Column verticalAlign='middle' textAlign='center'>
+                                                        Average: {this.state.avgGrade}
+                                                    </Grid.Column>
+                                                </Grid>
+                                            }
                                             actions={['Close']}
                                         />
                                     </Header.Content>
@@ -106,6 +115,7 @@ export default class ClassDetailsCard extends React.Component{
             else this.setState({hasGrades: false });
             
             // window.location.replace('/dashboard');
+            this.handleGetAverageGrade();
         }).catch(console.log("ok"))
     } /* End handleGetNotifications(...) */
 
@@ -128,4 +138,23 @@ export default class ClassDetailsCard extends React.Component{
             this.handleGetGrades();
         }).catch(console.log("ok"))
     } /* End handleGetNotifications(...) */
+
+    async handleGetAverageGrade() {
+        await fetch(`http://localhost:9000/quiz/getStudentAverageClassGrade?classId=${this.props.classId}&studentId=${this.state.studentId}`, {
+            method: 'GET',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            }
+        }).then(res => res.json()).then((data) => { 
+            console.log("data",data);
+            if (data[0]) this.setState({avgGrade: data[0].avgGrade+'%', hasGrades: true });
+            else this.setState({avgGrade: 'N/A' });
+            console.log(data);
+            console.log("avg grade after thing: "+this.state.avgGrade);
+            // window.location.replace('/dashboard');
+        }).catch(console.log("ok"))
+    }
 };
