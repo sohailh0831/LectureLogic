@@ -26,6 +26,7 @@ import UserNotifications from "./pages/UserNotifications";
 import ClassDiscussionBoard from "./pages/ClassDiscussionBoard";
 import EditQuiz from "./pages/EditQuiz";
 import Quiz from "./pages/Quiz";
+import Grades from "./pages/GradesView.js"
 
 
 
@@ -130,15 +131,15 @@ export default class Routes extends React.Component {
                                   onClick={this.handlePageJump}
                                   active={activeItem === 'Confidence'}
                               />
-                              {/* <Menu.Item
+                              <Menu.Item
                                   as={Link}
                                   //replace={false}
-                                  to={{pathname: '/lectureView', state: {}}} //where we can pass values into state (access as this.props.state.____)
-                                  name={"LectureView"}
-                                  content="Lecture View"
+                                  to={{pathname: '/grades', state: {}}} //where we can pass values into state (access as this.props.state.____)
+                                  name={"Grades"}
+                                  content="Grades"
                                   onClick={this.handlePageJump}
-                                  active={activeItem === 'Lecture View'}
-                              /> */}
+                                  active={activeItem === 'Grades'}
+                              />
                               <Menu.Item
                                 //replace={false}
                                 visible={localStorage.getItem('authenticated') !== 'authenticated'}
@@ -173,6 +174,7 @@ export default class Routes extends React.Component {
                             <Route path ="/userMessages" exact component={UserMessages}/>
                             <Route path ="/quizzes/:classId" exaxt component ={Quiz}/>
                             <Route path = "/editQuiz/:classId/:quizId" exact component ={EditQuiz}/>
+                            <Route exact path ="/grades" exact component={Grades}/>
                             <Redirect to="/404" />
                           </Switch>
 

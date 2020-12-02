@@ -2,6 +2,7 @@ import React from 'react'
 import { Button, Form, Grid, Header, Segment, Modal } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 import ClassCard from './ClassCard';
+import QuestionCard from './QuestionCard';
 
 class Dashboard extends React.Component {
     constructor(props) {
@@ -16,12 +17,14 @@ class Dashboard extends React.Component {
             type: '',
             school: '',
             listReceived: false,
-            studentList: []
+            studentList: [],
+            studentQuestions:[]
         };
         this.handleAddClass = this.handleAddClass.bind(this);
         this.getClassList = this.getClassList.bind(this);
         this.handleClassNameChange = this.handleClassNameChange.bind(this);
         this.handleClassDescChange = this.handleClassDescChange.bind(this);
+        this.handleGetStudentQuestions = this.handleGetStudentQuestions.bind(this);
         
 
     }
@@ -48,6 +51,9 @@ class Dashboard extends React.Component {
             }); // here's how u set variables u want to use later
     
         this.getClassList();
+        this.handleGetStudentQuestions();
+        console.log('studentQuestions:');
+        console.log(this.state.studentQuestions);
 
     }
 
@@ -69,16 +75,19 @@ class Dashboard extends React.Component {
         if (this.state.response.type === '0') {
             //console.log("DASH TYPE: "+this.state.response.type);
             return (
-            <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle'>
-                <Grid.Column style={{maxWidth: 450}}>
-                    <Form size='large'>
+                <Grid style={{maxWidth: '100vw', maxHeight: '100vh'}} textAlign='center' rows={2}>
+                    <Grid.Row style={{height: '10vh'}} textAlign='center'>     {/* Name of College */}
+                        <br/>
+                        <Header as = 'h2' color = 'grey' textAlign = 'center' horizontalAlign='center'>
+                            {this.state.school}
+                        </Header>
+                    </Grid.Row>
 
-                        <Segment stacked textAlign="center" verticalAlign='middle'>
-                            <Header as = 'h2' color = 'grey' textAlign = 'center'>
-                                {/* {popUpMessage} */}
-                                {this.state.school}
+                    <Grid.Row style={{height: '90vh'}} columns={2}>             {/* Main body of screen */}
+                        <Grid.Column style={{width: '50vw'}}>
+                            <Header as = 'h2' color = 'grey' textAlign = 'center' horizontalAlign='center'>
+                                ClassList
                             </Header>
-
                             <Modal
                                 trigger={<Button icon='add' color='purple' ></Button>}
                                 header='Add New Class'
@@ -100,67 +109,101 @@ class Dashboard extends React.Component {
                                 }
                                 actions={['Close', <Button color='purple' onClick={this.handleAddClass}> done</Button>]}
                             />
-                            
 
-                        </Segment>
+                            <br/>   {/* Need two \n's to have a space after the modal and before the actual classlist */}
+                            <br/>
 
-                        {/* Class Card */}
-                        <Grid.Column style={{width: "auto"}}>
-                            {this.state.classList.map((classList, index) => { 
-                                    return(<ClassCard classId={this.state.classList[index].id} className={this.state.classList[index].name} classDesc={this.state.classList[index].description} type={this.state.response.type}/>)
+                            {this.state.classList.map((classList, index) => {
+                                    return(<ClassCard classId={this.state.classList[index].id} className={this.state.classList[index].name} classDesc={this.state.classList[index].description } type={this.state.response.type}/>)
                                 }
                             )}
-                        </Grid.Column>
+                        </Grid.Column >
+                            
+                            {/* use a column here to add another column like on the student page. Example below copied from student dashboard */}
+                        {/* <Grid.Column style={{width: '50vw'}}>
+                            <Header as = 'h2' color = 'grey' textAlign = 'center' horizontalAlign='center'>
+                                Your Questions
+                            </Header>
 
-                    </Form>
-                </Grid.Column>
-            </Grid>
+                            {yourQuestions}
+
+                        </Grid.Column> */}
+                    </Grid.Row>
+
+                </Grid>
 
 
         ) //End return(...)
             //return(<ClassCard className={this.state.classList.name} classDesc={this.state.description} />);// -- ideally this works first shot but honestly prolly not lol
         
         } 
-        else {
+        else {  //if student
+            //Sets up question list
+            var yourQuestions;
+            if (this.state.studentQuestions.length === 0) {
+                console.log("studentQuestions empty");
+                yourQuestions=
+                <Header as = 'h2' color = 'grey' textAlign = 'center' horizontalAlign='center'>
+                    No Questions Asked
+                </Header>
+            }
+            else {
+                console.log("studentQuestions not empty");
+                yourQuestions=
+                this.state.studentQuestions.map((entry) =>{
+                    return(<QuestionCard lectureId={0} commenter={this.state.username} question={entry.question} studentFlag={1} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href} type={this.state.response.type} classId={entry.classId}></QuestionCard>);                                 
+                })
+            }
+
             return (
-                <Grid textAlign='center' style={{height: '100vh'}} verticalAlign='middle'>
-                    <Grid.Column style={{maxWidth: 450}}>
-                        <Form size='large'>
-    
-                            <Segment stacked textAlign="center" verticalAlign='middle'>
-                                <Header as = 'h2' color = 'grey' textAlign = 'center'>
-                                    {this.state.school}
-                                </Header>
-    
-                                <Modal
-                                    trigger={<Button icon='add' color='purple' ></Button>}
-                                    header='Enter Class ID'
-                                    content={
-                                        <Form>
-                                            <Form.Input
-                                                placeholder='Class ID'
-                                                required={true}
-                                                value={this.state.className}
-                                                onChange={this.handleClassNameChange}
-                                            />
-                                        </Form>
-                                    }
-                                    actions={['Close', <Button color='purple' onClick={this.handleAddClass}> Done</Button>]}
-                                />
-                                
-    
-                            </Segment>
-    
-                            {/* Class Card */}
-                            <Grid.Column style={{width: "auto"}}>
-                                {this.state.classList.map((classList, index) => {
-                                        return(<ClassCard classId={this.state.classList[index].id} className={this.state.classList[index].name} classDesc={this.state.classList[index].description } type={this.state.response.type}/>)
-                                    }
-                                )}
-                            </Grid.Column>
-    
-                        </Form>
-                    </Grid.Column>
+                <Grid style={{maxWidth: '100vw', maxHeight: '100vh'}} textAlign='center' rows={2}>
+                    <Grid.Row style={{height: '10vh'}} textAlign='center'>     {/* Name of College */}
+                        <br/>
+                        <Header as = 'h2' color = 'grey' textAlign = 'center' horizontalAlign='center'>
+                            {this.state.school}
+                        </Header>
+                    </Grid.Row>
+
+                    <Grid.Row style={{height: '90vh'}} columns={2}>             {/* Main body of screen */}
+                        <Grid.Column style={{width: '50vw'}}>
+                            <Header as = 'h2' color = 'grey' textAlign = 'center' horizontalAlign='center'>
+                                ClassList
+                            </Header>
+                            <Modal
+                                trigger={<Button icon='add' color='purple' ></Button>}
+                                header='Enter Class ID'
+                                content={
+                                    <Form>
+                                        <Form.Input
+                                            placeholder='Class ID'
+                                            required={true}
+                                            value={this.state.className}
+                                            onChange={this.handleClassNameChange}
+                                        />
+                                    </Form>
+                                }
+                                actions={['Close', <Button color='purple' onClick={this.handleAddClass}> Done</Button>]}
+                            />
+
+                            <br/>   {/* Need two \n's to have a space after the modal and before the actual classlist */}
+                            <br/>
+
+                            {this.state.classList.map((classList, index) => {
+                                    return(<ClassCard classId={this.state.classList[index].id} className={this.state.classList[index].name} classDesc={this.state.classList[index].description } type={this.state.response.type}/>)
+                                }
+                            )}
+                        </Grid.Column >
+                            
+                        <Grid.Column style={{width: '50vw'}}>
+                            <Header as = 'h2' color = 'grey' textAlign = 'center' horizontalAlign='center'>
+                                Your Questions
+                            </Header>
+
+                            {yourQuestions}
+
+                        </Grid.Column>
+                    </Grid.Row>
+
                 </Grid>
     
     
@@ -170,6 +213,22 @@ class Dashboard extends React.Component {
             
         }
     }//End redner{}(...)
+
+     //Code parts that need to be in here (if student)
+
+// </Grid>
+        //1. Name of college
+            // <Header as = 'h2' color = 'grey' textAlign = 'center' horizontalAlign='center'>
+            //  {this.state.school}
+            // </Header>
+        //2. ClassList
+            // {this.state.classList.map((classList, index) => {
+            //         return(<ClassCard classId={this.state.classList[index].id} className={this.state.classList[index].name} classDesc={this.state.classList[index].description } type={this.state.response.type}/>)
+            //     }
+            // )}
+        //3. List of Asked Questions
+            // NEED TO CODE
+
 
 
 
@@ -182,6 +241,22 @@ class Dashboard extends React.Component {
     async handleClassDescChange(event){
         const value = event.target.value;
         await this.setState({classDesc: value});
+    }
+
+    async handleGetStudentQuestions() {
+        await fetch('http://localhost:9000/userQuestions?username=' + this.state.username ,{
+            method: 'GET',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+                }
+        }).then(response => response.json())
+        .then(data => {
+            console.log(data);
+            this.setState({studentQuestions: data, listReceived: true})
+        }).catch(console.log);
     }
 
 
@@ -297,6 +372,10 @@ class Dashboard extends React.Component {
             }
         }
     } /* End getClassList(...) */
+
+
+    
+
 
 
     

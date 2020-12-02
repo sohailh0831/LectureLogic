@@ -41,7 +41,7 @@ export default class ClassCard extends React.Component{
                                         <Header.Content>
                                             {this.props.className}
                                             <div className="meta">
-                                                <p style={{fontSize: "75%"}} data-testid={"Class Description"}>({this.props.classDesc})</p>
+                                                <p style={{fontSize: "75%"}} data-testid={"Class Description"}>{this.props.classDesc}</p>
                                                 {/* <p style={{fontSize: "75%"}} data-testid={"Class Id"}>({this.props.classId})</p> */}
                                             </div>
                                         </Header.Content>
@@ -67,7 +67,7 @@ export default class ClassCard extends React.Component{
                                             {this.props.className}
                                             </Link>
                                             <div className="meta">
-                                                <p style={{fontSize: "75%"}} data-testid={"Class Description"}>({this.props.classDesc})</p>
+                                                <p style={{fontSize: "75%"}} data-testid={"Class Description"}>{this.props.classDesc}</p>
                                                 {/* <p style={{fontSize: "75%"}} data-testid={"Class Id"}>({this.props.classId})</p> */}
                                             </div>
                                             <Modal
@@ -75,7 +75,7 @@ export default class ClassCard extends React.Component{
                                                 trigger={<Button color='blue' onClick={this.handleGetStudentList}>Students</Button>}
                                                 header={'Student List for ' + this.props.className}
                                                 content={this.state.studentList.map((index) => {
-                                                            return(<ClassDetailsCard studentName={this.state.results[index]} studentEmail={index} />)
+                                                            return(<ClassDetailsCard studentName={this.state.results[index]} studentEmail={index} gradeFlag={0}/>)
                                                         })}
                                                 //content="hey"
                                                 actions={['Close']}
