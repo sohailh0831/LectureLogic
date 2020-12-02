@@ -52,10 +52,25 @@ class GradesView extends React.Component {
 
     render() {
         if(this.state.response.type === '0'){ //is instructor
+            const {value} = this.state;
             return (
-                <Grid textAlign='center' style={{height: '100vh'}, {width: '100vw'}} divided='vertically' columns={2}>
+                <Grid>
                     <Grid.Row verticalAlign='top'>
-                        Hi
+                        <Grid.Column style={{maxWidth: '50vw'}, {maxHeight: '100vh'}} verticalAlign='left'>
+                            <Segment stacked maxWidth='50vw' textAlign="center" verticalAlign='middle' >
+                                    <Header as = 'h2' color = 'grey' textAlign = 'center'>
+                                        Grades
+                                    </Header>
+            
+                                    {/* Class Grades Card */}
+                                    <Segment stacked textAlign="left" verticalAlign='middle' style={{overflow: 'auto'}}>
+                                    {this.state.classList.map((classList, index) => { 
+                                        return(<ClassGradeCard maxWidth='50vw' type={this.state.response.type} studentId={this.state.userId} className={this.state.classList[index].name} classId={this.state.classList[index].id}/>) //quizId={this.state.gradesList[index].quizId} classId={this.state.gradesList[index].classId} quizName={this.state.gradesList[index].quizName} grade={this.state.gradesList[index].score} />)
+                                    })}
+                                    </Segment>
+                            </Segment>
+                        </Grid.Column>
+
                     </Grid.Row>
                 </Grid>
             ) //end return
@@ -141,7 +156,7 @@ class GradesView extends React.Component {
                 }).catch(console.log);
             }
             else{ //----------IF INSTRUCTOR----------
-                console.log("Getting Instructor Classlist")
+                console.log("Getting Instructor Classlist: "+this.state.userId);
                 await fetch('http://localhost:9000/class/instructorClasses?user_id=' + this.state.userId ,{
                     method: 'GET',
                     credentials: "include",
@@ -149,9 +164,15 @@ class GradesView extends React.Component {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json',
                         'Access-Control-Allow-Credentials': true,
-                    }
+                      }
+                      // ,
+                    // body: JSON.stringify({
+                    //     id: this.state.userId
+                    // })
                 }).then(response => response.json())
                 .then(data => {
+                    console.log("HELP");
+                    console.log(data);
                     this.setState({classList: data, listReceived: true})
                 }).catch(console.log);
             }

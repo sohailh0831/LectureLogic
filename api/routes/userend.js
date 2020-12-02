@@ -581,6 +581,23 @@ router.get('/userQuestions', AuthenticationFunctions.ensureAuthenticated, async 
   }); 
 });
 
+router.get('/getStudentId', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+  //let results = await getNotificationsByClass(req, res);
+  let username = req.query.username;
+  let con = mysql.createConnection(dbInfo);
+
+  con.query(`select id FROM user WHERE username=${mysql.escape(username)};`, (error, results, fields) => {
+    if (error) {
+      console.log(error.stack);
+      con.end();
+      return res.status(400).send(results); 
+    }
+    console.log('\n\n\nresults:', results,'\n\n\n');
+    con.end();
+    return res.status(200).send(results);
+  }); 
+});
+
 router.post('/setQuizDueDate', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
   let results = await setDueDate(req, res);
   console.log('\n\n\nresults:', results,'\n\n\n')

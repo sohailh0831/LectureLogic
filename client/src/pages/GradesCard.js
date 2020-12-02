@@ -30,7 +30,6 @@ export default class GradesCard extends React.Component{
     }
 
     render() {
-        console.log("type: "+this.props.type);
         if (this.props.type == 1){ // if student, hide student list button
             return (
                 <Card background-color={'grey'} style={{width: "500px"}} centered >
@@ -62,8 +61,31 @@ export default class GradesCard extends React.Component{
             )
         } else { // if teacher
             return (
-                <Card>
-                    {this.state.quizName}
+                <Card background-color={'grey'} style={{width: "500px"}} centered >
+                    <Card.Content >
+                        <Header as="h4" textAlign="left" dividing>
+                            <div quizName="left aligned">
+                                <Header.Content>
+                                    <div>
+                                    {this.state.quizName}
+                                    </div>
+                                    <div>
+                                    Grade: {this.state.grade}%    
+                                    </div>
+                                    <div>                        
+                                    <Modal                                                
+                                        trigger={<Button color='blue' >See Student's Quiz</Button>}
+                                        header={'Quiz: ' + this.state.quizName}
+                                        //TODO Content needs to have question, student answer, correct answer
+                                        content="NEED TO HAVE QUIZ QUESTIONS: question, student answer, correct answer"
+                                        actions={['Close']}
+                                    />
+                                    </div>
+                                </Header.Content>
+                                
+                            </div>
+                        </Header>
+                    </Card.Content>
                 </Card>
             )
         }

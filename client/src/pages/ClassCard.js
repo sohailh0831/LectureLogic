@@ -75,7 +75,7 @@ export default class ClassCard extends React.Component{
                                                 trigger={<Button color='blue' onClick={this.handleGetStudentList}>Students</Button>}
                                                 header={'Student List for ' + this.props.className}
                                                 content={this.state.studentList.map((index) => {
-                                                            return(<ClassDetailsCard studentName={this.state.results[index]} studentEmail={index} />)
+                                                            return(<ClassDetailsCard studentName={this.state.results[index]} studentEmail={index} gradeFlag={0}/>)
                                                         })}
                                                 //content="hey"
                                                 actions={['Close']}
