@@ -51,6 +51,7 @@ class ClassPage extends React.Component {
         this.handleNewQuestion = this.handleNewQuestion.bind(this);
         this.handleSendMessage = this.handleSendMessage.bind(this);
         this.handleMessageChange = this.handleMessageChange.bind(this);
+        this.handleQuizzes = this.handleQuizzes.bind(this);
 
     }
 
@@ -266,6 +267,13 @@ class ClassPage extends React.Component {
                         
                         
                     </Segment>
+                    <Segment>
+                    <Button onClick={this.handleQuizzes} color='green' fluid size='large'>
+                        Go to Quizzes
+                    </Button>
+                    </Segment>
+
+
                 </Grid.Column>
                 </Grid.Row>
             </Grid>
@@ -362,9 +370,13 @@ class ClassPage extends React.Component {
 
                         <Button onClick={this.handleSendMessage} color='purple' fluid size='large'>
                             Send Message
-                        </Button>
+                        </Button>                  
                         
-                        
+                    </Segment>
+                    <Segment>
+                    <Button onClick={this.handleQuizzes} color='purple' fluid size='large'>
+                        Go to Quizzes
+                    </Button>
                     </Segment>
                 </Grid.Column>
                 </Grid>
@@ -604,6 +616,11 @@ class ClassPage extends React.Component {
             // window.location.replace('/dashboard');
         }).catch(console.log("ok"))
     } /* End handleGetNotifications(...) */
+
+    async handleQuizzes() {
+        var link = "/quizzes/" + this.state.classId
+        window.location.replace(link);
+    }
 
 
     async handleSendMessage() {

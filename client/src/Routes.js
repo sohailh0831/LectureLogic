@@ -24,6 +24,8 @@ import ClassMessages from "./pages/ClassMessages";
 import UserMessages from "./pages/UserMessages";
 import UserNotifications from "./pages/UserNotifications";
 import ClassDiscussionBoard from "./pages/ClassDiscussionBoard";
+import EditQuiz from "./pages/EditQuiz";
+import Quiz from "./pages/Quiz";
 import Grades from "./pages/GradesView.js"
 
 
@@ -170,6 +172,8 @@ export default class Routes extends React.Component {
                             <Route path ="/classMessages/:classId" exact component={ClassMessages}/>
                             <Route path ="/userNotifications" exact component={UserNotifications}/>
                             <Route path ="/userMessages" exact component={UserMessages}/>
+                            <Route path ="/quizzes/:classId" exaxt component ={Quiz}/>
+                            <Route path = "/editQuiz/:classId/:quizId" exact component ={EditQuiz}/>
                             <Route exact path ="/grades" exact component={Grades}/>
                             <Redirect to="/404" />
                           </Switch>
