@@ -266,6 +266,13 @@ class ClassPage extends React.Component {
                         
                         
                     </Segment>
+                    <Segment>
+                    <Button onClick={this.handleQuizzes} color='green' fluid size='large'>
+                        Go to Quizzes
+                    </Button>
+                    </Segment>
+
+
                 </Grid.Column>
                 </Grid.Row>
             </Grid>
@@ -608,8 +615,7 @@ class ClassPage extends React.Component {
     } /* End handleGetNotifications(...) */
 
     async handleQuizzes() {
-        console.log("CLICKED THAT SHIT")
-        var link = "/quizzes/" + this.state.classId + "/45"
+        var link = "/quizzes/" + this.state.classId
         window.location.replace(link);
     }
 

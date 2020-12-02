@@ -3,6 +3,7 @@ const { isNull } = require("lodash");
 var router = express.Router();
 const dotenv = require('dotenv').config();
 const mysql = require("mysql");
+const uuid = require('uuid');
  const { getStudentsQuizzes, getStudentGrades, getClassGrades, getStudentAverageClassGrade, updateGrade, updateHideFlag } = require("../store/quiz");
 
 const AuthenticationFunctions = require('../Authentication.js');
@@ -106,4 +107,44 @@ router.post('/updateHideFlag', AuthenticationFunctions.ensureAuthenticated, asyn
         return res.status(400).send(results);//.json({status:400, message: "error"});
     }
 });
+
+router.post('/newQuizCreation', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
+        //let quizId = uuid.v4();
+        let instructorId = req.body.instructorId;
+        let classId = req.body.classId;
+        let quizName  = req.body.quizName;
+        let startDate = "2020-11-30 19:31:41";//need to format to date time
+        let dueDate = "2020-12-15 19:31:41"; //need to format to datetime
+        let showAnswers = req.body.showAnswers;
+        let hiddenFlag = 0;
+
+        let con = mysql.createConnection(dbInfo);
+        con.query(`INSERT INTO quizzes (instructorId,classId,quizName,startDate,dueDate,showAnswers,hiddenFlag) VALUES(${mysql.escape(instructorId)},${mysql.escape(classId)},${mysql.escape(quizName)},${mysql.escape(startDate)},${mysql.escape(dueDate)},${mysql.escape(showAnswers)},${mysql.escape(hiddenFlag)});`, (error, results, fields) => {
+         if (error) {
+           console.log(error.stack);
+         }
+         con.end();
+         res.send("\"OK\"");
+         return;
+     });
+
+    });
+
+     router.post('/getAllQuizzes', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
+        let classId = req.body.classId;
+
+        let con = mysql.createConnection(dbInfo);
+        con.query(`SELECT * FROM quizzes WHERE classId = ${mysql.escape(classId)};`, (error, results, fields) => {
+            if (error) {
+                console.log(error.stack);
+            }
+                con.end();
+            res.send(results);
+            return;
+    });
+   
+
+});
+
+
 module.exports = router;

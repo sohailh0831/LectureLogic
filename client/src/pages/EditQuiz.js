@@ -3,7 +3,7 @@ import { Button, Form, Grid, Header, Segment, List,Modal} from 'semantic-ui-reac
 import 'semantic-ui-css/semantic.min.css';
 import QuizCard from './QuizCard';
 
-class Quiz extends React.Component {
+class EditQuiz extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -282,4 +282,4 @@ class Quiz extends React.Component {
 
 
     
-} export default Quiz
+} export default EditQuiz
