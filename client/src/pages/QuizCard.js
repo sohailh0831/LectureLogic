@@ -12,7 +12,8 @@ export default class QuizCard extends React.Component{
             answer: this.props.answer,
             commentList: [],
             comment: '',
-            c: []
+            c: [],
+            completedQuizList: []
             
         }
           this.handleEditQuiz = this.handleEditQuiz.bind(this);
@@ -22,6 +23,25 @@ export default class QuizCard extends React.Component{
 
     async componentDidMount(){
         
+        await fetch('http://localhost:9000/quiz/getCompletedQuizzes' ,{
+            method: 'POST',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            },
+            body: JSON.stringify({
+                    userId : this.props.userId,
+                    classId : this.props.classId
+                })
+        }).then(response => response.json())
+            .then(data => {
+                this.setState({completedQuizList: data});
+                // console.log(this.state.completedQuizList);
+                // console.log(this.state.completedQuizList[1].quizId)
+            }); 
+
     }
 
     render() {  
@@ -31,7 +51,20 @@ export default class QuizCard extends React.Component{
             quizButton =  <Button onClick={this.handleEditQuiz} >  Edit Quiz </Button>
         }
         else{
-            quizButton =  <Button onClick={this.handleTakeQuiz} >  Take Quiz </Button>
+            var index;
+            var foundMatch = false;
+            for(index =0; index < this.state.completedQuizList.length;index++){
+                if(this.state.completedQuizList[index].quizId == this.props.quizId){
+                    foundMatch = true;
+                }
+            }
+            if(foundMatch){
+                quizButton = <Header>Completed Quiz</Header>
+            }
+            else{
+                quizButton =  <Button onClick={this.handleTakeQuiz} >  Take Quiz </Button>
+            }
+
         }
 
         return(           

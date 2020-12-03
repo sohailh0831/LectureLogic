@@ -146,6 +146,22 @@ router.post('/newQuizCreation', AuthenticationFunctions.ensureAuthenticated, asy
 
 });
 
+router.post('/getAllQuizzesStudent', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
+    let classId = req.body.classId;
+
+    let con = mysql.createConnection(dbInfo);
+    con.query(`SELECT * FROM quizzes WHERE classId = ${mysql.escape(classId)} AND isPublished=1;`, (error, results, fields) => {
+        if (error) {
+            console.log(error.stack);
+        }
+            con.end();
+        res.send(results);
+        return;
+});
+
+
+});
+
 
 router.post('/getQuizDetails', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
     let quizId = req.body.quizId;
@@ -279,15 +295,6 @@ router.post('/saveQuizScores', AuthenticationFunctions.ensureAuthenticated, asyn
         }
     }
 
-//     let con = mysql.createConnection(dbInfo);
-//     con.query(`UPDATE quizzes SET isPublished = ${mysql.escape(update)} WHERE quizId = ${mysql.escape(quizId)};`, (error, results, fields) => {
-//         if (error) {
-//             console.log(error.stack);
-//         }
-//             con.end();
-//             res.send("\"OK\"");
-//         return;
-// });
     res.send("\"OK\"");
 });
 
@@ -333,13 +340,24 @@ function insertStudentAnswer(studentId, quizId, studentAnswer, questionId, isCor
  router.post('/submitQuizScores', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
     let quizId = req.body.quizId;
     let userId = req.body.userId;
+    let quizName = req.body.quizName;
+    let classId = req.body.classId;
     let con = mysql.createConnection(dbInfo);
     let totalPoints =  await getTotalPointsForQuiz(quizId,userId);
     let studentScore =  await getStudentsScoreForQuiz(quizId,userId); 
-    let percent = (studentScore* 100) /totalPoints;
+    let percent = Math.ceil((studentScore* 100) /totalPoints);
     
     console.log("total: " + totalPoints + " your score: " + studentScore);
     console.log(percent + "%");
+
+    con.query(`INSERT quizGradeStudents (quizId,classId,studentId,quizName,score,rawPoints,totalPoints,hasFinished) VALUES(${mysql.escape(quizId)},${mysql.escape(classId)},${mysql.escape(userId)},${mysql.escape(quizName)},${mysql.escape(percent)},${mysql.escape(studentScore)},${mysql.escape(totalPoints)},1);`, (error, results, fields) => {
+        if (error) {
+            console.log(error.stack);
+        }
+            con.end();
+        return;
+        });
+
     res.send("\"OK\"");
 
 });
@@ -369,8 +387,8 @@ function insertStudentAnswer(studentId, quizId, studentAnswer, questionId, isCor
             console.log(error.stack);
         }
             let key = "SUM(questionPoints)";
-            var studentScore =0;
-            if(results.length > 0){
+            var studentScore = 0;
+            if(results[0][key] > 0){
                 studentScore = results[0][key];
             }
             con.end();
@@ -382,6 +400,23 @@ function insertStudentAnswer(studentId, quizId, studentAnswer, questionId, isCor
 }
 
 
+router.post('/getCompletedQuizzes', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
+    let classId = req.body.classId;
+    let userId = req.body.userId;
+    console.log(req.body.classId + " " + req.body.userId)
+    let update =0;
+    let con = mysql.createConnection(dbInfo);
+    con.query(`SELECT quizId FROM quizGradeStudents WHERE classId=${mysql.escape(req.body.classId)} AND studentId = ${mysql.escape(req.body.userId)};`, (error, results, fields) => {
+        if (error) {
+            console.log(error.stack);
+        }
+        console.log(results)
+            con.end();
+            res.send(results);
+        return;
+});
+
+});
 
 
 module.exports = router;
