@@ -291,7 +291,7 @@ class Quiz extends React.Component {
             quizName: this.state.newQuizName,
             classId: this.state.classId,
             instructorId: this.state.userId,
-            quizStartDate: this.state.newQuizStartDate,
+            quizStartDate: this.state.newQuizStartDate || Date(),
             quizDueDate: this.state.newQuizDueDate,
             showAnswers: sA
             
