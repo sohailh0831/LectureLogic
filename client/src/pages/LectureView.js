@@ -172,6 +172,22 @@ class LectureView extends React.Component {
         this.setState({lectureId: urlElements[2]})
 
 
+
+        await fetch('http://localhost:9000/lecture/setViewedFlag', {
+            method: 'POST',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            },
+            body: JSON.stringify({
+                lectureId: urlElements[2]
+            })
+        }).then(response => response.json())
+            .then(data => {
+        }); 
+      
         await fetch('http://localhost:9000/getLectureVideoLink' ,{
             method: 'POST',
             credentials: "include",
