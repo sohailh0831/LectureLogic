@@ -114,23 +114,16 @@ class Quiz extends React.Component {
                                         />
                                      Start Date
                                      <Form.Input
-                                            placeholder='Enter Time (1/2/20 05:40:00'
+                                            placeholder='Enter Time (in format: 2020-12-05 23:00:00)'
                                             value={this.state.newQuizStartDate}
                                             onChange={this.handleQuizStartDateChange}
                                     />
                                     Due Date
                                      <Form.Input
-                                            placeholder='Enter Time (1/2/20 05:40:00'
+                                            placeholder='Enter Time (2020-12-05 23:00:00)'
                                             value={this.state.newQuizDueDate}
                                             onChange={this.handleQuizDueDateChange}
                                     />
-                                    Show Answers to Students
-                                     <Form.Input
-                                            placeholder='Enter True or False'
-                                            value={this.state.newQuizShowAnswers}
-                                            onChange={this.handleQuizShowAnswersChange}
-                                    />
-
                                     </Modal.Description>
                                 </Modal.Content>
                                 <Modal.Actions>
@@ -233,8 +226,8 @@ class Quiz extends React.Component {
             quizName: this.state.newQuizName,
             classId: this.state.classId,
             instructorId: this.state.userId,
-            quizStartDate: this.state.quizStartDate,
-            quizDueDate: this.state.quizDueDate,
+            quizStartDate: this.state.newQuizStartDate,
+            quizDueDate: this.state.newQuizDueDate,
             showAnswers: sA
             
         })

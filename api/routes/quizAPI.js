@@ -113,8 +113,8 @@ router.post('/newQuizCreation', AuthenticationFunctions.ensureAuthenticated, asy
         let instructorId = req.body.instructorId;
         let classId = req.body.classId;
         let quizName  = req.body.quizName;
-        let startDate = "2020-11-30 19:31:41";//need to format to date time
-        let dueDate = "2020-12-15 19:31:41"; //need to format to datetime
+        let startDate = req.body.quizStartDate;//need to format to date time
+        let dueDate = req.body.quizDueDate; //need to format to datetime
         let showAnswers = req.body.showAnswers;
         let hiddenFlag = 0;
 

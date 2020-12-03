@@ -173,7 +173,7 @@ class EditQuiz extends React.Component {
                         <Header> Quiz Name: {this.state.quizName}</Header>
                         <Header> Quiz Start Date: {this.state.quizStartDate}</Header>
                         <Header> Quiz Due Date: {this.state.quizDueDate}</Header>
-                        <Header> Show Answers for Quizzes?: {this.state.sH}</Header>
+                        {/* <Header> Show Answers for Quizzes?: {this.state.sH}</Header> */}
                         
                         </Segment>
 

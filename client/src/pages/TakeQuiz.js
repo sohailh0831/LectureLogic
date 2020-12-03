@@ -136,11 +136,11 @@ class TakeQuiz extends React.Component {
 
                     </Grid.Column>
                     <Grid.Column style={{width: 200}}>
-                        {/* <Segment>
+                        <Segment>
                                 <Button onClick={this.handleSaveQuestions} color='purple' fluid size='large'>
                                     Save Quiz Responses
                                 </Button>
-                        </Segment> */}
+                        </Segment>
                          
                         <Segment>
                         <Button onClick={this.handleSubmitQuiz} color='green' fluid size='large'>
@@ -212,14 +212,13 @@ class TakeQuiz extends React.Component {
         console.log(this.state.selectedOptions);
     }
 
-    async handleSaveQuestions(){ //will need to update to store selectedOptions in db
+     handleSaveQuestions(){ //will need to update to store selectedOptions in db
             // let selections = this.state.selectedOptions; // in JSON format ("questionId": "A")
             // let quizId = this.state.quizId;
             // let questionList = this.state.questionList;
             // let userId = this.state.userId;
             
-            
-            await fetch('http://localhost:9000/quiz/saveQuizScores' ,{
+             fetch('http://localhost:9000/quiz/saveQuizScores' ,{
                 method: 'POST',
                 credentials: "include",
                 headers: {
@@ -241,7 +240,7 @@ class TakeQuiz extends React.Component {
     async handleSubmitQuiz(){
             //TODO
             //Grade Quiz
-            this.handleSaveQuestions();
+            await this.handleSaveQuestions();
 
             await fetch('http://localhost:9000/quiz/submitQuizScores' ,{
                 method: 'POST',
