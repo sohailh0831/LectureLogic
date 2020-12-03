@@ -1,6 +1,8 @@
 import React from "react";
-import {Card, Header, Modal, Button, Form, Popup, Dimmer, Segment, Input} from "semantic-ui-react";
+import {Grid, Card, Header, Modal, Button, Form, Popup, Dimmer, Segment, Input} from "semantic-ui-react";
 import {Link} from "react-router-dom";
+import { Test, QuestionGroup, Question, Option } from 'react-multiple-choice';
+import QuizQuestionCard from "./QuizQuestionCard";
 
 export default class GradesCard extends React.Component{
 
@@ -13,10 +15,12 @@ export default class GradesCard extends React.Component{
             quizName: '',
             grade: '',
             type: '',
-            updatedGrade: ''
+            updatedGrade: '',
+            questionList: []
         }
         this.handleUpdateGrade = this.handleUpdateGrade.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
+        this.handleGetQuestions = this.handleGetQuestions.bind(this);
     }
 
     async componentDidMount(){
@@ -29,6 +33,8 @@ export default class GradesCard extends React.Component{
             grade: this.props.grade,
             type: this.props.type
         });
+        //console.log("QUIZZZZ IDD : "+this.props.quizId);
+        this.handleGetQuestions();
     }
 
     render() {
@@ -50,7 +56,37 @@ export default class GradesCard extends React.Component{
                                         trigger={<Button color='blue' >See Quiz</Button>}
                                         header={'Quiz: ' + this.state.quizName}
                                         //TODO Content needs to have question, student answer, correct answer
-                                        content="NEED TO HAVE QUIZ QUESTIONS: question, student answer, correct answer"
+                                        content={
+                                            <Grid padded style={{height: '100vh'}} columns={2} >
+                                                <Grid.Row style={{height: '90%'}} textAlign = 'center' >
+                                                    <Grid.Column style={{width: 1400}}>  
+                                                        {/* Question list component */}
+                                                        {/* <Header>{this.state.quizName}</Header> */}
+                                                        {/* <Segment> */}
+                                                            
+                                                        <Test onOptionSelect={selectedOptions => this.setState({ selectedOptions })}>
+
+                                                        {this.state.questionList.map((entry) =>{
+                                                                        
+                                                                        return( <QuizQuestionCard maxWidth='50vw' type={0} quizQuestion={entry.quizQuestion} quizQuestionId={entry.quizQuestionId} quizQuestionAnswer={entry.quizQuestionAnswer} quizAnswerChoices={entry.answerChoices} quizPointValue={entry.pointValue}/> 
+                                                                            
+                                                                        //     <QuestionGroup questionNumber={entry.quizQuestionId}>
+                                                                        //     <Question>({entry.pointValue} pts) Question: {entry.quizQuestion} </Question>
+                                                                        //     <Option value="A">{JSON.parse(entry.answerChoices)[0].A}</Option>
+                                                                        //     <Option value="B">{JSON.parse(entry.answerChoices)[1].B}</Option>
+                                                                        //     <Option value="C">{JSON.parse(entry.answerChoices)[2].C}</Option>
+                                                                        //     <Option value="D">{JSON.parse(entry.answerChoices)[3].D}</Option>
+                                                                        // </QuestionGroup>     
+                                                                        )
+                                                                    })}
+                                                            
+                                                        </Test>
+                                                        {/* </Segment> */}
+
+                                                    </Grid.Column>
+                                                </Grid.Row>
+                                            </Grid>
+                                        }//"NEED TO HAVE QUIZ QUESTIONS: question, student answer, correct answer"
                                         actions={['Close']}
                                     />
                                     </div>
@@ -133,5 +169,28 @@ export default class GradesCard extends React.Component{
                 window.location.replace(window.location.href);
             }).catch(console.log)
     };
+
+    async handleGetQuestions(){
+        //TODO
+        console.log("quizID: "+this.props.quizId);
+        await fetch('http://localhost:9000/quiz/getAllQuizQuestions' ,{
+            method: 'POST',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            },
+            body: JSON.stringify({
+                quizId: this.props.quizId,
+            })
+            }).then(response => response.json())
+            .then(data => {
+                console.log("QUESTIONS");
+                console.log(data);
+               this.setState({questionList: data});
+            }); 
+
+    }
 
 };
