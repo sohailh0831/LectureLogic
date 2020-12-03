@@ -1,7 +1,6 @@
 import React from "react";
 import {Card, Header, Modal, Button, Form, Checkbox, Input, List} from "semantic-ui-react";
 
-
 export default class QuizCard extends React.Component{
 
     constructor(props){

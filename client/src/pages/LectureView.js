@@ -119,7 +119,7 @@ class LectureView extends React.Component {
         }).catch(console.log)
             }
             
-        }, 30000);
+        }, 20000);
         //console.log("clearing interval");
         //return () => clearInterval(interval);
     }

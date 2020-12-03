@@ -33,7 +33,29 @@ function updateConfidence(req, res) {
 
         let con = mysql.createConnection(dbInfo);
         con.query(`select confidence, record from quiz WHERE uuid = '${req.user.id}' AND lecId = ${req.body.quizId}`, (error, results, fields) => { 
-            console.log('results:', results)
+            console.log('results1:', results)
+            if (error) {
+                console.log(error.stack);
+                con.end();
+                res.status(400).json({status:400, message: "Update to request list failed."});
+                resolve();
+                return;
+            }
+            if (results.length === 0){
+                con.query(`insert into quiz (uuid, lecId) VALUES ('${req.user.id}', ${req.body.quizId})`, (error, results1, fields) => { 
+                    if (error) {
+                        console.log(error.stack);
+                        con.end();
+                        res.status(400).json({status:400, message: "Update to request list failed."});
+                        resolve();
+                        return;
+                    }
+                });
+            }
+        });
+
+        con.query(`select confidence, record from quiz WHERE uuid = '${req.user.id}' AND lecId = ${req.body.quizId}`, (error, results, fields) => { 
+            console.log('results3:', results)
             if (error) {
                 console.log(error.stack);
                 con.end();

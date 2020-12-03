@@ -155,7 +155,20 @@ router.post('/getAllQuizzesStudent', AuthenticationFunctions.ensureAuthenticated
             console.log(error.stack);
         }
             con.end();
-        res.send(results);
+        console.log("QUIZZES: ", results)
+        let validquiz = [];
+        results.forEach(element => {
+            let d1 = Date();
+            d1 = Date.parse(d1);
+            console.log("d1: ",d1);
+            let d2 = Date.parse(element.startDate);
+            console.log("d2: ",d2);
+            if (d1 >= d2){
+                validquiz.push(element);
+            }
+        });
+        console.log("VALID QUIZZES: ", validquiz)
+        res.send(validquiz);
         return;
 });
 
