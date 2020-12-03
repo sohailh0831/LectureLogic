@@ -118,15 +118,19 @@ class EditQuiz extends React.Component {
             window.location.replace("/");
         }
         var showPublish;
+        var pubStatus;
         if(this.state.isPublished == 1){
-            showPublish = <Header>Quiz is published</Header>
+            pubStatus = <Header>Quiz Status: Available to students</Header>
+            showPublish = <Button onClick={this.handlePublishQuiz} color='red' fluid size='large'>
+            Unpublish Quiz
+            </Button>
         }
         else{
+            pubStatus = <Header>Quiz Status: Not available to students</Header>
             showPublish = <Button onClick={this.handlePublishQuiz} color='green' fluid size='large'>
             Publish Quiz
-    </Button>
+            </Button>
         }
-
     
         return (
             <div>
@@ -258,6 +262,7 @@ class EditQuiz extends React.Component {
                 
             </Segment>
             <Segment>
+                    {pubStatus}
                     {showPublish}
             </Segment>
                     </Grid.Column>
@@ -373,6 +378,7 @@ class EditQuiz extends React.Component {
             },
             body: JSON.stringify({
                 quizId: this.state.quizId,
+                isPublished: this.state.isPublished
             })
             }).then(response => response.json())
             .then(data => {

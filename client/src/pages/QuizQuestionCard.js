@@ -27,6 +27,7 @@ export default class QuizQuestionCard extends React.Component{
         var listAnswers = JSON.parse(this.props.quizAnswerChoices)
         this.setState({answerA: listAnswers[0].A, answerB: listAnswers[1].B,answerC: listAnswers[2].C,answerD: listAnswers[3].D})
 
+
     }
 
     render() {  

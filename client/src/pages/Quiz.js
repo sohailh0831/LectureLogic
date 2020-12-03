@@ -169,7 +169,7 @@ class Quiz extends React.Component {
                         </Header>
                         <List>
                                 {this.state.quizList.map((entry) =>{
-                                        return(<QuizCard quizName={entry.quizName} quizStartDate={entry.startDate} quizDueDate={entry.dueDate} quizId={entry.quizId} link={window.location.href} type={this.state.response.type} classId={this.state.classId}></QuizCard>) ;    
+                                        return(<QuizCard quizName={entry.quizName} quizStartDate={entry.startDate} quizDueDate={entry.dueDate} quizId={entry.quizId} link={window.location.href} type={this.state.response.type} classId={this.state.classId} userId={this.state.userId}></QuizCard>) ;    
                                     })}
                         </List> 
 
@@ -259,9 +259,15 @@ class Quiz extends React.Component {
     }
 
 
-
     async handleGetQuizzes(){
-        await fetch('http://localhost:9000/quiz/getAllQuizzes' ,{
+        var link;
+        if(this.state.type == 0){ // if instructor
+            link = "http://localhost:9000/quiz/getAllQuizzes";
+        }
+        else{ //if student .. only showing published quizzes and not already taken quizzes
+            link = "http://localhost:9000/quiz/getAllQuizzesStudent"
+        }
+        await fetch(link ,{
         method: 'POST',
         credentials: "include",
         headers: {
@@ -271,6 +277,7 @@ class Quiz extends React.Component {
         },
         body: JSON.stringify({
             classId: this.state.classId,
+            type: this.state.type
         })
         }).then(response => response.json())
         .then(data => {
