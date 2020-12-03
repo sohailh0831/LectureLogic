@@ -113,8 +113,8 @@ router.post('/newQuizCreation', AuthenticationFunctions.ensureAuthenticated, asy
         let instructorId = req.body.instructorId;
         let classId = req.body.classId;
         let quizName  = req.body.quizName;
-        let startDate = "2020-11-30 19:31:41";//need to format to date time
-        let dueDate = "2020-12-15 19:31:41"; //need to format to datetime
+        let startDate = req.body.quizStartDate;//need to format to date time
+        let dueDate = req.body.quizDueDate; //need to format to datetime
         let showAnswers = req.body.showAnswers;
         let hiddenFlag = 0;
 
@@ -143,6 +143,22 @@ router.post('/newQuizCreation', AuthenticationFunctions.ensureAuthenticated, asy
             return;
     });
    
+
+});
+
+router.post('/getAllQuizzesStudent', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
+    let classId = req.body.classId;
+
+    let con = mysql.createConnection(dbInfo);
+    con.query(`SELECT * FROM quizzes WHERE classId = ${mysql.escape(classId)} AND isPublished=1;`, (error, results, fields) => {
+        if (error) {
+            console.log(error.stack);
+        }
+            con.end();
+        res.send(results);
+        return;
+});
+
 
 });
 
@@ -182,7 +198,6 @@ router.post('/newQuizQuestionCreation', AuthenticationFunctions.ensureAuthentica
     answerChoicesList.push({D: newQuestionAnswerD});
 
     let answerChoicesJSON = JSON.stringify(answerChoicesList);
-    console.log(answerChoicesJSON);
 
     let con = mysql.createConnection(dbInfo);
     con.query(`INSERT INTO quizQuestionTable (quizId,quizQuestion,quizQuestionAnswer,answerChoices,pointValue) VALUES(${mysql.escape(quizId)},${mysql.escape(newQuestion)},${mysql.escape(newQuestionCorrectAnswer)},${mysql.escape(answerChoicesJSON)},${mysql.escape(newQuestionPointValue)});`, (error, results, fields) => {
@@ -231,8 +246,13 @@ router.post('/deleteQuizQuestion', AuthenticationFunctions.ensureAuthenticated, 
 
 router.post('/publishQuiz', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
     let quizId = req.body.quizId;
+    let current = req.body.isPublished;
+    let update =0;
+    if(current == 0){
+        update = 1; //if publish is 0 make it 1
+    }
     let con = mysql.createConnection(dbInfo);
-    con.query(`UPDATE quizzes SET isPublished = 1 WHERE quizId = ${mysql.escape(quizId)};`, (error, results, fields) => {
+    con.query(`UPDATE quizzes SET isPublished = ${mysql.escape(update)} WHERE quizId = ${mysql.escape(quizId)};`, (error, results, fields) => {
         if (error) {
             console.log(error.stack);
         }
@@ -243,6 +263,160 @@ router.post('/publishQuiz', AuthenticationFunctions.ensureAuthenticated, async f
 
 });
 
+
+router.post('/saveQuizScores', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
+    let quizId = req.body.quizId;
+    let userId = req.body.userId;
+    let selections = JSON.parse(req.body.selections);
+    let questionList = JSON.parse(req.body.questionList);
+
+    for (var key in selections) { //loop through all of user's selections
+        // check if the property/key is defined in the object itself, not in parent
+        if (selections.hasOwnProperty(key)) {           
+            //key is the questionId
+            //selections[key] is users answer choice (e.g. A,B,C,D)
+
+            var index;
+            var correctAnswer;
+            var isCorrect =0;
+            for(index=0; index < questionList.length; index++){
+                //console.log(questionList[index].quizQuestionId.toString());
+                if(questionList[index].quizQuestionId.toString() == key){
+                    correctAnswer = questionList[index].quizQuestionAnswer;
+                    if(correctAnswer == selections[key]){ //if answer is correct
+                        isCorrect =1;
+                        console.log("Correct Answer");
+                    }
+                 //insert selections into DB
+                 //insert into question table (studentId = userId, quizId = quizId, studentAnswer = selections[key], questionId = questionList[index].quizQuestionId, isCorrect)
+                    insertStudentAnswer(userId,quizId,selections[key],questionList[index].quizQuestionId,isCorrect,questionList[index].pointValue);
+                }
+            }
+        }
+    }
+
+    res.send("\"OK\"");
+});
+
+
+function insertStudentAnswer(studentId, quizId, studentAnswer, questionId, isCorrect,pointValue){
+        let con = mysql.createConnection(dbInfo);
+        console.log(studentId)
+
+
+        //check if entry already exists
+        con.query(`SELECT * FROM quizQuestionAnswer WHERE questionId=${mysql.escape(questionId)} AND studentId=${mysql.escape(studentId)} AND quizId = ${mysql.escape(quizId)};`, (error, results, fields) => {
+                if (error) {
+                    console.log(error.stack);
+                }
+                if(results.length > 0){ //Found previous entry... need to UPDATE instead of INSERT
+                    con.query(`update quizQuestionAnswer set studentAnswer=${mysql.escape(studentAnswer)}, correctFlag=${mysql.escape(isCorrect)}, questionPoints=${mysql.escape(pointValue)} where questionId=${mysql.escape(questionId)} AND studentId=${mysql.escape(studentId)} AND quizId= ${mysql.escape(quizId)};`, (error, results, fields) => {
+                        if (error) {
+                            console.log(error.stack);
+                        }
+            
+                            con.end();
+                            //res.send("\"OK\"");
+                        return;
+                });
+                }
+                else{ // no previous entry... need to insert
+                    con.query(`insert into quizQuestionAnswer (studentId,quizId,studentAnswer,questionId,correctFlag,questionPoints) values(${mysql.escape(studentId)},${mysql.escape(quizId)},${mysql.escape(studentAnswer)},${mysql.escape(questionId)},${mysql.escape(isCorrect)},${mysql.escape(pointValue)});`, (error, results, fields) => {
+                        if (error) {
+                            console.log(error.stack);
+                        }
+            
+                            con.end();
+                        return;
+                });
+
+                }
+                return;
+        });
+        
+ }
+
+
+ router.post('/submitQuizScores', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
+    let quizId = req.body.quizId;
+    let userId = req.body.userId;
+    let quizName = req.body.quizName;
+    let classId = req.body.classId;
+    let con = mysql.createConnection(dbInfo);
+    let totalPoints =  await getTotalPointsForQuiz(quizId,userId);
+    let studentScore =  await getStudentsScoreForQuiz(quizId,userId); 
+    let percent = Math.ceil((studentScore* 100) /totalPoints);
+    
+    console.log("total: " + totalPoints + " your score: " + studentScore);
+    console.log(percent + "%");
+
+    con.query(`INSERT quizGradeStudents (quizId,classId,studentId,quizName,score,rawPoints,totalPoints,hasFinished) VALUES(${mysql.escape(quizId)},${mysql.escape(classId)},${mysql.escape(userId)},${mysql.escape(quizName)},${mysql.escape(percent)},${mysql.escape(studentScore)},${mysql.escape(totalPoints)},1);`, (error, results, fields) => {
+        if (error) {
+            console.log(error.stack);
+        }
+            con.end();
+        return;
+        });
+
+    res.send("\"OK\"");
+
+});
+
+ function getTotalPointsForQuiz(quizId,userId){
+    return new Promise(resolve => {
+    let con = mysql.createConnection(dbInfo);
+     con.query(`SELECT SUM(questionPoints) FROM quizQuestionAnswer WHERE quizId= ${mysql.escape(quizId)} AND studentId = ${mysql.escape(userId)};`, (error, results, fields) => {
+        if (error) {
+            console.log(error.stack);
+        }
+            let key = "SUM(questionPoints)";
+            var totalPoints = results[0][key];
+            con.end();
+            console.log(totalPoints);
+        resolve(totalPoints);
+        return;
+        });
+    });
+}
+
+ function getStudentsScoreForQuiz(quizId,userId){
+    return new Promise(resolve => {
+    let con = mysql.createConnection(dbInfo);
+     con.query(`SELECT SUM(questionPoints) FROM quizQuestionAnswer WHERE quizId= ${mysql.escape(quizId)} AND studentId = ${mysql.escape(userId)} AND correctFlag=1;`, (error, results, fields) => {
+        if (error) {
+            console.log(error.stack);
+        }
+            let key = "SUM(questionPoints)";
+            var studentScore = 0;
+            if(results[0][key] > 0){
+                studentScore = results[0][key];
+            }
+            con.end();
+            console.log(studentScore);
+            resolve(studentScore);
+            return;
+        });
+    });
+}
+
+
+router.post('/getCompletedQuizzes', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
+    let classId = req.body.classId;
+    let userId = req.body.userId;
+    console.log(req.body.classId + " " + req.body.userId)
+    let update =0;
+    let con = mysql.createConnection(dbInfo);
+    con.query(`SELECT quizId FROM quizGradeStudents WHERE classId=${mysql.escape(req.body.classId)} AND studentId = ${mysql.escape(req.body.userId)};`, (error, results, fields) => {
+        if (error) {
+            console.log(error.stack);
+        }
+        console.log(results)
+            con.end();
+            res.send(results);
+        return;
+});
+
+});
 
 
 module.exports = router;

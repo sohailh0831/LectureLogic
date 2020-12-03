@@ -114,23 +114,16 @@ class Quiz extends React.Component {
                                         />
                                      Start Date
                                      <Form.Input
-                                            placeholder='Enter Time (1/2/20 05:40:00'
+                                            placeholder='Enter Time (in format: 2020-12-05 23:00:00)'
                                             value={this.state.newQuizStartDate}
                                             onChange={this.handleQuizStartDateChange}
                                     />
                                     Due Date
                                      <Form.Input
-                                            placeholder='Enter Time (1/2/20 05:40:00'
+                                            placeholder='Enter Time (2020-12-05 23:00:00)'
                                             value={this.state.newQuizDueDate}
                                             onChange={this.handleQuizDueDateChange}
                                     />
-                                    Show Answers to Students
-                                     <Form.Input
-                                            placeholder='Enter True or False'
-                                            value={this.state.newQuizShowAnswers}
-                                            onChange={this.handleQuizShowAnswersChange}
-                                    />
-
                                     </Modal.Description>
                                 </Modal.Content>
                                 <Modal.Actions>
@@ -169,7 +162,7 @@ class Quiz extends React.Component {
                         </Header>
                         <List>
                                 {this.state.quizList.map((entry) =>{
-                                        return(<QuizCard quizName={entry.quizName} quizStartDate={entry.startDate} quizDueDate={entry.dueDate} quizId={entry.quizId} link={window.location.href} type={this.state.response.type} classId={this.state.classId}></QuizCard>) ;    
+                                        return(<QuizCard quizName={entry.quizName} quizStartDate={entry.startDate} quizDueDate={entry.dueDate} quizId={entry.quizId} link={window.location.href} type={this.state.response.type} classId={this.state.classId} userId={this.state.userId}></QuizCard>) ;    
                                     })}
                         </List> 
 
@@ -233,8 +226,8 @@ class Quiz extends React.Component {
             quizName: this.state.newQuizName,
             classId: this.state.classId,
             instructorId: this.state.userId,
-            quizStartDate: this.state.quizStartDate,
-            quizDueDate: this.state.quizDueDate,
+            quizStartDate: this.state.newQuizStartDate,
+            quizDueDate: this.state.newQuizDueDate,
             showAnswers: sA
             
         })
@@ -275,9 +268,15 @@ class Quiz extends React.Component {
     }
 
 
-
     async handleGetQuizzes(){
-        await fetch('http://localhost:9000/quiz/getAllQuizzes' ,{
+        var link;
+        if(this.state.type == 0){ // if instructor
+            link = "http://localhost:9000/quiz/getAllQuizzes";
+        }
+        else{ //if student .. only showing published quizzes and not already taken quizzes
+            link = "http://localhost:9000/quiz/getAllQuizzesStudent"
+        }
+        await fetch(link ,{
         method: 'POST',
         credentials: "include",
         headers: {
@@ -287,6 +286,7 @@ class Quiz extends React.Component {
         },
         body: JSON.stringify({
             classId: this.state.classId,
+            type: this.state.type
         })
         }).then(response => response.json())
         .then(data => {
