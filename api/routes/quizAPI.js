@@ -254,11 +254,6 @@ router.post('/saveQuizScores', AuthenticationFunctions.ensureAuthenticated, asyn
     let selections = JSON.parse(req.body.selections);
     let questionList = JSON.parse(req.body.questionList);
 
-    // var i;
-   // console.log("HERE")
-    //console.log(selections['11']);
-   // console.log(questionList[0].quizQuestionId);
-
     for (var key in selections) { //loop through all of user's selections
         // check if the property/key is defined in the object itself, not in parent
         if (selections.hasOwnProperty(key)) {           
@@ -278,7 +273,7 @@ router.post('/saveQuizScores', AuthenticationFunctions.ensureAuthenticated, asyn
                     }
                  //insert selections into DB
                  //insert into question table (studentId = userId, quizId = quizId, studentAnswer = selections[key], questionId = questionList[index].quizQuestionId, isCorrect)
-                    insertStudentAnswer(userId,quizId,selections[key],questionList[index].quizQuestionId,isCorrect);
+                    insertStudentAnswer(userId,quizId,selections[key],questionList[index].quizQuestionId,isCorrect,questionList[index].pointValue);
                 }
             }
         }
@@ -297,7 +292,7 @@ router.post('/saveQuizScores', AuthenticationFunctions.ensureAuthenticated, asyn
 });
 
 
-function insertStudentAnswer(studentId, quizId, studentAnswer, questionId, isCorrect){
+function insertStudentAnswer(studentId, quizId, studentAnswer, questionId, isCorrect,pointValue){
         let con = mysql.createConnection(dbInfo);
         console.log(studentId)
 
@@ -308,7 +303,7 @@ function insertStudentAnswer(studentId, quizId, studentAnswer, questionId, isCor
                     console.log(error.stack);
                 }
                 if(results.length > 0){ //Found previous entry... need to UPDATE instead of INSERT
-                    con.query(`update quizQuestionAnswer set studentAnswer=${mysql.escape(studentAnswer)}, correctFlag=${mysql.escape(isCorrect)} where questionId=${mysql.escape(questionId)} AND studentId=${mysql.escape(studentId)} AND quizId= ${mysql.escape(quizId)};`, (error, results, fields) => {
+                    con.query(`update quizQuestionAnswer set studentAnswer=${mysql.escape(studentAnswer)}, correctFlag=${mysql.escape(isCorrect)}, questionPoints=${mysql.escape(pointValue)} where questionId=${mysql.escape(questionId)} AND studentId=${mysql.escape(studentId)} AND quizId= ${mysql.escape(quizId)};`, (error, results, fields) => {
                         if (error) {
                             console.log(error.stack);
                         }
@@ -319,52 +314,72 @@ function insertStudentAnswer(studentId, quizId, studentAnswer, questionId, isCor
                 });
                 }
                 else{ // no previous entry... need to insert
-                    con.query(`insert into quizQuestionAnswer (studentId,quizId,studentAnswer,questionId,correctFlag) values(${mysql.escape(studentId)},${mysql.escape(quizId)},${mysql.escape(studentAnswer)},${mysql.escape(questionId)},${mysql.escape(isCorrect)});`, (error, results, fields) => {
+                    con.query(`insert into quizQuestionAnswer (studentId,quizId,studentAnswer,questionId,correctFlag,questionPoints) values(${mysql.escape(studentId)},${mysql.escape(quizId)},${mysql.escape(studentAnswer)},${mysql.escape(questionId)},${mysql.escape(isCorrect)},${mysql.escape(pointValue)});`, (error, results, fields) => {
                         if (error) {
                             console.log(error.stack);
                         }
             
                             con.end();
-                            //res.send("\"OK\"");
                         return;
                 });
 
                 }
-                    //con.end();
-                    //res.send("\"OK\"");
                 return;
         });
         
-
-
-
-/*
-con.query(`IF EXISTS(select * from quizQuestionAnswer where questionId=${mysql.escape(questionId)} AND studentId=${mysql.escape(studentId)} AND quizId = ${mysql.escape(quizId)}) update quizQuestionAnswer set studentAnswer=${mysql.escape(studentAnswer)}, correctFlag=${mysql.escape(isCorrect)} where questionId=${mysql.escape(questionId)} AND studentId=${mysql.escape(studentId)} AND quizId= ${mysql.escape(quizId)} 
-    ELSE insert into quizQuestionAnswer (studentId,quizId,studentAnswer,questionId,correctFlag) values(${mysql.escape(studentId)},${mysql.escape(quizId)},${mysql.escape(studentAnswer)},${mysql.escape(questionId)},${mysql.escape(isCorrect)});`, (error, results, fields) => {
-*/
-
-/*
-con.query(`update quizQuestionAnswer set studentAnswer=${mysql.escape(studentAnswer)}, correctFlag=${mysql.escape(isCorrect)} where questionId=${mysql.escape(questionId)} AND studentId=${mysql.escape(studentId)} AND quizId= ${mysql.escape(quizId)} 
-IF @@ROWCOUNT=0 
-insert into quizQuestionAnswer (studentId,quizId,studentAnswer,questionId,correctFlag) values(${mysql.escape(studentId)},${mysql.escape(quizId)},${mysql.escape(studentAnswer)},${mysql.escape(questionId)},${mysql.escape(isCorrect)});`, (error, results, fields) => {
-*/
-
-/*
-con.query(`insert into quizQuestionAnswer (studentId,quizId,studentAnswer,questionId,correctFlag) values(${mysql.escape(studentId)},${mysql.escape(quizId)},${mysql.escape(studentAnswer)},${mysql.escape(questionId)},${mysql.escape(isCorrect)});`, (error, results, fields) => {
-*/
-
-
-// con.query(`update quizQuestionAnswer set studentAnswer=${mysql.escape(studentAnswer)}, correctFlag=${mysql.escape(isCorrect)} where questionId=${mysql.escape(questionId)} AND studentId=${mysql.escape(studentId)} AND quizId= ${mysql.escape(quizId)} 
-// IF @@ROWCOUNT=0 
-// insert into quizQuestionAnswer (studentId,quizId,studentAnswer,questionId,correctFlag) values(${mysql.escape(studentId)},${mysql.escape(quizId)},${mysql.escape(studentAnswer)},${mysql.escape(questionId)},${mysql.escape(isCorrect)});`, (error, results, fields) => {
-//         if (error) {
-//             console.log(error.stack);
-//         }
-//             con.end();
-//             //res.send("\"OK\"");
-//         return;
-// });
  }
+
+
+ router.post('/submitQuizScores', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
+    let quizId = req.body.quizId;
+    let userId = req.body.userId;
+    let con = mysql.createConnection(dbInfo);
+    let totalPoints =  await getTotalPointsForQuiz(quizId,userId);
+    let studentScore =  await getStudentsScoreForQuiz(quizId,userId); 
+    let percent = (studentScore* 100) /totalPoints;
+    
+    console.log("total: " + totalPoints + " your score: " + studentScore);
+    console.log(percent + "%");
+    res.send("\"OK\"");
+
+});
+
+ function getTotalPointsForQuiz(quizId,userId){
+    return new Promise(resolve => {
+    let con = mysql.createConnection(dbInfo);
+     con.query(`SELECT SUM(questionPoints) FROM quizQuestionAnswer WHERE quizId= ${mysql.escape(quizId)} AND studentId = ${mysql.escape(userId)};`, (error, results, fields) => {
+        if (error) {
+            console.log(error.stack);
+        }
+            let key = "SUM(questionPoints)";
+            var totalPoints = results[0][key];
+            con.end();
+            console.log(totalPoints);
+        resolve(totalPoints);
+        return;
+        });
+    });
+}
+
+ function getStudentsScoreForQuiz(quizId,userId){
+    return new Promise(resolve => {
+    let con = mysql.createConnection(dbInfo);
+     con.query(`SELECT SUM(questionPoints) FROM quizQuestionAnswer WHERE quizId= ${mysql.escape(quizId)} AND studentId = ${mysql.escape(userId)} AND correctFlag=1;`, (error, results, fields) => {
+        if (error) {
+            console.log(error.stack);
+        }
+            let key = "SUM(questionPoints)";
+            var studentScore =0;
+            if(results.length > 0){
+                studentScore = results[0][key];
+            }
+            con.end();
+            console.log(studentScore);
+            resolve(studentScore);
+            return;
+        });
+    });
+}
 
 
 

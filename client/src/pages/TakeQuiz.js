@@ -217,10 +217,31 @@ class TakeQuiz extends React.Component {
     async handleSubmitQuiz(){
             //TODO
             //Grade Quiz
-            let selections = this.state.selectedOptions; // in JSON format ("questionId": "A")
-            let questionList = this.state.questionList;
             let quizId = this.state.quizId;
             let userId = this.state.userId;
+            this.handleSaveQuestions();
+
+            await fetch('http://localhost:9000/quiz/submitQuizScores' ,{
+                method: 'POST',
+                credentials: "include",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Credentials': true,
+                },
+                body: JSON.stringify({
+                    userId : this.state.userId,
+                    quizId : this.state.quizId
+                })
+                }).then(response => response.json())
+                .then(data => {
+                    
+                }); 
+
+
+
+
+
 
     }
 
