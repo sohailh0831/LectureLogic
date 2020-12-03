@@ -372,6 +372,22 @@ class EditQuiz extends React.Component {
     }
 
     async handlePublishQuiz(){
+
+        await fetch(`http://localhost:9000/messages`, {
+                method: 'POST',
+                credentials: "include",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Credentials': true,
+                },
+                body: JSON.stringify({
+                    sender: this.state.userId,
+                    content: `Your instructor edited the quiz: ${this.state.quizName || 'Untitled'}!`,
+                    id: this.state.classId
+                })
+            }).catch(console.log("ok"))
+
         await fetch('http://localhost:9000/quiz/publishQuiz' ,{
             method: 'POST',
             credentials: "include",

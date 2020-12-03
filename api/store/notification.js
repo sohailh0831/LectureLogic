@@ -42,7 +42,8 @@ function postMessage(req, res) {
                 var list = JSON.parse(results[0].student_list);
                 var i = 0;
                 for(i; i < list.length; i++){
-                    console.log("EEEEEEEEEE", i, "eeeeeeeeeee")
+                    console.log("EEEEEEEEEE", list[i], "eeeeeeeeeee")
+                    if(list[i][0] === '\'') continue;
                     await con.query(`insert into message (sender, receiver, content, status, class) VALUES ('${req.body.sender}', '${list[i]}', '${req.body.content}', 1, '${req.body.id}')`, async (error, results, fields1) => { 
                         console.log(error)
                         if (error) {
