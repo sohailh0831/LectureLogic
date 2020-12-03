@@ -46,6 +46,7 @@ class EditQuiz extends React.Component {
         this.handleSubmitNewQuestion = this.handleSubmitNewQuestion.bind(this);
         this.handleGetQuestions = this.handleGetQuestions.bind(this);
         this.handlePublishQuiz = this.handlePublishQuiz.bind(this);
+        this.handleDeleteQuiz = this.handleDeleteQuiz.bind(this);
 
     }
 
@@ -121,7 +122,7 @@ class EditQuiz extends React.Component {
         var pubStatus;
         if(this.state.isPublished == 1){
             pubStatus = <Header>Quiz Status: Available to students</Header>
-            showPublish = <Button onClick={this.handlePublishQuiz} color='red' fluid size='large'>
+            showPublish = <Button onClick={this.handlePublishQuiz} color='blue' fluid size='large'>
             Unpublish Quiz
             </Button>
         }
@@ -265,6 +266,9 @@ class EditQuiz extends React.Component {
                     {pubStatus}
                     {showPublish}
             </Segment>
+            <Segment>
+                    <Button onClick={this.handleDeleteQuiz} color='red' fluid size='large'> Delete Quiz </Button>
+            </Segment>
                     </Grid.Column>
                 
                 </Grid.Row>
@@ -386,6 +390,26 @@ class EditQuiz extends React.Component {
             }); 
 
             window.location.reload();
+    }
+
+    async handleDeleteQuiz(){
+        await fetch('http://localhost:9000/quiz/deleteQuiz' ,{
+            method: 'POST',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            },
+            body: JSON.stringify({
+                quizId: this.state.quizId,
+            })
+            }).then(response => response.json())
+            .then(data => {
+                console.log("Deleted quiz")
+            }); 
+
+            window.location.replace("/quizzes/" + this.state.classId);
     }
 
 

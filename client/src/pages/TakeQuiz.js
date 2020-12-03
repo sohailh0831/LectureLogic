@@ -212,12 +212,12 @@ class TakeQuiz extends React.Component {
         console.log(this.state.selectedOptions);
     }
 
-     handleSaveQuestions(){ //will need to update to store selectedOptions in db
+    async handleSaveQuestions(){ //will need to update to store selectedOptions in db
             // let selections = this.state.selectedOptions; // in JSON format ("questionId": "A")
             // let quizId = this.state.quizId;
             // let questionList = this.state.questionList;
             // let userId = this.state.userId;
-            
+            return new Promise(resolve => {
              fetch('http://localhost:9000/quiz/saveQuizScores' ,{
                 method: 'POST',
                 credentials: "include",
@@ -235,6 +235,9 @@ class TakeQuiz extends React.Component {
                 }).then(response => response.json())
                 .then(data => {
                 }); 
+                resolve();
+                return;
+            });
 
     }
     async handleSubmitQuiz(){
