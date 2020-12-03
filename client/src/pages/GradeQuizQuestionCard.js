@@ -32,13 +32,22 @@ export default class GradeQuizQuestionCard extends React.Component{
 
     render() {  
 
-        var deleteButton;
-        var instructorShowAnswer;
-        if(this.props.type == "0"){
-            deleteButton =  <Button onClick={this.handleDeleteQuestion} >  Delete Question </Button>
-            instructorShowAnswer = <p style={{fontSize: "75%"}} data-testid={"answer"}>(Correct Answer: {this.props.quizQuestionAnswer})</p>
-
+        //var deleteButton;
+        var points;
+        if(this.props.correctFlag == 0){
+            //deleteButton =  <Button onClick={this.handleDeleteQuestion} >  Delete Question </Button>
+            points = <p style={{fontSize: "75%"}} data-testid={"answer"}>(Points: 0/{this.props.quizPointValue})</p>
+        } else {
+            points = <p style={{fontSize: "75%"}} data-testid={"answer"}>(Points: {this.props.quizPointValue}/{this.props.quizPointValue})</p>
         }
+
+        var answer;
+        if(this.props.type == 0) { //instructor
+            answer = <p style={{fontSize: "75%"}} data-testid={"answer"}>(Student Answer: {this.props.quizStudentAnswer})</p>;
+        } else {
+            answer = <p style={{fontSize: "75%"}} data-testid={"answer"}>(Your Answer: {this.props.quizStudentAnswer})</p>;
+        }
+
         console.log("Grade quiz question card");
         return(           
             <div>
@@ -49,7 +58,7 @@ export default class GradeQuizQuestionCard extends React.Component{
 
                             <div className="right aligned">
                                 {/* Add variable to change name on button from Click to respond to Click to see responces */}
-                                {deleteButton}
+                                {/* {deleteButton} */}
 
                             </div>
                             <Header as='h3' textAlign="left" dividing>
@@ -61,9 +70,11 @@ export default class GradeQuizQuestionCard extends React.Component{
                                             <p style={{fontSize: "100%"}} data-testid={"quizQuestionChoices"}>B: {this.state.answerB}</p>
                                             <p style={{fontSize: "100%"}} data-testid={"quizQuestionChoices"}>C: {this.state.answerC}</p>
                                             <p style={{fontSize: "100%"}} data-testid={"quizQuestionChoices"}>D: {this.state.answerD}</p>
-                                            {instructorShowAnswer}
-                                            <p style={{fontSize: "75%"}} data-testid={"quizQuestionPointValue"}>Point Value: {this.props.quizPointValue}</p>
-                                            
+                                            {/* {instructorShowAnswer} */}
+                                            <p style={{fontSize: "75%"}} data-testid={"answer"}>(Correct Answer: {this.props.quizQuestionAnswer})</p>
+                                            {answer}
+                                            {/* <p style={{fontSize: "75%"}} data-testid={"quizQuestionPointValue"}>Point Value: {this.props.quizPointValue}</p> */}
+                                            {points}
                                         </div>
                                     </Header.Content>
 

@@ -21,6 +21,7 @@ export default class GradesCard extends React.Component{
         this.handleUpdateGrade = this.handleUpdateGrade.bind(this);
         this.handleInputChange = this.handleInputChange.bind(this);
         this.handleGetQuestions = this.handleGetQuestions.bind(this);
+        this.handleGetQuestionsAnswers = this.handleGetQuestionsAnswers.bind(this);
     }
 
     async componentDidMount(){
@@ -34,7 +35,7 @@ export default class GradesCard extends React.Component{
             type: this.props.type
         });
         //console.log("QUIZZZZ IDD : "+this.props.quizId);
-        this.handleGetQuestions();
+        this.handleGetQuestionsAnswers();
     }
 
     render() {
@@ -68,7 +69,7 @@ export default class GradesCard extends React.Component{
 
                                                         {this.state.questionList.map((entry) =>{
                                                                         
-                                                                        return( <GradeQuizQuestionCard maxWidth='50vw' type={0} quizQuestion={entry.quizQuestion} quizQuestionId={entry.quizQuestionId} quizQuestionAnswer={entry.quizQuestionAnswer} quizAnswerChoices={entry.answerChoices} quizPointValue={entry.pointValue}/> 
+                                                                        return( <GradeQuizQuestionCard maxWidth='50vw' type={this.props.type} quizQuestion={entry.quizQuestion} quizQuestionId={entry.quizQuestionId} correctFlag={entry.correctFlag} quizQuestionAnswer={entry.quizQuestionAnswer} quizStudentAnswer={entry.studentAnswer} quizAnswerChoices={entry.answerChoices} quizPointValue={entry.pointValue}/> 
                                                                             
                                                                         //     <QuestionGroup questionNumber={entry.quizQuestionId}>
                                                                         //     <Question>({entry.pointValue} pts) Question: {entry.quizQuestion} </Question>
@@ -115,7 +116,37 @@ export default class GradesCard extends React.Component{
                                         trigger={<Button color='blue' >See Student's Quiz</Button>}
                                         header={'Quiz: ' + this.state.quizName}
                                         //TODO Content needs to have question, student answer, correct answer
-                                        content="NEED TO HAVE QUIZ QUESTIONS: question, student answer, correct answer"
+                                        content={
+                                            <Grid padded style={{height: '100vh'}} columns={2} >
+                                                <Grid.Row style={{height: '90%'}} textAlign = 'center' >
+                                                    <Grid.Column style={{width: 1400}}>  
+                                                        {/* Question list component */}
+                                                        {/* <Header>{this.state.quizName}</Header> */}
+                                                        {/* <Segment> */}
+                                                            
+                                                        <Test onOptionSelect={selectedOptions => this.setState({ selectedOptions })}>
+
+                                                        {this.state.questionList.map((entry) =>{
+                                                                        
+                                                                        return( <GradeQuizQuestionCard maxWidth='50vw' type={this.props.type} quizQuestion={entry.quizQuestion} quizQuestionId={entry.quizQuestionId} correctFlag={entry.correctFlag} quizQuestionAnswer={entry.quizQuestionAnswer} quizStudentAnswer={entry.studentAnswer} quizAnswerChoices={entry.answerChoices} quizPointValue={entry.pointValue}/> 
+                                                                            
+                                                                        //     <QuestionGroup questionNumber={entry.quizQuestionId}>
+                                                                        //     <Question>({entry.pointValue} pts) Question: {entry.quizQuestion} </Question>
+                                                                        //     <Option value="A">{JSON.parse(entry.answerChoices)[0].A}</Option>
+                                                                        //     <Option value="B">{JSON.parse(entry.answerChoices)[1].B}</Option>
+                                                                        //     <Option value="C">{JSON.parse(entry.answerChoices)[2].C}</Option>
+                                                                        //     <Option value="D">{JSON.parse(entry.answerChoices)[3].D}</Option>
+                                                                        // </QuestionGroup>     
+                                                                        )
+                                                                    })}
+                                                            
+                                                        </Test>
+                                                        {/* </Segment> */}
+
+                                                    </Grid.Column>
+                                                </Grid.Row>
+                                            </Grid>
+                                        }
                                         actions={['Close']}
                                     />
                                     <Modal                                                
@@ -183,6 +214,31 @@ export default class GradesCard extends React.Component{
             },
             body: JSON.stringify({
                 quizId: this.props.quizId,
+            })
+            }).then(response => response.json())
+            .then(data => {
+                console.log("QUESTIONS");
+                console.log(data);
+               this.setState({questionList: data});
+            }); 
+
+    }
+
+    async handleGetQuestionsAnswers(){
+        //TODO
+        console.log("quizID: "+this.props.quizId);
+        console.log("studentId: "+this.props.studentId);
+        await fetch('http://localhost:9000/quiz/getAllQuizQuestionsWithAnswers' ,{
+            method: 'POST',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            },
+            body: JSON.stringify({
+                quizId: this.props.quizId,
+                studentId: this.props.studentId,
             })
             }).then(response => response.json())
             .then(data => {
