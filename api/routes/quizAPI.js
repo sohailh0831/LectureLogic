@@ -236,7 +236,22 @@ router.post('/getAllQuizQuestions', AuthenticationFunctions.ensureAuthenticated,
             con.end();
         res.send(results);
         return;
+    });
+
 });
+
+router.post('/getAllQuizQuestionsWithAnswers', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
+    let quizId = req.body.quizId;
+    let studentId = req.body.studentId;
+    let con = mysql.createConnection(dbInfo);
+    con.query(`SELECT * FROM quizQuestionTable as q, quizQuestionAnswer as a WHERE q.quizId = ${mysql.escape(quizId)} and q.quizId = a.quizId and q.quizQuestionId = a.questionId and a.studentId = ${mysql.escape(studentId)};`, (error, results, fields) => {
+        if (error) {
+            console.log(error.stack);
+        }
+            con.end();
+        res.send(results);
+        return;
+    });
 
 });
 

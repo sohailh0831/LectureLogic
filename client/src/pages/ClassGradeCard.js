@@ -23,6 +23,7 @@ export default class ClassGradeCard extends React.Component{
         this.handleGetGrades = this.handleGetGrades.bind(this);
         this.handleGetAverageGrade = this.handleGetAverageGrade.bind(this);
         this.handleGetStudentList = this.handleGetStudentList.bind(this);
+        this.handleGoToQuizzes = this.handleGoToQuizzes.bind(this);
     }
 
     async componentDidMount(){
@@ -86,13 +87,14 @@ export default class ClassGradeCard extends React.Component{
                                         Average Grade: {this.state.avgGrade}
                                     </div> */}
                                     <Modal         
-                                        trigger={<Button color='blue' onClick={this.handleGetStudentList}>Quizzes</Button>}
-                                        header={'Student List for ' + this.props.className}
-                                        content={this.state.gradesList.map((gradesList, index) => {
-                                            if(this.state.gradesList[index].classId == this.props.classId) {
-                                                return(<GradesCard maxWidth='50vw' type={this.state.type} studentId={this.props.studentId} quizId={this.state.gradesList[index].quizId} classId={this.state.gradesList[index].classId} quizName={this.state.gradesList[index].quizName} grade={this.state.gradesList[index].score} />)
-                                            }
-                                        })}
+                                        trigger={<Button color='blue' onClick={this.handleGoToQuizzes}>Quizzes</Button>}
+                                        header={'Quizzes for ' + this.props.className}
+                                        // content={this.state.gradesList.map((gradesList, index) => {
+                                        //     if(this.state.gradesList[index].classId == this.props.classId) {
+                                        //         return(<GradesCard maxWidth='50vw' type={this.state.type} studentId={this.props.studentId} quizId={this.state.gradesList[index].quizId} classId={this.state.gradesList[index].classId} quizName={this.state.gradesList[index].quizName} grade={this.state.gradesList[index].score} />)
+                                        //     }
+                                        // })}
+                                        //content={window.location.replace('/dashboard')}
                                         //content="hey"
                                         actions={['Close']}
                                     />
@@ -109,7 +111,9 @@ export default class ClassGradeCard extends React.Component{
             )
         }
     }
-
+    async handleGoToQuizzes(){
+        window.location.replace(`/quizzes/${this.props.classId}`);
+    }
     async handleGetGrades() {
         //console.log("studentId: "+this.state.studentId);
         await fetch(`http://localhost:9000/quiz/getStudentQuizResults?studentId=${this.props.studentId}`, {
