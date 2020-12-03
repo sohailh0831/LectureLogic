@@ -2,7 +2,7 @@ import React from "react";
 import {Grid, Card, Header, Modal, Button, Form, Popup, Dimmer, Segment, Input} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import { Test, QuestionGroup, Question, Option } from 'react-multiple-choice';
-import QuizQuestionCard from "./QuizQuestionCard";
+import GradeQuizQuestionCard from "./GradeQuizQuestionCard";
 
 export default class GradesCard extends React.Component{
 
@@ -68,7 +68,7 @@ export default class GradesCard extends React.Component{
 
                                                         {this.state.questionList.map((entry) =>{
                                                                         
-                                                                        return( <QuizQuestionCard maxWidth='50vw' type={0} quizQuestion={entry.quizQuestion} quizQuestionId={entry.quizQuestionId} quizQuestionAnswer={entry.quizQuestionAnswer} quizAnswerChoices={entry.answerChoices} quizPointValue={entry.pointValue}/> 
+                                                                        return( <GradeQuizQuestionCard maxWidth='50vw' type={0} quizQuestion={entry.quizQuestion} quizQuestionId={entry.quizQuestionId} quizQuestionAnswer={entry.quizQuestionAnswer} quizAnswerChoices={entry.answerChoices} quizPointValue={entry.pointValue}/> 
                                                                             
                                                                         //     <QuestionGroup questionNumber={entry.quizQuestionId}>
                                                                         //     <Question>({entry.pointValue} pts) Question: {entry.quizQuestion} </Question>
