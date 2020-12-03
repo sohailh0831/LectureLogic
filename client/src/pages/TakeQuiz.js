@@ -33,7 +33,8 @@ class TakeQuiz extends React.Component {
             questionList:[],
             sH: "False", // show answers boolean
             isPublished: 0,
-            selectedOptions: {}
+            selectedOptions: {},
+            savedOptions: []
         };
 
 
@@ -99,7 +100,7 @@ class TakeQuiz extends React.Component {
             });
 
         this.handleGetQuestions();
-
+            console.log("AYEEEEEEE", this.state.selectedOptions)
 
     }
 
@@ -110,9 +111,23 @@ class TakeQuiz extends React.Component {
         return (
             <div>
             
-            <Grid padded style={{height: '100vh'}} columns={2} >
+            <Grid padded style={{height: '100vh'}} columns={3} >
                 <Grid.Row style={{height: '90%'}} textAlign = 'center' >
-                    <Grid.Column style={{width: 1400}}>  
+                    <Grid.Column style={{width: 400}}>
+                        <Header>Saved Answers</Header>
+                        <Segment>
+                            {this.state.savedOptions.map((entry) => {
+                                return(
+                                <view>
+                                    Question: {entry.question}
+                                    <p>Answer: {entry.studentAnswer}</p>
+                                    <p></p>
+                                </view>)
+                            })}
+                        </Segment>
+                        
+                    </Grid.Column>  
+                    <Grid.Column style={{width: 900}}>  
                         {/* Question list component */}
                         <Header>{this.state.quizName}</Header>
                         <Segment>
@@ -205,11 +220,40 @@ class TakeQuiz extends React.Component {
                this.setState({questionList: data});
             }); 
 
+        await fetch('http://localhost:9000/quiz/getAnsweredQuestions' ,{
+            method: 'POST',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            },
+            body: JSON.stringify({
+                quizId: this.state.quizId,
+                userId: this.state.userId
+            })
+            }).then(response => response.json())
+            .then(data => {
+               let select = this.state.selectedOptions;
+               data.forEach(element => {
+                   select[element.questionId] = element.studentAnswer;
+               });
+               data.forEach(element => {
+                   this.state.questionList.forEach(ele => {
+                       if(ele.quizQuestionId === element.questionId){
+                           element.question = ele.quizQuestion;
+                       }
+                   })
+                   select[element.questionId] = element.studentAnswer;
+               });
+               this.setState({selectedOptions: select, savedOptions: data});
+            }); 
+
     }
 
 
     async handleSelections(){
-        console.log(this.state.selectedOptions);
+        console.log("BRUHHHHHHH",this.state.selectedOptions);
     }
 
     async handleSaveQuestions(){ //will need to update to store selectedOptions in db
@@ -217,6 +261,7 @@ class TakeQuiz extends React.Component {
             // let quizId = this.state.quizId;
             // let questionList = this.state.questionList;
             // let userId = this.state.userId;
+            //console.log("BRUHHHHHHH",this.state.selectedOptions);
             return new Promise(resolve => {
              fetch('http://localhost:9000/quiz/saveQuizScores' ,{
                 method: 'POST',
