@@ -134,7 +134,7 @@ router.post('/newQuizCreation', AuthenticationFunctions.ensureAuthenticated, asy
         let classId = req.body.classId;
 
         let con = mysql.createConnection(dbInfo);
-        con.query(`SELECT * FROM quizzes WHERE classId = ${mysql.escape(classId)};`, (error, results, fields) => {
+        con.query(`SELECT * FROM quizzes WHERE classId = ${mysql.escape(classId)} AND isDeleted=0;`, (error, results, fields) => {
             if (error) {
                 console.log(error.stack);
             }
@@ -150,7 +150,7 @@ router.post('/getAllQuizzesStudent', AuthenticationFunctions.ensureAuthenticated
     let classId = req.body.classId;
 
     let con = mysql.createConnection(dbInfo);
-    con.query(`SELECT * FROM quizzes WHERE classId = ${mysql.escape(classId)} AND isPublished=1;`, (error, results, fields) => {
+    con.query(`SELECT * FROM quizzes WHERE classId = ${mysql.escape(classId)} AND isPublished=1 AND isDeleted=0;`, (error, results, fields) => {
         if (error) {
             console.log(error.stack);
         }
@@ -313,6 +313,7 @@ router.post('/saveQuizScores', AuthenticationFunctions.ensureAuthenticated, asyn
 
 
 function insertStudentAnswer(studentId, quizId, studentAnswer, questionId, isCorrect,pointValue){
+    return new Promise(resolve => {
         let con = mysql.createConnection(dbInfo);
         console.log(studentId)
 
@@ -330,6 +331,7 @@ function insertStudentAnswer(studentId, quizId, studentAnswer, questionId, isCor
             
                             con.end();
                             //res.send("\"OK\"");
+                        resolve();    
                         return;
                 });
                 }
@@ -340,12 +342,16 @@ function insertStudentAnswer(studentId, quizId, studentAnswer, questionId, isCor
                         }
             
                             con.end();
+                            resolve();    
                         return;
                 });
 
                 }
+                resolve();
                 return;
         });
+
+    });
         
  }
 
@@ -430,6 +436,25 @@ router.post('/getCompletedQuizzes', AuthenticationFunctions.ensureAuthenticated,
 });
 
 });
+
+
+router.post('/deleteQuiz', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
+    let quizId = req.body.quizId;
+    let con = mysql.createConnection(dbInfo);
+    con.query(`UPDATE quizzes SET isDeleted=1 WHERE quizId = ${mysql.escape(quizId)};`, (error, results, fields) => {
+        if (error) {
+            console.log(error.stack);
+        }
+        console.log(results)
+            con.end();
+            res.send(results);
+        return;
+});
+
+});
+
+
+
 
 
 module.exports = router;

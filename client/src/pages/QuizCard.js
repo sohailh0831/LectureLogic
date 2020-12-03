@@ -47,7 +47,7 @@ export default class QuizCard extends React.Component{
 
         var quizButton;
         if(this.props.type == "0"){
-            quizButton =  <Button onClick={this.handleEditQuiz} >  Edit Quiz </Button>
+            quizButton =  <Button onClick={this.handleEditQuiz} >  Edit Quiz </Button> 
         }
         else{
             var index;
