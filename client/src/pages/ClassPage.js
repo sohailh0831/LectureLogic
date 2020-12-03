@@ -560,6 +560,22 @@ class ClassPage extends React.Component {
             window.location.replace('/ClassPage/'+this.state.className);
         }).catch(console.log)
         
+        await fetch(`http://localhost:9000/messages`, {
+                method: 'POST',
+                credentials: "include",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Credentials': true,
+                },
+                body: JSON.stringify({
+                    sender: this.state.userId,
+                    content: `Your instructor added the lecture: ${this.state.tempLectureName || 'Untitled'}!`,
+                    id: this.state.classId
+                })
+            }).catch(console.log("ok"))
+
+
     } /* End handleAddLecture(...) */
 
 

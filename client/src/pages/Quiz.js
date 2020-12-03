@@ -238,6 +238,21 @@ class Quiz extends React.Component {
             showAnswers: sA
             
         })
+
+        await fetch(`http://localhost:9000/messages`, {
+                method: 'POST',
+                credentials: "include",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Credentials': true,
+                },
+                body: JSON.stringify({
+                    sender: this.state.userId,
+                    content: `Your instructor added the quiz: ${this.state.newQuizName}, which will be due on ${this.state.newQuizDueDate}!`,
+                    id: this.state.classId
+                })
+            }).catch(console.log("ok"))
         
         await fetch(link, {
             method: 'POST',
@@ -255,6 +270,7 @@ class Quiz extends React.Component {
 
         this.handleGetQuizzes();
 
+        
 
     }
 
