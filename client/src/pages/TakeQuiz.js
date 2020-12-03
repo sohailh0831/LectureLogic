@@ -17,6 +17,7 @@ class TakeQuiz extends React.Component {
             testQuestions: ['Sample Question1', 'Sample Question2', 'John', 'George', 'Ringo'],
             questionInterval: '',
             openNewQuestionModal: false,
+            openNewSubmitButtonModal: false,
             quizId: '',
             quizName: '',
             quizStartDate: '',
@@ -41,6 +42,7 @@ class TakeQuiz extends React.Component {
         this.handleSelections = this.handleSelections.bind(this);
         this.handleSaveQuestions = this.handleSaveQuestions.bind(this);
         this.handleSubmitQuiz = this.handleSubmitQuiz.bind(this);
+        this.handleModalClick = this.handleModalClick.bind(this);
 
     }
 
@@ -143,11 +145,33 @@ class TakeQuiz extends React.Component {
                         <Segment>
                         <Button onClick={this.handleSubmitQuiz} color='green' fluid size='large'>
                                     Submit Quiz Responses
-                                </Button>
+                        </Button>
+                        
+                        <Modal
+                                    onClose={() => this.setState({openNewSubmitButtonModal: false})}
+                                    onOpen={() => this.setState({openNewSubmitButtonModal: true})}
+                                    open={this.state.openNewSubmitButtonModal}
+                                    //close={!this.state.openModal}
+                                >
+                                <Modal.Header>Successfully submitted Quiz.</Modal.Header>
+                                <Modal.Content>
+                                    <Modal.Description>
+                                        You may now exit the page. Click here to continue back to dashboard page
+                                    </Modal.Description>
+                                </Modal.Content>
+                                <Modal.Actions>
+                                    <Button
+                                        content="Back to Dashboard"
+                                        labelPosition='right'
+                                        icon='checkmark'
+                                        onClick={this.handleModalClick}
+                                        positive
+                                    />
+                                </Modal.Actions>
+                            </Modal>
+
+
                         </Segment>
-                        <Button onClick={this.handleSelections} color='green' fluid size='large'>
-                                    Print Selections
-                                </Button>
                     </Grid.Column>
                 
                 </Grid.Row>
@@ -193,9 +217,8 @@ class TakeQuiz extends React.Component {
             // let quizId = this.state.quizId;
             // let questionList = this.state.questionList;
             // let userId = this.state.userId;
-            
-            
-            await fetch('http://localhost:9000/quiz/saveQuizScores' ,{
+            return new Promise(resolve => {
+             fetch('http://localhost:9000/quiz/saveQuizScores' ,{
                 method: 'POST',
                 credentials: "include",
                 headers: {
@@ -212,16 +235,41 @@ class TakeQuiz extends React.Component {
                 }).then(response => response.json())
                 .then(data => {
                 }); 
+                resolve();
+                return;
+            });
 
     }
     async handleSubmitQuiz(){
             //TODO
             //Grade Quiz
-            let selections = this.state.selectedOptions; // in JSON format ("questionId": "A")
-            let questionList = this.state.questionList;
-            let quizId = this.state.quizId;
-            let userId = this.state.userId;
+            await this.handleSaveQuestions();
 
+            await fetch('http://localhost:9000/quiz/submitQuizScores' ,{
+                method: 'POST',
+                credentials: "include",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Credentials': true,
+                },
+                body: JSON.stringify({
+                    userId : this.state.userId,
+                    quizId : this.state.quizId,
+                    quizName: this.state.quizName,
+                    classId : this.state.classId
+                })
+                }).then(response => response.json())
+                .then(data => {
+
+                }); 
+
+                this.setState({openNewSubmitButtonModal: true});
+
+    }
+
+    async handleModalClick(){
+        window.location.replace("/");
     }
 
 
