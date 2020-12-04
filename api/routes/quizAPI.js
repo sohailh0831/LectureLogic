@@ -1,12 +1,15 @@
 var express = require("express");
-const { isNull } = require("lodash");
+const { isNull, min } = require("lodash");
 var router = express.Router();
 const dotenv = require('dotenv').config();
 const mysql = require("mysql");
 const uuid = require('uuid');
+const {postStudentMessage} = require("../store/notification"); 
+
  const { getStudentsQuizzes, getStudentGrades, getClassGrades, getStudentAverageClassGrade, updateGrade, updateHideFlag } = require("../store/quiz");
 
 const AuthenticationFunctions = require('../Authentication.js');
+const quiz = require("../store/quiz");
 
 let dbInfo = {
     connectionLimit: 100,
@@ -17,6 +20,8 @@ let dbInfo = {
     port: 3306,
     multipleStatements: true
 };
+
+
 
 router.get('/getStudentQuizzes', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
     console.log("GETTING STUDENT QUIZZWES\n");
@@ -110,6 +115,7 @@ router.post('/updateHideFlag', AuthenticationFunctions.ensureAuthenticated, asyn
 
 router.post('/newQuizCreation', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
         //let quizId = uuid.v4();
+        console.log(req.body)
         let instructorId = req.body.instructorId;
         let classId = req.body.classId;
         let quizName  = req.body.quizName;
@@ -117,9 +123,10 @@ router.post('/newQuizCreation', AuthenticationFunctions.ensureAuthenticated, asy
         let dueDate = req.body.quizDueDate; //need to format to datetime
         let showAnswers = req.body.showAnswers;
         let hiddenFlag = 0;
-
+        let minConf = parseInt(req.body.minGrade);
+        console.log(minConf)
         let con = mysql.createConnection(dbInfo);
-        con.query(`INSERT INTO quizzes (instructorId,classId,quizName,startDate,dueDate,showAnswers,hiddenFlag) VALUES(${mysql.escape(instructorId)},${mysql.escape(classId)},${mysql.escape(quizName)},${mysql.escape(startDate)},${mysql.escape(dueDate)},${mysql.escape(showAnswers)},${mysql.escape(hiddenFlag)});`, (error, results, fields) => {
+        con.query(`INSERT INTO quizzes (instructorId,classId,quizName,startDate,dueDate,showAnswers,hiddenFlag,minGrade) VALUES(${mysql.escape(instructorId)},${mysql.escape(classId)},${mysql.escape(quizName)},${mysql.escape(startDate)},${mysql.escape(dueDate)},${mysql.escape(showAnswers)},${mysql.escape(hiddenFlag)},${mysql.escape(minConf)});`, (error, results, fields) => {
          if (error) {
            console.log(error.stack);
          }
@@ -186,8 +193,7 @@ router.post('/getQuizDetails', AuthenticationFunctions.ensureAuthenticated, asyn
             con.end();
         res.send(results[0]);
         return;
-});
-
+    });
 
 });
 
@@ -376,11 +382,18 @@ function insertStudentAnswer(studentId, quizId, studentAnswer, questionId, isCor
     let userId = req.body.userId;
     let quizName = req.body.quizName;
     let classId = req.body.classId;
+    let minGrade = req.body.minGrade;
     let con = mysql.createConnection(dbInfo);
     let totalPoints =  await getTotalPointsForQuiz(quizId,userId);
     let studentScore =  await getStudentsScoreForQuiz(quizId,userId); 
     let percent = Math.ceil((studentScore* 100) /totalPoints);
     
+    if (percent < minGrade){
+        req.body.content = `A student has a low grade on the quiz ${quizName}`;
+        req.body.id = classId;
+        req.body.sender = userId;
+        postStudentMessage(req,res);
+    }
     console.log("total: " + totalPoints + " your score: " + studentScore);
     console.log(percent + "%");
 
@@ -494,6 +507,131 @@ router.post('/applyCurve', AuthenticationFunctions.ensureAuthenticated, async fu
         con.end();
         res.send(results);
         return;
+    });
+});
+
+router.post('/getStudentStatus', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+    /* This is the worst code ever and I am sorry to whomesoever looks at it*/
+    let quizId = req.body.quizId;
+    let con = mysql.createConnection(dbInfo);
+    con.query(`SELECT classId FROM quizzes WHERE quizId = ${mysql.escape(quizId)};`, (error, results, fields) => {
+        if (error) {
+            console.log(error.stack);
+        }
+        if(results){
+            console.log('results', results)
+            con.query(`SELECT student_list FROM class WHERE id = ${results[0].classId};`, (error, results1, fields) => {
+                if (error) {
+                    console.log(error.stack);
+                    con.end();
+                    return;
+                }
+                let list = [];
+                list.push([]);
+                list.push([]);
+                list.push([]);
+                if(results1){
+                    console.log('results1', results1)
+                    results1[0].student_list = JSON.parse(results1[0].student_list);
+                    let str = '';
+                    let b = true;
+                    results1[0].student_list.forEach(student => {
+                            if(student.charAt(0) !== '\''){
+                                if(b) str += `WHERE id='${student}'`
+                                else str += ` OR id='${student}'`
+                                b=false;
+                            }
+                    });
+                    console.log(str);
+                    con.query(`SELECT id, name FROM user ${str};`, (error, results2, fields) => {
+                        if (error) {
+                            console.log(error.stack);
+                            con.end();
+                            return;
+                        } 
+                        if(!results2){
+                            results2 = [];
+                            results2.push([]);
+                        }
+                        if(results2){
+                            console.log('results2', results2)
+                            let str1 = '';
+                            b=true;
+                            results1[0].student_list.forEach(student => {
+                                if(student.charAt(0) !== '\''){
+                                    if(b) str1 += `WHERE studentId='${student}'`
+                                    else str1 += ` OR studentId='${student}'`
+                                    b=false;
+                                }
+                        });
+                            con.query(`SELECT DISTINCT studentId FROM quizQuestionAnswer ${str1} AND quizId=${quizId};`, (error, results3, fields) => {
+                                if (error) {
+                                    console.log(error.stack);
+                                    con.end();
+                                    return;
+                                } 
+                                if(!results3){
+                                    results3 = [];
+                                    results3.push([]);
+                                }
+                                if(results3){
+                                    console.log('results3', results3)
+                                    con.query(`SELECT DISTINCT studentId FROM quizGradeStudents ${str1} AND quizId=${quizId};`, (error, results4, fields) => {
+                                        if (error) {
+                                            console.log(error.stack);
+                                            con.end();
+                                            return;
+                                        } 
+                                        if(!results4){
+                                            results4 = [];
+                                            results4.push([]);
+                                        }
+                                        if(results4){
+                                            console.log('results4', results4)
+                                            let i;
+                                            let j;
+                                            let k;
+                                            let b;
+                                            for(i = 0; i < results2.length; i++){
+                                                b = false
+                                                for(j = 0; j < results4.length; j++){
+                                                    if(results2[i].id === results4[j].studentId){
+                                                        list[0].push(results2[i]);
+                                                        b = true;
+                                                        break;
+                                                    }
+                                                }
+                                                if (b) continue;
+                                                for(k = 0; k < results3.length; k++){
+                                                    if(results2[i].id === results3[k].studentId){
+                                                        list[1].push(results2[i]);
+                                                        b = true;
+                                                        break;
+                                                    }
+                                                }
+                                                if (b) continue;
+                                                list[2].push(results2[i]);
+                                            }
+                                            console.log(list)
+                                            con.end();
+                                            res.send(list);
+                                            return;
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }
+                else{
+                    con.end();
+                    res.send(list);
+                    return;
+                }
+            });
+        }
+        // res.send(results[0]);
+        // return;
     });
 });
 

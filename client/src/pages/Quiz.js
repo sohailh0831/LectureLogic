@@ -31,6 +31,7 @@ class Quiz extends React.Component {
             openNewQuizModal: false,
             isLocked: false,
             newQuizName: '',
+            newMinGrade: '',
             newQuizStartDate: '',
             newQuizDueDate: '',
             newQuizShowAnswers: '',
@@ -42,6 +43,7 @@ class Quiz extends React.Component {
         this.handleOpenNewQuizModal = this.handleOpenNewQuizModal.bind(this);
         this.handleCloseNewQuizModal = this.handleCloseNewQuizModal.bind(this);
         this.handleQuizNameChange = this.handleQuizNameChange.bind(this);
+        this.handleMinGradeChange = this.handleMinGradeChange.bind(this);
         this.hidePicker = this.hidePicker.bind(this);
         this.handlePicker = this.handlePicker.bind(this);
         this.setDate = this.setDate.bind(this);
@@ -123,6 +125,17 @@ class Quiz extends React.Component {
                                             value={this.state.newQuizName}
                                             onChange={this.handleQuizNameChange}
                                         />
+                                        Minimum Grade:
+                                    <Form.Input
+                                            placeholder='(0-100) Notified If Student Grade Below Value'
+                                            value={this.state.newMinGrade}
+                                            onChange={this.handleMinGradeChange}
+                                        />
+                                    {/* <Form.Input
+                                            placeholder='(0-100) Notified If Student Grade Below Value'
+                                            value={this.state.newMinGrade}
+                                            onChange={this.handleNewMinGrade}
+                                        /> */}
                                      Start Date: 
                                      <Form.Input
                                             placeholder='Enter Time (in format: 2020-12-05 23:00:00)'
@@ -235,6 +248,9 @@ class Quiz extends React.Component {
     handleQuizNameChange(event) {
         this.setState({newQuizName: event.target.value});
     }
+    handleMinGradeChange(event) {
+        this.setState({newMinGrade: event.target.value});
+    }
     handleQuizStartDateChange(event) {
         this.setState({newQuizStartDate: event.target.value});
     }
@@ -293,7 +309,8 @@ class Quiz extends React.Component {
             instructorId: this.state.userId,
             quizStartDate: this.state.newQuizStartDate || Date(),
             quizDueDate: this.state.newQuizDueDate,
-            showAnswers: sA
+            showAnswers: sA,
+            minGrade: this.state.newMinGrade
             
         })
 

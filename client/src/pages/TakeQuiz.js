@@ -34,7 +34,8 @@ class TakeQuiz extends React.Component {
             sH: "False", // show answers boolean
             isPublished: 0,
             selectedOptions: {},
-            savedOptions: []
+            savedOptions: [],
+            minGrade: ''
         };
 
 
@@ -92,7 +93,7 @@ class TakeQuiz extends React.Component {
             })
         }).then(response => response.json())
             .then(data => {
-                this.setState({ quizName: data.quizName , quizStartDate: data.startDate, quizDueDate: data.dueDate, quizShowAnswers: data.showAnswers, isPublished: data.isPublished })
+                this.setState({ quizName: data.quizName , quizStartDate: data.startDate, quizDueDate: data.dueDate, quizShowAnswers: data.showAnswers, isPublished: data.isPublished,  minGrade: data.minGrade})
                 if(data.showAnswers == 1){
                     this.state.sH = "True";
                 }
@@ -302,7 +303,8 @@ class TakeQuiz extends React.Component {
                     userId : this.state.userId,
                     quizId : this.state.quizId,
                     quizName: this.state.quizName,
-                    classId : this.state.classId
+                    classId : this.state.classId,
+                    minGrade: this.state.minGrade
                 })
                 }).then(response => response.json())
                 .then(data => {
