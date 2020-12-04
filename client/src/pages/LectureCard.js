@@ -15,8 +15,11 @@ export default class LectureCard extends React.Component{
             tempLectureDesc: '',
             tempLectureSection: '',
             tmepLectureVideo: '',
-            dimmed: true
+            dimmed: true,
+            tempMinConfidence: '',
+            minConf: ''
         }
+        this.handleLectureMinConfidence = this.handleLectureMinConfidence.bind(this);
         this.handleGetStudentList = this.handleGetStudentList.bind(this);
         this.handleEditLecture = this.handleEditLecture.bind(this);
         this.handleRemoveLecture = this.handleRemoveLecture.bind(this);
@@ -37,6 +40,7 @@ export default class LectureCard extends React.Component{
             lectureDesc: this.props.lectureDesc,
             lectureVideoLink: this.props.lectureVideoLink,
             lectureViewedFlag: this.props.lectureViewedFlag,
+            minConf: this.props.minConf,
             temp: this.props.type
         });
     }
@@ -183,6 +187,12 @@ export default class LectureCard extends React.Component{
                                                                 value={this.state.tempLectureVideoLink}
                                                                 onChange={this.handleLectureVideoLinkChange}
                                                             />
+                                                            <Form.Input
+                                                                placeholder={this.props.minConf}
+                                                                required={false}
+                                                                value={this.state.tempMinConfidence}
+                                                                onChange={this.handleLectureMinConfidence}
+                                                            />
                                                         </Form>
                                                     }
                                                     actions={['Cancel', <Button color='purple' onClick={this.handleEditLecture}>Done</Button>]}
@@ -224,6 +234,10 @@ export default class LectureCard extends React.Component{
     async handleLectureVideoLinkChange(event){
         await this.setState({tempLectureVideoLink: event.target.value});
     }
+    async handleLectureMinConfidence(event){
+        const value = event.target.value;
+        await this.setState({tempMinConfidence: value});
+    }
 
     async handleDimmer(event){
         await this.setState({dimmed: false});
@@ -248,6 +262,10 @@ export default class LectureCard extends React.Component{
             //console.log("NEW NAME UNDEFd");
             this.state.tempLectureVideoLink = this.props.lectureVideoLink;
         }
+        if ( this.state.tempMinConfidence === '' || this.state.tempMinConfidence === undefined) {
+            //console.log("NEW NAME UNDEFd");
+            this.state.tempMinConfidence = this.props.minConf;
+        }
         console.log("LECTUREID: "+this.props.lectureId);
         console.log("edited lecName: "+this.state.tempLectureName);
         console.log("edited lecDesc: "+this.state.tempLectureDesc);
@@ -267,7 +285,8 @@ export default class LectureCard extends React.Component{
                 name: this.state.tempLectureName,
                 description: this.state.tempLectureDesc,
                 video_link: this.state.tempLectureVideoLink,
-                section: this.state.tempLectureSection
+                section: this.state.tempLectureSection,
+                minConf: this.state.tempMinConfidence
             })
         }).then(res => res.json()).then((data) => { 
             console.log(data);

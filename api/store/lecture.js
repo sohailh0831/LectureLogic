@@ -78,9 +78,11 @@ function addLecture(req, res) {
         let class_id = req.body.class_id;
         let video_link = req.body.video_link;
         let section = req.body.section;
+        let minConf = req.body.minConf;
+
 
         let con = mysql.createConnection(dbInfo);
-        con.query(`insert into lecture (name, description, class_id, section, video_link) values (${mysql.escape(name)}, ${mysql.escape(description)}, ${mysql.escape(class_id)}, ${mysql.escape(section)},${mysql.escape(video_link)})`, (error, results, fields) => {
+        con.query(`insert into lecture (name, description, class_id, section, video_link, minConf) values (${mysql.escape(name)}, ${mysql.escape(description)}, ${mysql.escape(class_id)}, ${mysql.escape(section)},${mysql.escape(video_link)},${mysql.escape(minConf)})`, (error, results, fields) => {
             if (error) {
                 console.log(error.stack);
                 con.end();
@@ -149,9 +151,10 @@ function editLecture(req, res) {
         let description = req.body.description;
         let video_link = req.body.video_link;
         let section = req.body.section;
+        let minConf = req.body.minConf;
 
         let con = mysql.createConnection(dbInfo);
-        con.query(`update lecture SET name=${mysql.escape(name)}, description=${mysql.escape(description)}, section=${mysql.escape(section)}, video_link=${mysql.escape(video_link)} where id=${mysql.escape(lecture_id)}`, (error, results, fields) => {
+        con.query(`update lecture SET name=${mysql.escape(name)}, description=${mysql.escape(description)}, section=${mysql.escape(section)}, video_link=${mysql.escape(video_link)}, minConf=${mysql.escape(minConf)} where id=${mysql.escape(lecture_id)}`, (error, results, fields) => {
             if (error) {
                 console.log(error.stack);
                 con.end();
