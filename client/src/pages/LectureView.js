@@ -93,33 +93,33 @@ class LectureView extends React.Component {
                 console.log("SENDING SLIDER DATA");
                 this.setState({changeFlag: false});
                 await fetch("http://localhost:9000/confidence", {
-            method: 'PUT',
-            credentials: "include",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Credentials': true,
-            },
-            body: JSON.stringify({
-                quizId: this.state.lectureId,
-                val: this.state.sliderData,
-                time: this.state.formattedTimestamp
-            })
-        }).then(res => res.json()).then((data) => {
-            console.log(data) 
-            if(data === "OK"){ //successfully logged in
-                localStorage.setItem("authenticated", "authenticated");
-                console.log("successfully changed email")
-                window.location.replace('/');            }
-            else{
-           //window.location.replace('/login'); // need to flash that authentication failed
-           console.log("email change fail")
-            }
-            this.setState({response: data})
-        }).catch(console.log)
-            }
-            
-        }, 20000);
+                    method: 'PUT',
+                    credentials: "include",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Credentials': true,
+                    },
+                    body: JSON.stringify({
+                        quizId: this.state.lectureId,
+                        val: this.state.sliderData,
+                        time: this.state.formattedTimestamp
+                    })
+                }).then(res => res.json()).then((data) => {
+                    console.log(data) 
+                    if(data === "OK"){ //successfully logged in
+                        localStorage.setItem("authenticated", "authenticated");
+                        console.log("successfully changed email")
+                        window.location.replace('/');            }
+                    else{
+                //window.location.replace('/login'); // need to flash that authentication failed
+                        console.log("email change fail")
+                    }
+                    this.setState({response: data})
+                }).catch(console.log)
+                    }
+                    
+                }, 20000);
         //console.log("clearing interval");
         //return () => clearInterval(interval);
     }

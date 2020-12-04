@@ -1,7 +1,6 @@
 import React from 'react'
-import { Button, Form, Grid, Header, Segment, Modal, Dropdown } from 'semantic-ui-react'
+import {Grid, Header, Segment} from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
-import GradesCard from './GradesCard';
 import ClassGradeCard from './ClassGradeCard';
 
 class GradesView extends React.Component {

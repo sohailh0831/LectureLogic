@@ -3,7 +3,6 @@ import { Button, Form, Grid, Header, Segment, List,Modal} from 'semantic-ui-reac
 import 'semantic-ui-css/semantic.min.css';
 import QuizCard from './QuizCard';
 import DateTimePicker from "react-datetime-picker";
-import GraphCard from "./GraphCard";
 
 class Quiz extends React.Component {
     constructor(props) {
