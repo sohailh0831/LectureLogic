@@ -29,6 +29,7 @@ class Confidence extends React.Component {
         this.getClassList = this.getClassList.bind(this);
         // this.handleClassNameChange = this.handleClassNameChange.bind(this);
         // this.handleClassDescChange = this.handleClassDescChange.bind(this);
+        this.handle
         
 
     }
@@ -125,24 +126,11 @@ class Confidence extends React.Component {
 
             return (
                 <Grid textAlign='center' style={{height: '100vh'}, {_width: '100vw'}} verticalAlign='middle' columns={2}>
-                    <ZingChart data={myConfig}/>
-
-                    <Grid.Column style={{width: "auto"}}>
-                        <Segment stacked textAlign="left" verticalAlign='left'>
-                            <p>Class Average Confidence: {this.state.response4}</p> 
-                        </Segment>
-                    </Grid.Column>
-
-                    <Grid.Column style={{width: "auto"}}>
-                        <Segment stacked textAlign="left" verticalAlign='middle'>
-                                    {Object.keys(this.state.response3).map(index => (
-                                        <List.Item>
-                                        <List.Header>Time Stamp: {index} </List.Header> 
-                                        <p>Confidence: {this.state.response3[index]}</p>
-                                        </List.Item>
-                                    ))}
-                        </Segment>
-                    </Grid.Column>
+                    <Segment>
+                        <Header>
+                            
+                        </Header>
+                    </Segment>
                 </Grid>
     
     
@@ -245,7 +233,22 @@ class Confidence extends React.Component {
         }
     } /* End getClassList(...) */
 
-
+    async handleGetStudentList(){
+        console.log("HERE");
+        await fetch('http://localhost:9000/requests?classId=' + this.props.classId ,{
+            method: 'GET',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            }
+        }).then(response => response.json())
+            .then(data => {
+                this.setState({studentList: Object.keys(data.results), results: data.results})
+                console.log(Object.keys(data.results)[0]);
+            }); // here's how u set variables u want to use later
+    }
 
 
 
