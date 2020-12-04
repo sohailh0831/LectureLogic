@@ -70,8 +70,8 @@ export default class ClassCard extends React.Component{
                                                 <p style={{fontSize: "75%"}} data-testid={"Class Description"}>{this.props.classDesc}</p>
                                                 {/* <p style={{fontSize: "75%"}} data-testid={"Class Id"}>({this.props.classId})</p> */}
                                             </div>
+                                            {/* \/\/\/ Modal for studentList \/\/\/*/}
                                             <Modal
-                                                
                                                 trigger={<Button color='blue' onClick={this.handleGetStudentList}>Students</Button>}
                                                 header={'Student List for ' + this.props.className}
                                                 content={this.state.studentList.map((index) => {

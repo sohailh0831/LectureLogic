@@ -15,7 +15,7 @@ class Confidence extends React.Component {
             response: '',
             response2: '',
             response3: '',
-            response4: '',
+            avgConfidence: '',
             classList: [],
             newClassDesc: '',
             type: '',
@@ -26,7 +26,7 @@ class Confidence extends React.Component {
         this.handleGetConfidence = this.handleGetConfidence.bind(this);
         this.handleGetAllConfidence = this.handleGetAllConfidence.bind(this);
         this.handleGetAvgConfidence = this.handleGetAvgConfidence.bind(this);
-        // this.getClassList = this.getClassList.bind(this);
+        this.getClassList = this.getClassList.bind(this);
         // this.handleClassNameChange = this.handleClassNameChange.bind(this);
         // this.handleClassDescChange = this.handleClassDescChange.bind(this);
         
@@ -56,6 +56,7 @@ class Confidence extends React.Component {
         console.log('before setting vars');
         //this.handleGetConfidence();
         this.handleGetAvgConfidence();
+        console.log(this.state.avgConfidence);
         this.handleGetAllConfidence();
         console.log('after setting vars');
 
@@ -185,7 +186,7 @@ class Confidence extends React.Component {
             }
         }).then(res => res.json()).then((data) => { 
             console.log("data",data);
-            this.setState({response4: data.Average})
+            this.setState({avgConfidence: data.Average})
             // window.location.replace('/dashboard');
         }).catch(console.log("ok"))
     } /* End handleAddClass(...) */
@@ -206,7 +207,43 @@ class Confidence extends React.Component {
         }).catch(console.log("ok"))
     } /* End handleAddClass(...) */
 
-
+    async getClassList() { //dont fuck with this... doesnt work
+        if (!this.state.listReceived) {
+            if (this.state.type === '1') { //----------IF STUDENT----------
+                await fetch('http://localhost:9000/class/studentClasses?user_id=' + this.state.userId ,{
+                    method: 'GET',
+                    credentials: "include",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Credentials': true,
+                      }
+                      // ,
+                    // body: JSON.stringify({
+                    //     id: this.state.userId
+                    // })
+                }).then(response => response.json())
+                .then(data => {
+                    this.setState({classList: data, listReceived: true})
+                }).catch(console.log);
+            }
+            else{ //----------IF INSTRUCTOR----------
+                console.log("Getting Instructor Classlist")
+                await fetch('http://localhost:9000/class/instructorClasses?user_id=' + this.state.userId ,{
+                    method: 'GET',
+                    credentials: "include",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Credentials': true,
+                    }
+                }).then(response => response.json())
+                .then(data => {
+                    this.setState({classList: data, listReceived: true})
+                }).catch(console.log);
+            }
+        }
+    } /* End getClassList(...) */
 
 
 

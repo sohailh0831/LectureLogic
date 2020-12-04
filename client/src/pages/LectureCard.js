@@ -1,6 +1,7 @@
 import React from "react";
 import {Card, Header, Modal, Button, Form, Popup, Dimmer, Segment} from "semantic-ui-react";
 import {Link} from "react-router-dom";
+import GraphCard from './GraphCard';
 
 
 export default class LectureCard extends React.Component{
@@ -15,7 +16,8 @@ export default class LectureCard extends React.Component{
             tempLectureDesc: '',
             tempLectureSection: '',
             tmepLectureVideo: '',
-            dimmed: true
+            dimmed: true,
+            studentConfList: []
         }
         this.handleGetStudentList = this.handleGetStudentList.bind(this);
         this.handleEditLecture = this.handleEditLecture.bind(this);
@@ -26,6 +28,7 @@ export default class LectureCard extends React.Component{
         this.handleLectureVideoLinkChange = this.handleLectureVideoLinkChange.bind(this);
         this.handleDimmer = this.handleDimmer.bind(this);
         this.handleUpdateHideFlag = this.handleUpdateHideFlag.bind(this);
+        this.handleGetAllConfidence = this.handleGetAllConfidence.bind(this);
     }
 
     async componentDidMount(){
@@ -39,6 +42,8 @@ export default class LectureCard extends React.Component{
             lectureViewedFlag: this.props.lectureViewedFlag,
             temp: this.props.type
         });
+
+        this.handleGetAllConfidence();
     }
 
     render() {
@@ -196,6 +201,15 @@ export default class LectureCard extends React.Component{
 
                                             {hideButton} {/* See functionality above... if the object is supposed to be hidden, it should have a make visible button, else a hide button */}
 
+                                            <Modal
+                                                trigger={<Button onClick={this.handleGetAllConfidence}>Stats</Button>}
+                                                header={'Confidence for ' + this.state.lectureName}
+                                                // content={this.state.studentConfList.map((entry, index) => {
+                                                //             return(<GraphCard studentName={this.state.results[index]} studentEmail={index} gradeFlag={0}/>);
+                                                //         })}
+                                                content={<Header>hey</Header>}
+                                                actions={['Close']}
+                                            />
                                             {/* {<Button content='Delete' ></Button>} */}
                                         {/* </Dropdown.Menu> */}
                                     {/* </Dropdown> */}
@@ -316,6 +330,27 @@ export default class LectureCard extends React.Component{
                 console.log(Object.keys(data.results)[0]);
             }); // here's how u set variables u want to use later
     }
+
+    async handleGetAllConfidence() {
+        console.log('Getting all confidence');
+        console.log(this.props.lectureId);
+        await fetch("http://localhost:9000/allconfidence?quizId=" + this.props.lectureId, {
+            method: 'GET',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            }
+        }).then(res => res.json()).then((data) => {
+            console.log('STUDENT CONF LIST: ');
+            console.log(data);
+            console.log(data.record);
+            // Object.keys(data.record)
+            this.setState({studentConfList: data});
+            // window.location.replace('/dashboard');
+        }).catch(console.log("ok"))
+    } /* End handleAddClass(...) */
 
     async handleUpdateHideFlag(){
         let tmpHide = this.props.hidden;

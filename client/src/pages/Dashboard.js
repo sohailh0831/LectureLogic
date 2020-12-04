@@ -86,7 +86,7 @@ class Dashboard extends React.Component {
                         </Header>
                     </Grid.Row>
 
-                    <Grid.Row style={{height: '90vh'}} columns={3}>             {/* Main body of screen */}
+                    <Grid.Row style={{height: '90vh'}} columns={2}>             {/* Main body of screen */}
                         <Grid.Column style={{width: '50vw'}}>
                             <Header as = 'h2' color = 'grey' textAlign = 'center' horizontalAlign='center'>
                                 ClassList
@@ -125,7 +125,7 @@ class Dashboard extends React.Component {
                             {/* use a column here to add another column like on the student page. Example below copied from student dashboard */}
                         {/* <Grid.Column style={{width: '50vw'}}>
                             <Header as = 'h2' color = 'grey' textAlign = 'center' horizontalAlign='center'>
-                                Your Questions
+                                
                             </Header>
 
                             {yourQuestions}
@@ -198,7 +198,7 @@ class Dashboard extends React.Component {
                             )}
                         </Grid.Column >
                             
-                        <Grid.Column style={{width: '50vw'}}>
+                        <Grid.Column style={{width: '50vw', maxHeight: '90vh'}}>
                             <Header as = 'h2' color = 'grey' textAlign = 'center' horizontalAlign='center'>
                                 Your Questions
                             </Header>
@@ -207,7 +207,7 @@ class Dashboard extends React.Component {
 
                         </Grid.Column>
 
-                        <Grid.Column>
+                        <Grid.Column style={{maxHeight: '90vh'}}>
                             <Header as = 'h2' color = 'grey' textAlign = 'center' horizontalAlign='center'>
                                 Upcoming Quizzes
                             </Header>
