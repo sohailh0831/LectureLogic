@@ -216,7 +216,7 @@ function getAllConfidence(req, res) {
         }
     
         let con = mysql.createConnection(dbInfo);
-        con.query(`select confidence, name, record from quiz LEFT JOIN user ON quiz.uuid = user.id WHERE lecId = ${req.query.quizId}`, (error, results, fields) => { 
+        con.query(`select confidence, name, uuid, record from quiz LEFT JOIN user ON quiz.uuid = user.id WHERE lecId = ${req.query.quizId}`, (error, results, fields) => { 
             if (error) {
                 console.log(error.stack);
                 con.end();
