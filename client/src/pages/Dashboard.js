@@ -3,6 +3,8 @@ import { Button, Form, Grid, Header, Segment, Modal } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 import ClassCard from './ClassCard';
 import QuestionCard from './QuestionCard';
+import QuizCard from './QuizCard';
+import DashboardQuizCard from './DashboardQuizCard';
 
 class Dashboard extends React.Component {
     constructor(props) {
@@ -18,13 +20,15 @@ class Dashboard extends React.Component {
             school: '',
             listReceived: false,
             studentList: [],
-            studentQuestions:[]
+            studentQuestions:[],
+            classQuizzes: []
         };
         this.handleAddClass = this.handleAddClass.bind(this);
         this.getClassList = this.getClassList.bind(this);
         this.handleClassNameChange = this.handleClassNameChange.bind(this);
         this.handleClassDescChange = this.handleClassDescChange.bind(this);
         this.handleGetStudentQuestions = this.handleGetStudentQuestions.bind(this);
+        this.handleGetQuizzes = this.handleGetQuizzes.bind(this);
         
 
     }
@@ -52,9 +56,7 @@ class Dashboard extends React.Component {
     
         this.getClassList();
         this.handleGetStudentQuestions();
-        console.log('studentQuestions:');
-        console.log(this.state.studentQuestions);
-
+        console.log('end of component did mount');
     }
 
     compo
@@ -72,8 +74,9 @@ class Dashboard extends React.Component {
 
         console.log(this.state.classList);
         console.log("SCHOOL "+this.state.school);
-        if (this.state.response.type === '0') {
+        if (this.state.response.type === '0') { //if instructor
             //console.log("DASH TYPE: "+this.state.response.type);
+
             return (
                 <Grid style={{maxWidth: '100vw', maxHeight: '100vh'}} textAlign='center' rows={2}>
                     <Grid.Row style={{height: '10vh'}} textAlign='center'>     {/* Name of College */}
@@ -83,7 +86,7 @@ class Dashboard extends React.Component {
                         </Header>
                     </Grid.Row>
 
-                    <Grid.Row style={{height: '90vh'}} columns={2}>             {/* Main body of screen */}
+                    <Grid.Row style={{height: '90vh'}} columns={3}>             {/* Main body of screen */}
                         <Grid.Column style={{width: '50vw'}}>
                             <Header as = 'h2' color = 'grey' textAlign = 'center' horizontalAlign='center'>
                                 ClassList
@@ -139,16 +142,17 @@ class Dashboard extends React.Component {
         } 
         else {  //if student
             //Sets up question list
+
             var yourQuestions;
             if (this.state.studentQuestions.length === 0) {
-                console.log("studentQuestions empty");
+                //console.log("studentQuestions empty");
                 yourQuestions=
                 <Header as = 'h2' color = 'grey' textAlign = 'center' horizontalAlign='center'>
                     No Questions Asked
                 </Header>
             }
             else {
-                console.log("studentQuestions not empty");
+                //console.log("studentQuestions not empty");
                 yourQuestions=
                 this.state.studentQuestions.map((entry) =>{
                     return(<QuestionCard lectureId={0} commenter={this.state.username} question={entry.question} studentFlag={1} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href} type={this.state.response.type} classId={entry.classId}></QuestionCard>);                                 
@@ -164,7 +168,7 @@ class Dashboard extends React.Component {
                         </Header>
                     </Grid.Row>
 
-                    <Grid.Row style={{height: '90vh'}} columns={2}>             {/* Main body of screen */}
+                    <Grid.Row style={{height: '90vh'}} columns={3}>             {/* Main body of screen */}
                         <Grid.Column style={{width: '50vw'}}>
                             <Header as = 'h2' color = 'grey' textAlign = 'center' horizontalAlign='center'>
                                 ClassList
@@ -201,6 +205,19 @@ class Dashboard extends React.Component {
 
                             {yourQuestions}
 
+                        </Grid.Column>
+
+                        <Grid.Column>
+                            <Header as = 'h2' color = 'grey' textAlign = 'center' horizontalAlign='center'>
+                                Upcoming Quizzes
+                            </Header>
+
+                            {this.state.classList.map((entry, x) =>{
+                                console.log('DASHBOARD CLASSID: ');
+                                console.log(entry);
+                                console.log(this.state.classList);
+                                return(<DashboardQuizCard className={entry.name} classId={entry.id} type={this.state.type}/>) ;        
+                            })}
                         </Grid.Column>
                     </Grid.Row>
 
@@ -259,6 +276,36 @@ class Dashboard extends React.Component {
         }).catch(console.log);
     }
 
+    async handleGetQuizzes(x){
+        var link;
+        var toReturn;
+        if(this.state.type == 0){ // if instructor
+            link = "http://localhost:9000/quiz/getAllQuizzes";
+        }
+        else{ //if student .. only showing published quizzes and not already taken quizzes
+            link = "http://localhost:9000/quiz/getAllQuizzesStudent"
+        }
+        await fetch(link ,{
+        method: 'POST',
+        credentials: "include",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Credentials': true,
+        },
+        body: JSON.stringify({
+            classId: x,
+            type: this.state.type
+        })
+        }).then(response => response.json())
+        .then(data => {
+            toReturn = data
+            console.log("HEREEEEEEEEEEEEEEEEEEEEEEEEEEE");
+            console.log(data);
+            return(data);
+        }).catch(console.log); 
+
+    }
 
 
     async handleAddClass() {
