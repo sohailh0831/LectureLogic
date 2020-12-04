@@ -101,7 +101,7 @@ class LectureView extends React.Component {
                 'Access-Control-Allow-Credentials': true,
             },
             body: JSON.stringify({
-                quizId: 1,
+                quizId: this.state.lectureId,
                 val: this.state.sliderData,
                 time: this.state.formattedTimestamp
             })
