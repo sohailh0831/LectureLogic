@@ -1,7 +1,6 @@
 import React from "react";
-import {Grid, Card, Header, Modal, Button, Form, Popup, Dimmer, Segment, Input} from "semantic-ui-react";
-import {Link} from "react-router-dom";
-import { Test, QuestionGroup, Question, Option } from 'react-multiple-choice';
+import {Grid, Card, Header, Modal, Button, Input} from "semantic-ui-react";
+import { Test} from 'react-multiple-choice';
 import GradeQuizQuestionCard from "./GradeQuizQuestionCard";
 
 export default class GradesCard extends React.Component{

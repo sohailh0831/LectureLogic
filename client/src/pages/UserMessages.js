@@ -1,5 +1,5 @@
 import React from 'react'
-import { Button, Form, Grid, Header, Segment, Popup, Modal, List } from 'semantic-ui-react'
+import {Form, Grid, Segment, List } from 'semantic-ui-react'
 import 'semantic-ui-css/semantic.min.css';
 
 class UserMessages extends React.Component {

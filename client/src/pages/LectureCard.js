@@ -1,5 +1,5 @@
 import React from "react";
-import {Card, Header, Modal, Button, Form, Popup, Dimmer, Segment} from "semantic-ui-react";
+import {Card, Header, Modal, Button, Form, Dimmer, Segment} from "semantic-ui-react";
 import {Link} from "react-router-dom";
 import GraphCard from './GraphCard';
 
@@ -217,7 +217,7 @@ export default class LectureCard extends React.Component{
                                                 // content={this.state.studentConfList.map((entry, index) => {
                                                 //             return(<GraphCard studentName={this.state.results[index]} studentEmail={index} gradeFlag={0}/>);
                                                 //         })}
-                                                content={<Header>hey</Header>}
+                                                content={null}//<GraphCard studentConfList={this.state.studentConfList} studentName={this.props.studentName} studentId={this.props.studentId} classname={this.props.className} lectureName={this.props.lectureName}></GraphCard>}
                                                 actions={['Close']}
                                             />
                                             {/* {<Button content='Delete' ></Button>} */}
@@ -365,6 +365,7 @@ export default class LectureCard extends React.Component{
             console.log('STUDENT CONF LIST: ');
             console.log(data);
             console.log(data.record);
+            var tmp = JSON.stringify(data.record);
             // Object.keys(data.record)
             this.setState({studentConfList: data});
             // window.location.replace('/dashboard');

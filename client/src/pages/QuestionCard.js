@@ -1,5 +1,5 @@
 import React from "react";
-import {Card, Header, Modal, Button, Form, Checkbox, Input, List} from "semantic-ui-react";
+import {Card, Header, Modal, Button, Form, Checkbox, Input} from "semantic-ui-react";
 
 
 export default class QuestionCard extends React.Component{

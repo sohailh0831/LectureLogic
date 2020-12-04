@@ -1,5 +1,5 @@
 import React from 'react'
-import {Form, Grid, Segment, List, Progress, Header } from 'semantic-ui-react';
+import {Grid, Segment, List } from 'semantic-ui-react';
 import 'semantic-ui-css/semantic.min.css';
 import ZingChart from 'zingchart-react'
 import {zingchart, ZC} from 'zingchart/es6';

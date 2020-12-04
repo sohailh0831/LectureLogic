@@ -1,6 +1,5 @@
 import React from "react";
-import {Card, Header, Modal, Button} from "semantic-ui-react";
-import {Link} from "react-router-dom";
+import {} from "semantic-ui-react";
 import 'semantic-ui-css/semantic.min.css';
 import ZingChart from 'zingchart-react'
 import {zingchart, ZC} from 'zingchart/es6';

@@ -219,7 +219,7 @@ class ClassPage extends React.Component {
                             {/* Class Card */}
                             <Segment stacked textAlign="left" verticalAlign='middle' style={{overflow: 'auto'}}>
                             {this.state.lectureList.map((lectureList, index) => { 
-                                return(<LectureCard maxWidth='50vw' hidden ={this.state.lectureList[index].hiddenFlag} className={this.state.className} lectureId={this.state.lectureList[index].id} lectureName={this.state.lectureList[index].name} lectureDesc={this.state.lectureList[index].description} lectureSection={this.state.lectureList[index].section} lectureVideoLink={this.state.lectureList[index].video_link} type={this.state.response.type} minConf={this.state.lectureList[index].minConf}/>)
+                                return(<LectureCard maxWidth='50vw' studentId={this.state.userId} studentName={this.state.userName} hidden ={this.state.lectureList[index].hiddenFlag} className={this.state.className} lectureId={this.state.lectureList[index].id} lectureName={this.state.lectureList[index].name} lectureDesc={this.state.lectureList[index].description} lectureSection={this.state.lectureList[index].section} lectureVideoLink={this.state.lectureList[index].video_link} type={this.state.response.type} minConf={this.state.lectureList[index].minConf}/>)
                             })}
                             </Segment>
                         </Segment>
@@ -323,7 +323,7 @@ class ClassPage extends React.Component {
                             <Segment>
                                 {this.state.lectureList.map((lectureList, index) => {
                                         if (this.state.lectureList[index].hiddenFlag == 0) { //if statement to hide lecture if the instructor has declared the lecture hidden
-                                            return(<LectureCard className={this.state.className} lectureId={this.state.lectureList[index].id} lectureName={this.state.lectureList[index].name} lectureDesc={this.state.lectureList[index].description} lectureSection={this.state.lectureList[index].section} lectureVideoLink={this.state.lectureList[index].video_link} lectureViewedFlag={this.state.lectureList[index].viewedFlag} type={this.state.response.type} minConf={this.state.lectureList[index].minConf}/>)
+                                            return(<LectureCard studentId={this.state.userId} studentName={this.state.userName} className={this.state.className} lectureId={this.state.lectureList[index].id} lectureName={this.state.lectureList[index].name} lectureDesc={this.state.lectureList[index].description} lectureSection={this.state.lectureList[index].section} lectureVideoLink={this.state.lectureList[index].video_link} lectureViewedFlag={this.state.lectureList[index].viewedFlag} type={this.state.response.type} minConf={this.state.lectureList[index].minConf}/>)
                                         }
                                     }
                                 )}

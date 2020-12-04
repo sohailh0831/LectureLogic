@@ -1,6 +1,5 @@
 import React from "react";
-import {Card, Header, Modal, Button, Form, Popup, Dimmer, Segment} from "semantic-ui-react";
-import {Link} from "react-router-dom";
+import {Card, Header, Modal, Button, Segment} from "semantic-ui-react";
 import GradesCard from './GradesCard.js';
 import ClassDetailsCard from './ClassDetailsCard';
 
