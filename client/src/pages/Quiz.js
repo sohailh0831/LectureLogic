@@ -32,6 +32,7 @@ class Quiz extends React.Component {
             openNewQuizModal: false,
             isLocked: false,
             newQuizName: '',
+            newMinGrade: '',
             newQuizStartDate: '',
             newQuizDueDate: '',
             newQuizShowAnswers: '',
@@ -43,6 +44,7 @@ class Quiz extends React.Component {
         this.handleOpenNewQuizModal = this.handleOpenNewQuizModal.bind(this);
         this.handleCloseNewQuizModal = this.handleCloseNewQuizModal.bind(this);
         this.handleQuizNameChange = this.handleQuizNameChange.bind(this);
+        this.handleMinGradeChange = this.handleMinGradeChange.bind(this);
         this.hidePicker = this.hidePicker.bind(this);
         this.handlePicker = this.handlePicker.bind(this);
         this.setDate = this.setDate.bind(this);
@@ -115,33 +117,61 @@ class Quiz extends React.Component {
                     open={this.state.openNewQuizModal}
                     //close={!this.state.openModal}
                 >
-                    <Modal.Header>New Quiz</Modal.Header>
-                    <Modal.Content>
-                        <Modal.Description>
-                            Quiz Name:
+                <Modal.Header>New Quiz</Modal.Header>
+                <Modal.Content>
+                    <Modal.Description>
+                        Quiz Name:
+                    <Form.Input
+                            placeholder='Enter Quiz Name Here'
+                            value={this.state.newQuizName}
+                            onChange={this.handleQuizNameChange}
+                        />
+                        Minimum Grade:
+                    <Form.Input
+                            placeholder='(0-100) Notified If Student Grade Below Value'
+                            value={this.state.newMinGrade}
+                            onChange={this.handleMinGradeChange}
+                        />
+                    {/* <Form.Input
+                            placeholder='(0-100) Notified If Student Grade Below Value'
+                            value={this.state.newMinGrade}
+                            onChange={this.handleNewMinGrade}
+                        /> */}
+                        Start Date: 
                         <Form.Input
-                                placeholder='Enter Quiz Name Here'
-                                value={this.state.newQuizName}
-                                onChange={this.handleQuizNameChange}
-                            />
-                            Start Date: 
-                            <Form.Input
-                                placeholder='Enter Time (in format: 2020-12-05 23:00:00)'
-                                value={this.state.newQuizStartDate}
-                                onChange={this.handleQuizStartDateChange}
+                            placeholder='Enter Time (in format: 2020-12-05 23:00:00)'
+                            value={this.state.newQuizStartDate}
+                            onChange={this.handleQuizStartDateChange}
+                            
+                    >
+                        <DateTimePicker 
+                                    value={this.state.date} 
+                                    isVisible={this.state.isVisible}
+                                    mode={'datetime'}
+                                    is24Hour={true}
+                                    onConfirm={this.handlePicker}
+                                    onCancel={this.hidePicker}
+                                    onChange={this.setDate}
+                                />
+                    </Form.Input>
+                    Due Date: 
+                        <Form.Input
+                            placeholder='Enter Time (2020-12-05 23:00:00)'
+                            value={this.state.newQuizDueDate}
+                            onChange={this.handleQuizDueDateChange}
+                    >
+                        <DateTimePicker 
+                                    value={this.state.date1} 
+                                    isVisible={this.state.isVisible1}
+                                    mode={'datetime'}
+                                    is24Hour={true}
+                                    onConfirm={this.handlePicker1}
+                                    onCancel={this.hidePicker1}
+                                    onChange={this.setDate1}
                                 
-                        >
-                            <DateTimePicker 
-                                        value={this.state.date} 
-                                        isVisible={this.state.isVisible}
-                                        mode={'datetime'}
-                                        is24Hour={true}
-                                        onConfirm={this.handlePicker}
-                                        onCancel={this.hidePicker}
-                                        onChange={this.setDate}
-                                    />
+                    />
                         </Form.Input>
-                        Due Date: 
+                        {/* Due Date: 
                             <Form.Input
                                 placeholder='Enter Time (2020-12-05 23:00:00)'
                                 value={this.state.newQuizDueDate}
@@ -156,7 +186,7 @@ class Quiz extends React.Component {
                                         onCancel={this.hidePicker1}
                                         onChange={this.setDate1}
                                     />
-                        </Form.Input>
+                        </Form.Input> */}
                         </Modal.Description>
                     </Modal.Content>
                     <Modal.Actions>
@@ -236,6 +266,9 @@ class Quiz extends React.Component {
     handleQuizNameChange(event) {
         this.setState({newQuizName: event.target.value});
     }
+    handleMinGradeChange(event) {
+        this.setState({newMinGrade: event.target.value});
+    }
     handleQuizStartDateChange(event) {
         this.setState({newQuizStartDate: event.target.value});
     }
@@ -294,7 +327,8 @@ class Quiz extends React.Component {
             instructorId: this.state.userId,
             quizStartDate: this.state.newQuizStartDate || Date(),
             quizDueDate: this.state.newQuizDueDate,
-            showAnswers: sA
+            showAnswers: sA,
+            minGrade: this.state.newMinGrade
             
         })
 

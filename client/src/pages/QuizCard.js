@@ -16,6 +16,7 @@ export default class QuizCard extends React.Component{
             
         }
           this.handleEditQuiz = this.handleEditQuiz.bind(this);
+          this.handleStudentType = this.handleStudentType.bind(this);
           this.handleTakeQuiz = this.handleTakeQuiz.bind(this);
 
     }
@@ -46,8 +47,10 @@ export default class QuizCard extends React.Component{
     render() {  
 
         var quizButton;
+        var quizButton1;
         if(this.props.type == "0"){
             quizButton =  <Button onClick={this.handleEditQuiz} >  Edit Quiz </Button> 
+            quizButton1 =  <Button onClick={this.handleStudentType} >  Student Types </Button> 
         }
         else{
             var index;
@@ -76,6 +79,7 @@ export default class QuizCard extends React.Component{
                             <div className="right aligned">
                                 {/* Add variable to change name on button from Click to respond to Click to see responces */}
                                 {quizButton}
+                                {quizButton1}
 
                             </div>
                             <Header as='h4' textAlign="left" dividing>
@@ -104,6 +108,10 @@ export default class QuizCard extends React.Component{
 
   async handleEditQuiz(){
       var link = "http://localhost:3000/editQuiz/" + this.props.classId +"/" + this.props.quizId;
+      window.location.replace(link);
+  } 
+  async handleStudentType(){
+      var link = "http://localhost:3000/studentType/" + this.props.classId +"/" + this.props.quizId;
       window.location.replace(link);
   } 
   async handleTakeQuiz(){
