@@ -219,6 +219,12 @@ class ClassPage extends React.Component {
                             {/* Class Card */}
                             <Segment stacked textAlign="left" verticalAlign='middle' style={{overflow: 'auto'}}>
                             {this.state.lectureList.map((lectureList, index) => { 
+                                 console.log('NEXT 3 LINES!!!!!!!!!!!!');
+                                 console.log(this.state.username);
+                                 console.log(this.state.userName);
+                                 console.log(this.state.userId);
+                                 console.log(this.state.lectureId);
+                                 console.log(this.props.className);
                                 return(<LectureCard maxWidth='50vw' studentId={this.state.userId} studentName={this.state.userName} hidden ={this.state.lectureList[index].hiddenFlag} className={this.state.className} lectureId={this.state.lectureList[index].id} lectureName={this.state.lectureList[index].name} lectureDesc={this.state.lectureList[index].description} lectureSection={this.state.lectureList[index].section} lectureVideoLink={this.state.lectureList[index].video_link} type={this.state.response.type} minConf={this.state.lectureList[index].minConf}/>)
                             })}
                             </Segment>

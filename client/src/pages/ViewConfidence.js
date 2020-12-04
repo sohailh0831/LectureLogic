@@ -29,7 +29,6 @@ class Confidence extends React.Component {
         this.getClassList = this.getClassList.bind(this);
         // this.handleClassNameChange = this.handleClassNameChange.bind(this);
         // this.handleClassDescChange = this.handleClassDescChange.bind(this);
-        this.handle
         
 
     }
@@ -127,9 +126,7 @@ class Confidence extends React.Component {
             return (
                 <Grid textAlign='center' style={{height: '100vh'}, {_width: '100vw'}} verticalAlign='middle' columns={2}>
                     <Segment>
-                        <Header>
-                            
-                        </Header>
+                        
                     </Segment>
                 </Grid>
     

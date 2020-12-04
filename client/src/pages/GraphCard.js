@@ -23,7 +23,7 @@ export default class GraphCard extends React.Component{
     render() {
         //setup for graph using values from props
         console.log("RESUlts");
-        console.log(this.props.studentConfList[0].record);
+        console.log(this.props.studentConfList[0]);
 
         let data = [];
         data = JSON.parse(this.props.studentConfList[0].record);
@@ -47,7 +47,7 @@ export default class GraphCard extends React.Component{
         let myConfig = {
             type: 'bar',
             title: {
-                text: '' + this.props.studentName + '\'s Confidence Level for ' + this.props.className,
+                text: 'Confidence Levels for ' + this.props.studentName,
                 fontSize: 24,
             },
             scaleX: {
