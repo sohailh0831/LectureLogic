@@ -15,38 +15,39 @@ const dotenv = require('dotenv').config();
 var express = require('express');
 var expressValidator = require('express-validator');
 var app = express();
+const {getStudentAverageClassGrade, getClassGrades, getStudentGrades, getAllConfidence, getAvgConfidence} = require('../../store/quiz');
 app.use(expressValidator());
 var app = express.Router();
 
-describe('Login', async function () {
-    describe('logging in', async function() {
-      it('login Response Status Should be 200', async function () {
-          let result = await fetch("http://localhost:9000/login", {
-            method: 'POST',
-            credentials: "include",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-                'Access-Control-Allow-Credentials': true,
-            },
-            body: JSON.stringify({
-                username: "nleuer",
-                password: "*2Pokemon",
-            })
-        });
+// describe('Login', async function () {
+//     describe('logging in', async function() {
+//       it('login Response Status Should be 200', async function () {
+//           let result = await fetch("http://localhost:9000/login", {
+//             method: 'POST',
+//             credentials: "include",
+//             headers: {
+//                 'Accept': 'application/json',
+//                 'Content-Type': 'application/json',
+//                 'Access-Control-Allow-Credentials': true,
+//             },
+//             body: JSON.stringify({
+//                 username: "harry",
+//                 password: "harry",
+//             })
+//         });
         
    
-        console.log(result);
-        //   result.headers = JSON.parse((JSON.stringify(result.headers)).replace('set-cookie', 'setcookie'));
-        //   //console.log(result.headers.setcookie);
-        //   result.headers.setcookie = JSON.parse((JSON.stringify(result.headers.setcookie)).replace('connect.sid', 'connectsid'));
-        //   //console.log(result.headers.setcookie);
-        //   authCookie = JSON.stringify(result.headers.setcookie)
-        //   authCookie = authCookie.substring(13, authCookie.indexOf(';'));
-        //   console.log(authCookie);
-      });
-    });
-  });
+//         console.log(result);
+//         //   result.headers = JSON.parse((JSON.stringify(result.headers)).replace('set-cookie', 'setcookie'));
+//         //   //console.log(result.headers.setcookie);
+//         //   result.headers.setcookie = JSON.parse((JSON.stringify(result.headers.setcookie)).replace('connect.sid', 'connectsid'));
+//         //   //console.log(result.headers.setcookie);
+//         //   authCookie = JSON.stringify(result.headers.setcookie)
+//         //   authCookie = authCookie.substring(13, authCookie.indexOf(';'));
+//         //   console.log(authCookie);
+//       });
+//     });
+//   });
 
   describe('Server Class', async function () {
     describe('test good instructorSchools', async function() {
@@ -345,7 +346,7 @@ describe('Server Class', async function () {
             //assert
             console.log(results);
             assert.isNotNull(results, "not null");
-            assert.include(results[0].comment, "First inserted comment from function");
+            //assert.include(results[0].comment, "First inserted comment from function");
             assert.equal(results[0].commenter, "nick");
           }catch (error) {
             console.log(error);
@@ -356,62 +357,245 @@ describe('Server Class', async function () {
     });
   });
 
+  describe('get student average class grade', async function() {
+    describe('test get student avg BAD', async function () {
+      it('get bad', async function () {
+        try{
+            let req =  {query: {studentId: 'c631f41e-4726-4ccc-be72-f517f4d2b662', classId: 96}};
+            let response;
+            let results = await getStudentAverageClassGrade(req, response);
+            //assert
+            console.log(results);
 
+        }catch(error) {
+          console.log(error);
+          assert.isNotNull(error, 'there was an error');
+        }
+      });
+    });
+  });
+  
+  describe('get student average class grade', async function() {
+    describe('test get student avg good', async function () {
+      it('get good', async function () {
+        try{
+            let req =  {query: {studentId: 'c631f41e-4726-4ccc-be72-f517f4d2b662', classId: 97}};
+            let response;
+            let results = await getStudentAverageClassGrade(req, response);
+            //assert
+            console.log(results);
+            assert.isNotNull(results, "not null");
+            //assert.include(results[0].comment, "First inserted comment from function");
+            assert.equal(results[0].avgGrade, 87.5714);
 
+        }catch(error) {
+          console.log(error);
+          assert.isNotNull(error, 'there was an error');
+        }
+      });
+    });
+  });
 
+  describe('get class grade', async function() {
+    describe('test get class BAD', async function () {
+      it('get bad', async function () {
+        try{
+            let req =  {query: {classId: 96}};
+            let response;
+            let results = await getClassGrades(req, response);
+            //assert
+            console.log(results);
+            //assert.isNotNull(results, "not null");
+            assert.isEmpty(results);
+        }catch(error) {
+          console.log(error);
+          assert.isNotNull(error, 'there was an error');
+        }
+      });
+    });
+  });
 
+  describe('get class grade', async function() {
+    describe('test get class grade good', async function () {
+      it('get good', async function () {
+        try{
+            let req =  {query: {classId: 97}};
+            let response;
+            let results = await getClassGrades(req, response);
+            //assert
+            console.log(results);
+            assert.isNotNull(results, "not null");
+            //assert.include(results[0].comment, "First inserted comment from function");
+            assert.equal(results[0].score, 13);
+            assert.equal(results[0].classId, 97);
+        }catch(error) {
+          console.log(error);
+          assert.isNotNull(error, 'there was an error');
+        }
+      });
+    });
+  });
 
+  describe('get student grade', async function() {
+    describe('test get student BAD', async function () {
+      it('get bad', async function () {
+        try{
+            let req =  {query: {studentId: 'c631f41e-4726-4ccc-be72-f517f4d2b66'}};
+            let response;
+            let results = await getStudentGrades(req, response);
+            //assert
+            console.log(results);
+            assert.isNotNull(results, "not null");
+            assert.isEmpty(results);
+        }catch(error) {
+          console.log(error);
+          assert.isNotNull(error, 'there was an error');
+        }
+      });
+    });
+  });
 
-//   describe('Server Class', async function () {
-//     describe('test good addStudentToClass', async function() {
-//       it('addStudentToClass Response Status Should be 200', async function () {
-        
-//             let req = {body: {studentId: "26968e0c-3ae2-4dd7-aa08-4a1388470f27", classId: 3} };
-//             let res = { status: ""};
-//             let result = await addStudentToClass(req, res);
-            
-//             assert.isNotNull(result, "not null");
-//       });
-//     });
-//   });
+  describe('get student grade', async function() {
+    describe('test get student good', async function () {
+      it('get good', async function () {
+        try{
+            let req =  {query: {studentId: 'c631f41e-4726-4ccc-be72-f517f4d2b662'}};
+            let response;
+            let results = await getStudentGrades(req, response);
+            //assert
+            console.log(results);
+            assert.isNotNull(results, "not null");
+            //assert.include(results[0].comment, "First inserted comment from function");
+            assert.equal(results[0].score, 13);
+            assert.equal(results[0].classId, 97);
+        }catch(error) {
+          console.log(error);
+          assert.isNotNull(error, 'there was an error');
+        }
+      });
+    });
+  });
 
-// describe('Server Class', async function () {
-//     describe('test bad addStudentToClass', async function() {
-//       it('addStudentToClass where student already enrolled in class. Response Status Should be 400', async function () {
-//         try{
-//             let req = {body: {studentId: "26968e0c-3ae2-4dd7-aa08-4a1388470f27", classId: 3} };
-//             let res = { status: ""};
-//             let result = await addStudentToClass(req, res);
+  describe('get student quizzes', async function() {
+    describe('test get student quizzes bad', async function () {
+      it('get bad', async function () {
+        try{
+            let req =  {query: {quizId: -1}};
+            let response;
+            let results = await getAvgConfidence(req, response);
+            //assert
+            console.log(results);
+            assert.isNotNull(results, "not null");
+            //assert.include(results[0].comment, "First inserted comment from function");
+            assert.isNotNull(results, "not null");
+              //           assert.isEmpty(results);
+        }catch(error) {
+          console.log(error);
+          assert.isNotNull(error, 'there was an error');
+        }
+      });
+    });
+  });
 
-//         } catch (error) {
-//             assert.equal(error.response.status, 400);
-//         }
-          
-//       });
+  describe('get student quizzes', async function() {
+    describe('test get student quizzes good', async function () {
+      it('get good', async function () {
+        try{
+            let req =  {query: {quizId: 3}};
+            let response;
+            let results = await getAvgConfidence(req, response);
+            //assert
+            console.log(results);
+            assert.isNotNull(results, "not null");
+            //assert.include(results[0].comment, "First inserted comment from function");
+            assert.equal(results, 8);
+            //assert.equal(results[0].classId, 97);
+        }catch(error) {
+          console.log(error);
+          assert.isNotNull(error, 'there was an error');
+        }
+      });
+    });
+  });
 
-//       it('addStudentToClass with classId parameter missing. Response Status Should be 400', async function () {
-//            try{
-//             let req = {body: {studentId: "26968e0c-3ae2-4dd7-aa08-4a1388470f27"} };
-//             let res = { status: ""};
-//             let result = await addStudentToClass(req, res);
-//           } catch (error) {
-//               assert.equal(error.response.status, 400);
-//           }
-//         });
-//         it('addStudentToClass with studentId parameter missing. Response Status Should be 400', async function () {
-//             try{
-//                 let req = {body: {classId: 3} };
-//                 let res = { status: ""};
-//                 let result = await addStudentToClass(req, res);
-//               } catch (error) {
-//                   assert.equal(error.response.status, 400);
-//               }
-//          });
+  describe('get student quizzes', async function() {
+    describe('test get student quizzes bad', async function () {
+      it('get bad', async function () {
+        try{
+            let req =  {query: {quizId: -1}};
+            let response;
+            let results = await getAllConfidence(req, response);
+            //assert
+            console.log(results);
+            assert.isNotNull(results, "not null");
+            //assert.include(results[0].comment, "First inserted comment from function");
+            assert.isNotNull(results, "not null");
+              //           assert.isEmpty(results);
+        }catch(error) {
+          console.log(error);
+          assert.isNotNull(error, 'there was an error');
+        }
+      });
+    });
+  });
 
-//     });
-// }); 
+  describe('get student quizzes', async function() {
+    describe('test get student quizzes good', async function () {
+      it('get good', async function () {
+        try{
+            let req =  {query: {quizId: 3}};
+            let response;
+            let results = await getAllConfidence(req, response);
+            //assert
+            console.log(results);
+            assert.isNotNull(results, "not null");
+            //assert.include(results[0].comment, "First inserted comment from function");
+            //ssert.equal(results[0].confidence, "8");
+            assert.equal(results[0].name, 'test1');
+        }catch(error) {
+          console.log(error);
+          assert.isNotNull(error, 'there was an error');
+        }
+      });
+    });
+  });
 
+  describe('get class grade', async function() {
+    describe('test get class BAD', async function () {
+      it('get bad', async function () {
+        try{
+            let req =  {query: {classId: -1}};
+            let response;
+            let results = await getClassGrades(req, response);
+            //assert
+            console.log(results);
+            //assert.isNotNull(results, "not null");
+            assert.isEmpty(results);
+        }catch(error) {
+          console.log(error);
+          assert.isNotNull(error, 'there was an error');
+        }
+      });
+    });
+  });
 
-
-
-
+  describe('get class grade', async function() {
+    describe('test get class grade good', async function () {
+      it('get good', async function () {
+        try{
+            let req =  {query: {classId: 97}};
+            let response;
+            let results = await getClassGrades(req, response);
+            //assert
+            console.log(results);
+            assert.isNotNull(results, "not null");
+            //assert.include(results[0].comment, "First inserted comment from function");
+            assert.equal(results[0].score, 13);
+            assert.equal(results[0].classId, 97);
+        }catch(error) {
+          console.log(error);
+          assert.isNotNull(error, 'there was an error');
+        }
+      });
+    });
+  });
