@@ -93,7 +93,7 @@ class LectureView extends React.Component {
                 console.log("SENDING SLIDER DATA");
                 this.setState({changeFlag: false});
                 await fetch("http://localhost:9000/confidence", {
-            method: 'PUT',
+            method: 'POST',
             credentials: "include",
             headers: {
                 'Accept': 'application/json',
@@ -101,9 +101,9 @@ class LectureView extends React.Component {
                 'Access-Control-Allow-Credentials': true,
             },
             body: JSON.stringify({
-                quizId: this.state.lectureId,
-                val: this.state.sliderData,
-                time: this.state.formattedTimestamp
+                lectureId: this.state.lectureId,
+                sliderData: this.state.sliderData,
+                formattedTimestamp: this.state.formattedTimestamp
             })
         }).then(res => res.json()).then((data) => {
             console.log(data) 

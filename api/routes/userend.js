@@ -269,7 +269,7 @@ router.get('/requests', AuthenticationFunctions.ensureAuthenticated, async funct
 }
 });
 
-router.put('/confidence', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
+router.post('/confidence', AuthenticationFunctions.ensureAuthenticated, async function(req, res, next) {
   let results = await updateConfidence(req, res);
   
   if (results) {
