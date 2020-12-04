@@ -214,10 +214,12 @@ export default class LectureCard extends React.Component{
                                             <Modal
                                                 trigger={<Button onClick={this.handleGetAllConfidence}>Stats</Button>}
                                                 header={'Confidence for ' + this.state.lectureName}
-                                                // content={this.state.studentConfList.map((entry, index) => {
-                                                //             return(<GraphCard studentName={this.state.results[index]} studentEmail={index} gradeFlag={0}/>);
-                                                //         })}
-                                                content={null}//<GraphCard studentConfList={this.state.studentConfList} studentName={this.props.studentName} studentId={this.props.studentId} classname={this.props.className} lectureName={this.props.lectureName}></GraphCard>}
+                                                content={this.state.studentConfList.map((entry, index) => {
+                                                            console.log("record");
+                                                            console.log(this.state.studentConfList[index].record);
+                                                            return(<GraphCard studentConfList={this.state.studentConfList} studentName={this.props.studentName} studentId={this.props.studentId} classname={this.props.className} lectureName={this.props.lectureName}/>);
+                                                        })}
+                                                // content={null}//<GraphCard studentConfList={this.state.studentConfList} studentName={this.props.studentName} studentId={this.props.studentId} classname={this.props.className} lectureName={this.props.lectureName}></GraphCard>}
                                                 actions={['Close']}
                                             />
                                             {/* {<Button content='Delete' ></Button>} */}
@@ -364,8 +366,8 @@ export default class LectureCard extends React.Component{
         }).then(res => res.json()).then((data) => {
             console.log('STUDENT CONF LIST: ');
             console.log(data);
-            console.log(data.record);
-            var tmp = JSON.stringify(data.record);
+            //console.log(data[0].record);
+            //var tmp = JSON.stringify(data[0].record);
             // Object.keys(data.record)
             this.setState({studentConfList: data});
             // window.location.replace('/dashboard');

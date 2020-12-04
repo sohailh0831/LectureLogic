@@ -216,7 +216,7 @@ function getAllConfidence(req, res) {
         }
     
         let con = mysql.createConnection(dbInfo);
-        con.query(`select confidence, name, record from quiz LEFT JOIN user ON quiz.uuid = user.id WHERE lecId = ${req.query.quizId}`, (error, results, fields) => { 
+        con.query(`select confidence, name, uuid, record from quiz LEFT JOIN user ON quiz.uuid = user.id WHERE lecId = ${req.query.quizId}`, (error, results, fields) => { 
             if (error) {
                 console.log(error.stack);
                 con.end();
@@ -231,7 +231,7 @@ function getAllConfidence(req, res) {
                 for (i; i<results.length; i++){
                     let confidence = JSON.parse(results[i].confidence);
                     if (!confidence) continue;
-                    confidences.push({name: results[i].name, confidence: results[i].confidence, record: results[i].record});
+                    confidences.push({name: results[i].name, confidence: results[i].confidence, record: results[i].record, id: results[i].uuid});
                 }
     
                 con.end();

@@ -22,14 +22,28 @@ export default class GraphCard extends React.Component{
 
     render() {
         //setup for graph using values from props
-        let listX = [];
-        let listY = [];
-        for (let i = 0; i < this.props.studentConfList.length; i++) {
-            // console.log("In LOOP: " + this.state.studentConfList[i]);
-            listX.push(this.props.studentConfList[i].name);
-            listY.push(parseInt(JSON.parse(this.props.studentConfList[i].confidence), 10)); //2nd param is base for the number system to parse the int in
+        console.log("RESUlts");
+        console.log(this.props.studentConfList[0].record);
+
+        let data = [];
+        data = JSON.parse(this.props.studentConfList[0].record);
+        console.log("TT");
+        console.log(data);
+        console.log(Object.keys(data));
+        console.log(Object.values(data));
+
+
+        let listX = Object.keys(data);
+        let listY = Object.values(data);
+        // for (let i = 0; i < listX.length; i++) {
+        //     console.log("In LOOP: ");// + Object.keys(data)[i]);
+        //     listX.push(Object.keys(data)[i]);
+        //     listY.push(parseInt(Object.values(data)[i], 10)); //2nd param is base for the number system to parse the int in
+        // }
+        for(let i = 0; i< listY.length; i++){
+            listY[i] = parseInt(listY[i], 10);
         }
-        // console.log("listxandy:", listX, listY);
+        console.log("listxandy:", listX, listY);
         let myConfig = {
             type: 'bar',
             title: {
@@ -38,29 +52,20 @@ export default class GraphCard extends React.Component{
             },
             scaleX: {
                 // Set scale label
-                label: { text: 'Lecture Name' },
+                label: { text: 'Lecture TimeStamp' },
                 // Convert text on scale indices
                 labels: listX //change to student names
             },
             scaleY: {
                 // Scale label with unicode character
-                label: { text: 'Confidence Levels' }
+                label: { text: 'Confidence Levels' },
+                //labels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
             },
             series: [
                 {
                 // plot 1 values, linear data
                 values: listY,
                 }
-            //   {
-            //     // plot 2 values, linear data
-            //     values: [35,42,33,49,35,47,35],
-            //     text: 'Week 2'
-            //   },
-            //   {
-            //     // plot 2 values, linear data
-            //     values: [15,22,13,33,44,27,31],
-            //     text: 'Week 3'
-            //   }
             ]
         };
 
