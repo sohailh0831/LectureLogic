@@ -92,7 +92,7 @@ function postMessage(req, res) {
                 } 
                 if (results){
                         console.log(results.instructor_id)
-                        await con.query(`insert into message (sender, receiver, content, status, class) VALUES ('${req.body.sender}', '${results[0].instructor_id}', '${req.body.content}', 1, '${req.body.id}')`, async (error, results, fields1) => { 
+                        await con.query(`insert into message (sender, receiver, content, status, class) SELECT '${req.body.sender}', '${results[0].instructor_id}', '${req.body.content}', 1, '${req.body.id}' WHERE NOT EXISTS (SELECT * FROM message WHERE sender='${req.body.sender}' AND receiver='${results[0].instructor_id}' AND content='${req.body.content}' AND status=1)`, async (error, results, fields1) => { 
                             console.log(error)
                             if (error) {
                                 console.log(error.stack);
@@ -101,6 +101,7 @@ function postMessage(req, res) {
                                 resolve();
                                 return;
                             } 
+                            console.log("\n HIT3")
                             res.status(200)
                           
                         });

@@ -163,7 +163,7 @@ router.post('/getAllQuizzesStudent', AuthenticationFunctions.ensureAuthenticated
             console.log("d1: ",d1);
             let d2 = Date.parse(element.startDate);
             console.log("d2: ",d2);
-            if (d1 >= d2){
+            if (d1 >= d2 || !element.startDate){
                 validquiz.push(element);
             }
         });
@@ -433,6 +433,20 @@ function insertStudentAnswer(studentId, quizId, studentAnswer, questionId, isCor
     });
 }
 
+router.post('/getAnsweredQuestions', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
+    let quizId = req.body.quizId;
+    let userId = req.body.userId;
+    let con = mysql.createConnection(dbInfo);
+    con.query(`SELECT questionId, studentAnswer FROM quizQuestionAnswer WHERE quizId = ${mysql.escape(quizId)} AND studentId = ${mysql.escape(userId)};`, (error, results, fields) => {
+        if (error) {
+            console.log(error.stack);
+        }
+        console.log("ayup",results)
+        con.end();
+        res.send(results);
+        return;
+    });
+});
 
 router.post('/getCompletedQuizzes', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
     let classId = req.body.classId;
@@ -466,6 +480,21 @@ router.post('/deleteQuiz', AuthenticationFunctions.ensureAuthenticated, async fu
         return;
 });
 
+});
+
+
+router.post('/applyCurve', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
+    let quizId = req.body.quizId;
+    let curveValue = req.body.curveValue
+    let con = mysql.createConnection(dbInfo);
+    con.query(`UPDATE quizGradeStudents SET score = score + ${mysql.escape(curveValue)} WHERE quizId = ${mysql.escape(quizId)};`, (error, results, fields) => {
+        if (error) {
+            console.log(error.stack);
+        }
+        con.end();
+        res.send(results);
+        return;
+    });
 });
 
 
