@@ -19,7 +19,10 @@ export default class LectureCard extends React.Component{
             dimmed: true,
             studentConfList: [],
             tempMinConfidence: '',
-            minConf: ''
+            minConf: '',
+            individualConfList: [],
+            studentId: '',
+            lectureId: ''
         }
         this.handleLectureMinConfidence = this.handleLectureMinConfidence.bind(this);
         this.handleGetStudentList = this.handleGetStudentList.bind(this);
@@ -44,6 +47,7 @@ export default class LectureCard extends React.Component{
             lectureVideoLink: this.props.lectureVideoLink,
             lectureViewedFlag: this.props.lectureViewedFlag,
             minConf: this.props.minConf,
+            studentId: this.props.studentId,
             temp: this.props.type
         });
 
@@ -89,6 +93,18 @@ export default class LectureCard extends React.Component{
                                 Viewed!
                             </Dimmer>
                         </Dimmer.Dimmable>
+
+                        <Modal
+                            trigger={<Button onClick={this.handleGetConfidence}>Stats</Button>}
+                            header={'Confidence for ' + this.props.studentName}
+                            content={this.state.individualConfList.map((entry, index) => {
+                                        console.log("IndIviDual ConF LiST)");
+                                        console.log(this.state.individualConfList[index]);
+                                        return(<GraphCard studentConfList={this.state.individualConfList} studentName={this.state.individualConfList[index].name} studentId={this.props.studentId} classname={this.props.className} lectureName={this.state.lectureName}/>);
+                                    })}
+                            // content={null}//<GraphCard studentConfList={this.state.studentConfList} studentName={this.props.studentName} studentId={this.props.studentId} classname={this.props.className} lectureName={this.props.lectureName}></GraphCard>}
+                            actions={['Close']}
+                        />
                         {/* }>Viewed</Popup> */}
                     </div>
 
@@ -400,5 +416,24 @@ export default class LectureCard extends React.Component{
             window.location.replace('/ClassPage/'+this.props.className);
         }).catch(console.log)
     }
+
+    async handleGetConfidence() {
+        console.log("Getting confidence-----------------------------");
+        console.log(this.state.studentId);
+        console.log(this.state.lectureId);
+        await fetch("http://localhost:9000/confidence?quizId=" + this.props.lectureId + "?id=" + this.props.studentId, {
+            method: 'GET',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            }
+        }).then(res => res.json()).then((data) => { 
+            console.log("data",data);
+            this.setState({individualConfList: data})
+            // window.location.replace('/dashboard');
+        }).catch(console.log("not working here"))
+    } /* End handleAddClass(...) */
 
 };
