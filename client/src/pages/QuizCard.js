@@ -67,6 +67,10 @@ export default class QuizCard extends React.Component{
                 quizButton =  <Button onClick={this.handleTakeQuiz} >  Take Quiz </Button>
             }
 
+            if (this.props.dashboard === true) {
+                quizButton = null;
+            }
+
         }
 
         return(           

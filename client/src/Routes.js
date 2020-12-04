@@ -74,7 +74,7 @@ export default class Routes extends React.Component {
                                   onClick={this.handlePageJump}
                                   active={activeItem === 'MainPage'}
                                />
-                            <Menu.Item
+                            {/* <Menu.Item
                                   as={Link}
                                   //replace={false}
                                   to={{pathname: '/confidence', state: {}}} //where we can pass values into state (access as this.props.state.____)
@@ -82,7 +82,7 @@ export default class Routes extends React.Component {
                                   content="Confidence"
                                   onClick={this.handlePageJump}
                                   active={activeItem === 'Confidence'}
-                              />
+                              /> */}
                             <Menu.Item
                                   as={Link}
                                   //replace={false}

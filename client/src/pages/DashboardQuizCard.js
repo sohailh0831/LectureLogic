@@ -27,7 +27,7 @@ export default class DashboardQuizCard extends React.Component{
                 <div>
                     <Header> {this.props.className} </Header>
                     {this.state.quizList.map((entry) =>{
-                        return(<QuizCard quizName={entry.quizName} quizStartDate={entry.startDate} quizDueDate={entry.dueDate} quizId={entry.quizId} link={this.props.link} type={this.props.type} classId={this.props.classId} userId={this.props.userId}></QuizCard>);       
+                        return(<QuizCard dashboard={true} quizName={entry.quizName} quizStartDate={entry.startDate} quizDueDate={entry.dueDate} quizId={entry.quizId} link={this.props.link} type={this.props.type} classId={this.props.classId} userId={this.props.userId}></QuizCard>);  
                     })}
                     <br/> {/* needed for spacing so the classname isn't covered by the previous cards */}
                 </div>
