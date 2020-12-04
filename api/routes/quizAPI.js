@@ -483,6 +483,21 @@ router.post('/deleteQuiz', AuthenticationFunctions.ensureAuthenticated, async fu
 });
 
 
+router.post('/applyCurve', AuthenticationFunctions.ensureAuthenticated, async function(req,res,next){
+    let quizId = req.body.quizId;
+    let curveValue = req.body.curveValue
+    let con = mysql.createConnection(dbInfo);
+    con.query(`UPDATE quizGradeStudents SET score = score + ${mysql.escape(curveValue)} WHERE quizId = ${mysql.escape(quizId)};`, (error, results, fields) => {
+        if (error) {
+            console.log(error.stack);
+        }
+        con.end();
+        res.send(results);
+        return;
+    });
+});
+
+
 
 
 

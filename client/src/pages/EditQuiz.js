@@ -30,7 +30,10 @@ class EditQuiz extends React.Component {
             newQuestionPointValue: '',
             questionList:[],
             sH: "False", // show answers boolean
-            isPublished: 0
+            isPublished: 0,
+            openApplyCurveModal: false,
+            curveValue: 0,
+            showCurveSuccess: true,
         };
 
 
@@ -47,6 +50,10 @@ class EditQuiz extends React.Component {
         this.handleGetQuestions = this.handleGetQuestions.bind(this);
         this.handlePublishQuiz = this.handlePublishQuiz.bind(this);
         this.handleDeleteQuiz = this.handleDeleteQuiz.bind(this);
+        this.handleCloseApplyCurve = this.handleCloseApplyCurve.bind(this);
+        this.handleOpenApplyCurve = this.handleOpenApplyCurve.bind(this);
+        this.handleCurveChange = this.handleCurveChange.bind(this);
+        this.handleSubmitNewCurve = this.handleSubmitNewCurve.bind(this);
 
     }
 
@@ -66,6 +73,7 @@ class EditQuiz extends React.Component {
         let urlElements = window.location.pathname.split('/')
         this.setState({classId: urlElements[2]})
         this.setState({quizId: urlElements[3]})
+        this.setState({showCurveSuccess: false})
 
 
 
@@ -114,12 +122,12 @@ class EditQuiz extends React.Component {
 
     render() {
         /* decided what popup message to present */
-
         if(this.state.type === '1'){ // if not instructor redirect them to dashboard
             window.location.replace("/");
         }
         var showPublish;
         var pubStatus;
+        var curveSuccessMessage;
         if(this.state.isPublished == 1){
             pubStatus = <Header>Quiz Status: Available to students</Header>
             showPublish = <Button onClick={this.handlePublishQuiz} color='blue' fluid size='large'>
@@ -131,6 +139,10 @@ class EditQuiz extends React.Component {
             showPublish = <Button onClick={this.handlePublishQuiz} color='green' fluid size='large'>
             Publish Quiz
             </Button>
+        }
+
+        if(this.state.showCurveSuccess == true){
+            curveSuccessMessage = "Curve Applied Successfully"
         }
     
         return (
@@ -260,11 +272,55 @@ class EditQuiz extends React.Component {
                                     />
                                 </Modal.Actions>
                             </Modal>
+                         
                 
             </Segment>
             <Segment>
                     {pubStatus}
                     {showPublish}
+            </Segment>
+            <Segment>
+                <Header>
+                    Apply Curve to quiz scores
+                </Header>
+                
+                    <Button onClick={this.handleOpenApplyCurve} color='blue' fluid size='large'> Apply Curve </Button>
+                    {curveSuccessMessage}
+                    <Modal
+                                    onClose={() => this.setState({openApplyCurveModal: false})}
+                                    onOpen={() => this.setState({openApplyCurveModal: true})}
+                                    open={this.state.openApplyCurveModal}
+                                >
+                                <Modal.Header>Apply a curve to quiz</Modal.Header>
+                                <Modal.Content>
+                                    <Modal.Description>
+                                    Curve: (Enter value as percentage point increase)
+                                    <Form.Input
+                                            placeholder='Enter curve (percentage) here'
+                                            value={this.state.curveValue}
+                                            onChange={this.handleCurveChange}
+                                        />
+                                    </Modal.Description>
+                                </Modal.Content>
+                                <Modal.Actions>
+                                    <Button
+                                        content="Close"
+                                        labelPosition='left'
+                                        icon='x'
+                                        onClick={this.handleCloseApplyCurve}
+                                        negative
+                                    />
+                                    <Button
+                                        content="Submit"
+                                        labelPosition='right'
+                                        icon='checkmark'
+                                        onClick={this.handleSubmitNewCurve}
+                                        positive
+                                    />
+                                </Modal.Actions>
+                            </Modal>
+                    
+
             </Segment>
             <Segment>
                     <Button onClick={this.handleDeleteQuiz} color='red' fluid size='large'> Delete Quiz </Button>
@@ -285,12 +341,18 @@ class EditQuiz extends React.Component {
 
 
 
-    handleOpenNewQuestionModal() {
+   async handleOpenNewQuestionModal() {
         this.setState({openNewQuestionModal: true});
     }
 
     async handleCloseNewQuestionModal() {
         this.setState({openNewQuestionModal: false});
+    }
+    async handleOpenApplyCurve() {
+        this.setState({openApplyCurveModal: true});
+    }
+    async handleCloseApplyCurve() {
+        this.setState({openApplyCurveModal: false});
     }
 
     handleQuestionChange(event){
@@ -314,6 +376,9 @@ class EditQuiz extends React.Component {
     }
     handleQuestionPointValue(event){
         this.setState({newQuestionPointValue: event.target.value});
+    }
+    handleCurveChange(event){
+        this.setState({curveValue: event.target.value});
     }
 
     async handleSubmitNewQuestion(){ 
@@ -427,6 +492,35 @@ class EditQuiz extends React.Component {
 
             window.location.replace("/quizzes/" + this.state.classId);
     }
+
+
+
+
+
+    async handleSubmitNewCurve(){
+        console.log(this.state.curveValue);
+        await fetch('http://localhost:9000/quiz/applyCurve' ,{
+            method: 'POST',
+            credentials: "include",
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Credentials': true,
+            },
+            body: JSON.stringify({
+                quizId: this.state.quizId,
+                curveValue: this.state.curveValue
+            })
+            }).then(response => response.json())
+            .then(data => {
+                console.log("Applied Curve")
+            }); 
+
+        //     window.location.replace("/quizzes/" + this.state.classId);
+
+        this.setState({openApplyCurveModal: false, curveValue: 0, showCurveSuccess: true});
+    }
+
 
 
 
