@@ -27,6 +27,7 @@ import UserNotifications from "./pages/UserNotifications";
 import ClassDiscussionBoard from "./pages/ClassDiscussionBoard";
 import EditQuiz from "./pages/EditQuiz";
 import TakeQuiz from "./pages/TakeQuiz";
+import StudentType from "./pages/StudentType";
 import Quiz from "./pages/Quiz";
 import Grades from "./pages/GradesView.js"
 
@@ -187,6 +188,7 @@ export default class Routes extends React.Component {
                             <Route path ="/quizzes/:classId" exaxt component ={Quiz}/>
                             <Route path = "/editQuiz/:classId/:quizId" exact component ={EditQuiz}/>
                             <Route path = "/takeQuiz/:classId/:quizId" exact component ={TakeQuiz}/>
+                            <Route path = "/studentType/:classId/:quizId" exact component ={StudentType}/>
                             <Route exact path ="/grades" exact component={Grades}/>
                             <Redirect to="/404" />
                           </Switch>
