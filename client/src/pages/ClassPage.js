@@ -32,13 +32,15 @@ class ClassPage extends React.Component {
             classQuestionList: [],
             isLocked: false,
             newQuestion: '',
-            message: ''
+            message: '',
+            tempMinConfidence: ''
         };
         this.handleAddLecture = this.handleAddLecture.bind(this);
         // this.getClassList = this.getClassList.bind(this);
         this.getLectureList = this.getLectureList.bind(this);
         this.getQuestions = this.getQuestions.bind(this);
         this.handleLectureNameChange = this.handleLectureNameChange.bind(this);
+        this.handleLectureMinConfidence = this.handleLectureMinConfidence.bind(this);
         this.handleLectureDescriptionChange = this.handleLectureDescriptionChange.bind(this);
         this.handleLectureSectionChange = this.handleLectureSectionChange.bind(this);
         this.handleLectureVideoLinkChange = this.handleLectureVideoLinkChange.bind(this);
@@ -202,6 +204,12 @@ class ClassPage extends React.Component {
                                                 value={this.state.tempLectureVideoLink}
                                                 onChange={this.handleLectureVideoLinkChange}
                                             />
+                                            <Form.Input
+                                                placeholder='Confidence Minimum (0-10)'
+                                                required={true}
+                                                value={this.state.tempMinConfidence}
+                                                onChange={this.handleLectureMinConfidence}
+                                            />
                                         </Form>
                                     }
                                     actions={['Cancel', <Button color='purple' onClick={this.handleAddLecture}>Done</Button>]}
@@ -211,7 +219,7 @@ class ClassPage extends React.Component {
                             {/* Class Card */}
                             <Segment stacked textAlign="left" verticalAlign='middle' style={{overflow: 'auto'}}>
                             {this.state.lectureList.map((lectureList, index) => { 
-                                return(<LectureCard maxWidth='50vw' hidden ={this.state.lectureList[index].hiddenFlag} className={this.state.className} lectureId={this.state.lectureList[index].id} lectureName={this.state.lectureList[index].name} lectureDesc={this.state.lectureList[index].description} lectureSection={this.state.lectureList[index].section} lectureVideoLink={this.state.lectureList[index].video_link} type={this.state.response.type}/>)
+                                return(<LectureCard maxWidth='50vw' hidden ={this.state.lectureList[index].hiddenFlag} className={this.state.className} lectureId={this.state.lectureList[index].id} lectureName={this.state.lectureList[index].name} lectureDesc={this.state.lectureList[index].description} lectureSection={this.state.lectureList[index].section} lectureVideoLink={this.state.lectureList[index].video_link} type={this.state.response.type} minConf={this.state.lectureList[index].minConf}/>)
                             })}
                             </Segment>
                         </Segment>
@@ -318,7 +326,7 @@ class ClassPage extends React.Component {
                             <Grid.Column style={{width: "auto"}}>
                                 {this.state.lectureList.map((lectureList, index) => {
                                         if (this.state.lectureList[index].hiddenFlag == 0) { //if statement to hide lecture if the instructor has declared the lecture hidden
-                                            return(<LectureCard className={this.state.className} lectureId={this.state.lectureList[index].id} lectureName={this.state.lectureList[index].name} lectureDesc={this.state.lectureList[index].description} lectureSection={this.state.lectureList[index].section} lectureVideoLink={this.state.lectureList[index].video_link} lectureViewedFlag={this.state.lectureList[index].viewedFlag} type={this.state.response.type}/>)
+                                            return(<LectureCard className={this.state.className} lectureId={this.state.lectureList[index].id} lectureName={this.state.lectureList[index].name} lectureDesc={this.state.lectureList[index].description} lectureSection={this.state.lectureList[index].section} lectureVideoLink={this.state.lectureList[index].video_link} lectureViewedFlag={this.state.lectureList[index].viewedFlag} type={this.state.response.type} minConf={this.state.lectureList[index].minConf}/>)
                                         }
                                     }
                                 )}
@@ -408,6 +416,10 @@ class ClassPage extends React.Component {
     async handleLectureVideoLinkChange(event){
         const value = event.target.value;
         await this.setState({tempLectureVideoLink: value});
+    }
+    async handleLectureMinConfidence(event){
+        const value = event.target.value;
+        await this.setState({tempMinConfidence: value});
     }
 
     async getLock(){
@@ -552,7 +564,8 @@ class ClassPage extends React.Component {
                 description: this.state.tempLectureDesc,
                 class_id: this.state.classId,
                 section: this.state.tempLectureSection,
-                video_link: this.state.tempLectureVideoLink
+                video_link: this.state.tempLectureVideoLink,
+                minConf: this.state.tempMinConfidence
             })
         }).then(res => res.json()).then((data) => { 
             console.log(data);

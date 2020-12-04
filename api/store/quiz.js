@@ -5,9 +5,11 @@ const { isNull, result } = require("lodash");
 const mysql = require("mysql");
 const dotenv = require('dotenv').config();
 var expressValidator = require('express-validator');
+const {postStudentMessage} = require("./notification"); 
 var app = express();
 app.use(expressValidator());
 var app = express.Router();
+
 
 let dbInfo = {
     connectionLimit: 100,
@@ -32,25 +34,67 @@ function updateConfidence(req, res) {
         }
 
         let con = mysql.createConnection(dbInfo);
-        con.query(`select confidence, record from quiz WHERE uuid = '${req.user.id}' AND lecId = ${req.body.quizId}`, (error, results, fields) => { 
+        let con1 = mysql.createConnection(dbInfo);
+        con1.query(`select confidence, record from quiz WHERE uuid = '${req.user.id}' AND lecId = ${req.body.quizId}`, (error, results, fields) => { 
             console.log('results1:', results)
             if (error) {
                 console.log(error.stack);
+                con1.end();
                 con.end();
                 res.status(400).json({status:400, message: "Update to request list failed."});
                 resolve();
                 return;
             }
             if (results.length === 0){
-                con.query(`insert into quiz (uuid, lecId) VALUES ('${req.user.id}', ${req.body.quizId})`, (error, results1, fields) => { 
+                con1.query(`insert into quiz (uuid, lecId) VALUES ('${req.user.id}', ${req.body.quizId})`, (error, results1, fields) => { 
                     if (error) {
                         console.log(error.stack);
+                        con1.end();
                         con.end();
                         res.status(400).json({status:400, message: "Update to request list failed."});
                         resolve();
                         return;
                     }
+                    con1.end();
                 });
+            }
+            else {
+                console.log("\n HIT0")
+                let record = JSON.parse(results[0].record);
+                if(Object.keys(record).length > 5) {
+                    console.log("\n HIT1")
+                    let sum = 0;
+                    Object.keys(record).forEach(element =>{
+                        sum += parseInt(record[element]);
+                    })
+                    let avg = sum/Object.keys(record).length;
+                    console.log(sum, "\n", avg)
+                    con1.query(`select minConf, class_id, name from lecture where id = ${mysql.escape(req.body.quizId)}`, (error, results2, fields) => {
+                        if (error) {
+                            console.log(error.stack);
+                            con.end();
+                            con1.end()
+                            return;
+                        }    
+                        console.log("\n HIT1.5", results2);
+                        if ( results2[0] === undefined ) {   
+                            con1.end()
+                            resolve();
+                            return;
+                        }
+                        else if(results2[0].minConf > avg){
+                            console.log("\n HIT2")
+                            req.body.sender = req.user.id;
+                            req.body.id = results2[0].class_id;
+                            req.body.content = `A student has a low confidence on the lecture ${results2[0].name}`;
+                            postStudentMessage(req,res);
+                            console.log("\n HIT4")
+                            con1.end()
+                        }
+                        else con1.end();
+                    });
+                }
+
             }
         });
 
@@ -91,7 +135,7 @@ function updateConfidence(req, res) {
                     }
                 });
                 
-                con.query(`update quiz set confidence = ${mysql.escape(conf)} WHERE uuid = '${req.user.id}' AND lecId = ${req.body.quizId}`, async (error1, results1, fields1) => { 
+                con.query(`update quiz set confidence = ${mysql.escape(req.body.val)} WHERE uuid = '${req.user.id}' AND lecId = ${req.body.quizId}`, async (error1, results1, fields1) => { 
                     if (error1) {
                         console.log(error1.stack);
                         con.end();
