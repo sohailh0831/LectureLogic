@@ -50,8 +50,14 @@ export default class Routes extends React.Component {
 
     render() {
       const {activeItem} = this.state;
-      return(
-
+      var iconName;
+      if (localStorage.getItem('authenticated') === 'authenticated') {
+        iconName = 'user';
+      }
+      else {
+        iconName = 'align justify';
+      }
+      return( 
         <div>
           <GlobalStyles/>
               <div className="Routes">
@@ -87,9 +93,9 @@ export default class Routes extends React.Component {
                               />
                             <Menu.Item
                                   position='right'
-                                  icon='align justify'
-                                  name={"Menu"}
-                                  content="Menu"
+                                  icon={iconName}
+                                  //name={"Menu"}
+                                  //content="Menu"
                                   //content="Sidebar"
                                   //floated='right'
                                   onClick={this.handleSidebar}
@@ -104,7 +110,7 @@ export default class Routes extends React.Component {
                             <Sidebar
                               as={Menu}
                               animation='overlay'
-                              icon='labeled'
+                              //icon='labeled'
                               inverted
                               onHide={() => this.setState({sidebarVisible: false})}
                               vertical

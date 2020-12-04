@@ -164,8 +164,8 @@ class ClassPage extends React.Component {
         if (this.state.response.type === '0') { //instructor
             
             return (
-            <Grid textAlign='center' style={{height: '100vh'}, {width: '100vw'}} divided='vertically' columns={2}>
-                <Grid.Row verticalAlign='top'>
+                // Column 1 == lecture list | Column 2 == Class Discussion Board | Column 3 == Ask question and go to quizzes
+            <Grid textAlign='center' style={{height: '100vh'}, {width: '100vw'}} divided='vertically' columns={3}>
                     <Grid.Column style={{maxWidth: '50vw'}, {maxHeight: '100vh'}} verticalAlign='left'>
 
                             <Segment stacked maxWidth='50vw' textAlign="center" verticalAlign='middle' >
@@ -240,50 +240,48 @@ class ClassPage extends React.Component {
                                     })}
                             </Segment>
 
-                            <Segment>
-                                <Header as='h2' color='grey' textAlign='center'>
-                                    Ask a question:
-                                </Header>
-                                {discussionBoardLocked}
-                                {lockDiscussionBoardQuestion}
-                            </Segment> 
-
-
                         </Segment>
                         
                     </Grid.Column>
 
                     <Grid.Column style={{maxWidth: 450}}>
-                    <Button onClick={this.handleNotificationPage} color='purple' fluid size='large'>
-                        {this.state.notifications} Notifications
-                    </Button>
-                    <Button onClick={this.handleMessagePage} color='purple' fluid size='large'>
-                        All Messages
-                    </Button>
-                    <Segment stacked>
-                        <Form.Input
-                            placeholder='Message'
-                            required={true}
-                            value={this.state.message}
-                            onChange={this.handleMessageChange}
-                        />
-
-
-                        <Button onClick={this.handleSendMessage} color='purple' fluid size='large'>
-                            Send Message
+                        <Button onClick={this.handleNotificationPage} color='purple' fluid size='large'>
+                            {this.state.notifications} Notifications
                         </Button>
-                        
-                        
-                    </Segment>
-                    <Segment>
-                    <Button onClick={this.handleQuizzes} color='green' fluid size='large'>
-                        Go to Quizzes
-                    </Button>
-                    </Segment>
+
+                        <Button onClick={this.handleMessagePage} color='purple' fluid size='large'>
+                            All Messages
+                        </Button>
+
+                        <Segment stacked>
+                            <Form.Input
+                                placeholder='Message'
+                                required={true}
+                                value={this.state.message}
+                                onChange={this.handleMessageChange}
+                            />
 
 
+                            <Button onClick={this.handleSendMessage} color='purple' fluid size='large'>
+                                Send Message
+                            </Button>
+                        </Segment>
+
+                        <Segment>
+                            <Header as='h2' color='grey' textAlign='center'>
+                                Ask a question:
+                            </Header>
+                            {discussionBoardLocked}
+                            {lockDiscussionBoardQuestion}
+                        </Segment> 
+
+                        <Segment>
+                            <Button onClick={this.handleQuizzes} color='green' fluid size='large'>
+                                Go to Quizzes
+                            </Button>
+                        </Segment>
                 </Grid.Column>
-                </Grid.Row>
+
             </Grid>
 
 
@@ -295,7 +293,8 @@ class ClassPage extends React.Component {
             
             return (
                 <Grid padded style={{height: '100vh'}} columns={3}>
-                    <Grid.Column style={{maxWidth: 450}}>
+                    {/* Column 1 == lecture list | Column 2 == Discussion Board || Column 3 == Notifications, Ask a Question, Go to Quizzes */}
+                    <Grid.Column style={{width: '25vw'}}>
                         <Form size='large'>
     
                             <Segment stacked textAlign="center" verticalAlign='middle'>
@@ -318,71 +317,69 @@ class ClassPage extends React.Component {
                                     }
                                     actions={['Close', <Button color='purple' onClick={this.handleAddClass}> Done</Button>]}
                                 /> */}
-                                
-    
                             </Segment>
     
                             {/* Class Card */}
-                            <Grid.Column style={{width: "auto"}}>
+                            <Segment>
                                 {this.state.lectureList.map((lectureList, index) => {
                                         if (this.state.lectureList[index].hiddenFlag == 0) { //if statement to hide lecture if the instructor has declared the lecture hidden
                                             return(<LectureCard className={this.state.className} lectureId={this.state.lectureList[index].id} lectureName={this.state.lectureList[index].name} lectureDesc={this.state.lectureList[index].description} lectureSection={this.state.lectureList[index].section} lectureVideoLink={this.state.lectureList[index].video_link} lectureViewedFlag={this.state.lectureList[index].viewedFlag} type={this.state.response.type} minConf={this.state.lectureList[index].minConf}/>)
                                         }
                                     }
                                 )}
-                            </Grid.Column>
+                            </Segment>
 
                         </Form>
                     </Grid.Column>
-                    <Grid.Column style={{maxWidth: '50vw'}} verticalAlign='top' textAlgin='center'>
+
+                    <Grid.Column style={{width: '48vw'}} verticalAlign='middle' textAlgin='center'>
                         {/* Column for Class Discussion Board */}
                         <Segment>
                             <Header as = 'h2' color = 'grey' textAlign = 'center'>
                                 Class Discussion Board
                             </Header>
 
-                            <Segment stacked textAlign="left" style={{overflow: 'auto'}}>
+                            <Segment stacked textAlign="center" style={{overflow: 'auto'}}>
                                 {this.state.classQuestionList.map((entry) =>{
                                         return(<QuestionCard lectureId={0} commenter={this.state.username} question={entry.question} studentFlag={1} isAnswered={entry.isAnswered} answer={entry.answer} studentName={entry.studentName} time={entry.formattedTimestamp} questionId={entry.questionId} link={window.location.href} type={this.state.response.type} classId = {this.state.classId}></QuestionCard>);                                 
                                     })}
-                            </Segment>
+                            </Segment> 
 
-                            <Segment>
+                        </Segment>
+                    </Grid.Column>
+
+
+                    <Grid.Column verticalAlign='right' style={{maxWidth: '25vw'}}>
+                        <Button onClick={this.handleNotificationPage} color='purple' fluid size='large'>
+                            {this.state.notifications} Notifications
+                        </Button>
+                        <Button onClick={this.handleMessagePage} color='purple' fluid size='large'>
+                            All Messages
+                        </Button>
+                        <Segment stacked>
+                            <Form.Input
+                                placeholder='Message'
+                                required={true}
+                                value={this.state.message}
+                                onChange={this.handleMessageChange}
+                                style = {{maxWidth: '25vw', maxHeight: '10vw' }}
+                            />
+
+
+                            <Button onClick={this.handleSendMessage} color='purple' fluid size='large'>
+                                Send Message
+                            </Button>                  
+                        
+                        </Segment>
+                    <Segment>
                                 <Header as='h2' color='grey' textAlign='center'>
                                     Ask a question:
                                 </Header>
                                 {discussionBoardLocked}
                                 {lockDiscussionBoardQuestion}
-                            </Segment> 
-
-
-                        </Segment>
-                        
-                    </Grid.Column>
-                    <Grid.Column style={{maxWidth: '25vw'}}>
-                    <Button onClick={this.handleNotificationPage} color='purple' fluid size='large'>
-                        {this.state.notifications} Notifications
-                    </Button>
-                    <Button onClick={this.handleMessagePage} color='purple' fluid size='large'>
-                        All Messages
-                    </Button>
-                    <Segment stacked>
-                        <Form.Input
-                            placeholder='Message'
-                            required={true}
-                            value={this.state.message}
-                            onChange={this.handleMessageChange}
-                            style = {{maxWidth: '25vw', maxHeight: '10vw' }}
-                        />
-
-
-                        <Button onClick={this.handleSendMessage} color='purple' fluid size='large'>
-                            Send Message
-                        </Button>                  
-                        
-                    </Segment>
+                            </Segment>
                     <Segment>
-                    <Button onClick={this.handleQuizzes} color='purple' fluid size='large'>
+                    <Button onClick={this.handleQuizzes} color='green' fluid size='large'>
                         Go to Quizzes
                     </Button>
                     </Segment>
