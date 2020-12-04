@@ -231,7 +231,7 @@ function getAllConfidence(req, res) {
                 for (i; i<results.length; i++){
                     let confidence = JSON.parse(results[i].confidence);
                     if (!confidence) continue;
-                    confidences.push({name: results[i].name, confidence: results[i].confidence});
+                    confidences.push({name: results[i].name, confidence: results[i].confidence, record: results[i].record});
                 }
     
                 con.end();
