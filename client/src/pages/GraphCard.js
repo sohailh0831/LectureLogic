@@ -22,11 +22,11 @@ export default class GraphCard extends React.Component{
 
     render() {
         //setup for graph using values from props
-        console.log("RESUlts");
-        console.log(this.props.studentConfList[0]);
+        //console.log("RESUlts: "+this.props.studentName);
+        //console.log(this.props.studentConfList[0]);
 
         let data = [];
-        data = JSON.parse(this.props.studentConfList[0].record);
+        data = JSON.parse(this.props.studentConfList.record);
         console.log("TT");
         console.log(data);
         console.log(Object.keys(data));

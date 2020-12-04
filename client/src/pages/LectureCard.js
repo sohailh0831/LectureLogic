@@ -231,9 +231,10 @@ export default class LectureCard extends React.Component{
                                                 trigger={<Button onClick={this.handleGetAllConfidence}>Stats</Button>}
                                                 header={'Confidence for ' + this.state.lectureName}
                                                 content={this.state.studentConfList.map((entry, index) => {
-                                                            console.log("STuDEnT ConF LiST)");
-                                                            console.log(this.state.studentConfList[index]);
-                                                            return(<GraphCard studentConfList={this.state.studentConfList} studentName={this.state.studentConfList[index].name} studentId={this.props.studentId} classname={this.props.className} lectureName={this.state.lectureName}/>);
+                                                            //console.log("STuDEnT ConF LiST)");
+                                                            //console.log(this.state.studentConfList[index]);
+                                                            //console.log("listID: "+this.state.studentConfList[index].id+" propID: "+this.props.studentId);
+                                                            return(<GraphCard studentConfList={this.state.studentConfList[index]} studentName={this.state.studentConfList[index].name} studentId={this.props.studentId} classname={this.props.className} lectureName={this.state.lectureName}/>);
                                                         })}
                                                 // content={null}//<GraphCard studentConfList={this.state.studentConfList} studentName={this.props.studentName} studentId={this.props.studentId} classname={this.props.className} lectureName={this.props.lectureName}></GraphCard>}
                                                 actions={['Close']}
