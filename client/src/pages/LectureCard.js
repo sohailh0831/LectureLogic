@@ -35,6 +35,7 @@ export default class LectureCard extends React.Component{
         this.handleDimmer = this.handleDimmer.bind(this);
         this.handleUpdateHideFlag = this.handleUpdateHideFlag.bind(this);
         this.handleGetAllConfidence = this.handleGetAllConfidence.bind(this);
+        this.handleGetConfidence = this.handleGetConfidence.bind(this);
     }
 
     async componentDidMount(){
@@ -51,7 +52,8 @@ export default class LectureCard extends React.Component{
             temp: this.props.type
         });
 
-        this.handleGetAllConfidence();
+        //this.handleGetConfidence();
+        //this.handleGetConfidence(this.props.lectureId, this.props.studentId);
     }
 
     render() {
@@ -61,7 +63,8 @@ export default class LectureCard extends React.Component{
             if ( this.props.lectureViewedFlag == 1 ) {
                 console.log("NEED TO GREY OUT LECTURE");
                 
-                    
+                console.log("lecID: "+this.props.lectureId);
+                console.log("studentId: "+this.props.studentId);
                 return(
                     <div>
                         {/* <Link to = {'/LectureView'} >  */}
@@ -95,12 +98,14 @@ export default class LectureCard extends React.Component{
                         </Dimmer.Dimmable>
 
                         <Modal
-                            trigger={<Button onClick={this.handleGetConfidence}>Stats</Button>}
-                            header={'Confidence for ' + this.props.studentName}
-                            content={this.state.individualConfList.map((entry, index) => {
-                                        console.log("IndIviDual ConF LiST)");
-                                        console.log(this.state.individualConfList[index]);
-                                        return(<GraphCard studentConfList={this.state.individualConfList} studentName={this.state.individualConfList[index].name} studentId={this.props.studentId} classname={this.props.className} lectureName={this.state.lectureName}/>);
+                            
+                            trigger={<Button onClick={this.handleGetAllConfidence}>Stats</Button>}
+                            header={'Confidence for ' + this.state.lectureName}
+                            content={this.state.studentConfList.map((entry, index) => {
+                                    console.log(this.props.studentName);
+                                        if (this.state.studentConfList[index].id == this.props.studentId ){
+                                            return(<GraphCard studentConfList={this.state.studentConfList[index]} studentName={this.state.studentConfList[index].name} studentId={this.props.studentId} classname={this.props.className} lectureName={this.state.lectureName}/>);
+                                        }
                                     })}
                             // content={null}//<GraphCard studentConfList={this.state.studentConfList} studentName={this.props.studentName} studentId={this.props.studentId} classname={this.props.className} lectureName={this.props.lectureName}></GraphCard>}
                             actions={['Close']}
@@ -420,9 +425,9 @@ export default class LectureCard extends React.Component{
 
     async handleGetConfidence() {
         console.log("Getting confidence-----------------------------");
-        console.log(this.state.studentId);
-        console.log(this.state.lectureId);
-        await fetch("http://localhost:9000/confidence?quizId=" + this.props.lectureId + "?id=" + this.props.studentId, {
+        console.log(this.props.studentId);
+        console.log(this.props.lectureId);
+        await fetch("http://localhost:9000/confidence?quizId=" + this.props.lectureId + "&id=" + this.props.studentId, {
             method: 'GET',
             credentials: "include",
             headers: {
@@ -431,9 +436,12 @@ export default class LectureCard extends React.Component{
                 'Access-Control-Allow-Credentials': true,
             }
         }).then(res => res.json()).then((data) => { 
-            console.log("data",data);
-            this.setState({individualConfList: data})
-            // window.location.replace('/dashboard');
+            
+            if(data.length != 0){
+                console.log("data",data);
+                this.setState({individualConfList: data})
+                
+            }// window.location.replace('/dashboard');
         }).catch(console.log("not working here"))
     } /* End handleAddClass(...) */
 
