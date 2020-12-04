@@ -3,6 +3,7 @@ import { Button, Form, Grid, Header, Segment, List,Modal} from 'semantic-ui-reac
 import 'semantic-ui-css/semantic.min.css';
 import QuizCard from './QuizCard';
 import DateTimePicker from "react-datetime-picker";
+import GraphCard from "./GraphCard";
 
 class Quiz extends React.Component {
     constructor(props) {
@@ -111,83 +112,100 @@ class Quiz extends React.Component {
                 </Button>
 
                 <Modal
-                                    onClose={() => this.setState({openNewQuizModal: false})}
-                                    onOpen={() => this.setState({openNewQuizModal: true})}
-                                    open={this.state.openNewQuizModal}
-                                    //close={!this.state.openModal}
-                                >
-                                <Modal.Header>New Quiz</Modal.Header>
-                                <Modal.Content>
-                                    <Modal.Description>
-                                        Quiz Name:
-                                    <Form.Input
-                                            placeholder='Enter Quiz Name Here'
-                                            value={this.state.newQuizName}
-                                            onChange={this.handleQuizNameChange}
-                                        />
-                                        Minimum Grade:
-                                    <Form.Input
-                                            placeholder='(0-100) Notified If Student Grade Below Value'
-                                            value={this.state.newMinGrade}
-                                            onChange={this.handleMinGradeChange}
-                                        />
-                                    {/* <Form.Input
-                                            placeholder='(0-100) Notified If Student Grade Below Value'
-                                            value={this.state.newMinGrade}
-                                            onChange={this.handleNewMinGrade}
-                                        /> */}
-                                     Start Date: 
-                                     <Form.Input
-                                            placeholder='Enter Time (in format: 2020-12-05 23:00:00)'
-                                            value={this.state.newQuizStartDate}
-                                            onChange={this.handleQuizStartDateChange}
-                                            
-                                    >
-                                        <DateTimePicker 
-                                                    value={this.state.date} 
-                                                    isVisible={this.state.isVisible}
-                                                    mode={'datetime'}
-                                                    is24Hour={true}
-                                                    onConfirm={this.handlePicker}
-                                                    onCancel={this.hidePicker}
-                                                    onChange={this.setDate}
-                                                />
-                                    </Form.Input>
-                                    Due Date: 
-                                     <Form.Input
-                                            placeholder='Enter Time (2020-12-05 23:00:00)'
-                                            value={this.state.newQuizDueDate}
-                                            onChange={this.handleQuizDueDateChange}
-                                    >
-                                        <DateTimePicker 
-                                                    value={this.state.date1} 
-                                                    isVisible={this.state.isVisible1}
-                                                    mode={'datetime'}
-                                                    is24Hour={true}
-                                                    onConfirm={this.handlePicker1}
-                                                    onCancel={this.hidePicker1}
-                                                    onChange={this.setDate1}
-                                                />
-                                    </Form.Input>
-                                    </Modal.Description>
-                                </Modal.Content>
-                                <Modal.Actions>
-                                    <Button
-                                        content="Close"
-                                        labelPosition='left'
-                                        icon='x'
-                                        onClick={this.handleCloseNewQuizModal}
-                                        negative
+                    onClose={() => this.setState({openNewQuizModal: false})}
+                    onOpen={() => this.setState({openNewQuizModal: true})}
+                    open={this.state.openNewQuizModal}
+                    //close={!this.state.openModal}
+                >
+                <Modal.Header>New Quiz</Modal.Header>
+                <Modal.Content>
+                    <Modal.Description>
+                        Quiz Name:
+                    <Form.Input
+                            placeholder='Enter Quiz Name Here'
+                            value={this.state.newQuizName}
+                            onChange={this.handleQuizNameChange}
+                        />
+                        Minimum Grade:
+                    <Form.Input
+                            placeholder='(0-100) Notified If Student Grade Below Value'
+                            value={this.state.newMinGrade}
+                            onChange={this.handleMinGradeChange}
+                        />
+                    {/* <Form.Input
+                            placeholder='(0-100) Notified If Student Grade Below Value'
+                            value={this.state.newMinGrade}
+                            onChange={this.handleNewMinGrade}
+                        /> */}
+                        Start Date: 
+                        <Form.Input
+                            placeholder='Enter Time (in format: 2020-12-05 23:00:00)'
+                            value={this.state.newQuizStartDate}
+                            onChange={this.handleQuizStartDateChange}
+                            
+                    >
+                        <DateTimePicker 
+                                    value={this.state.date} 
+                                    isVisible={this.state.isVisible}
+                                    mode={'datetime'}
+                                    is24Hour={true}
+                                    onConfirm={this.handlePicker}
+                                    onCancel={this.hidePicker}
+                                    onChange={this.setDate}
+                                />
+                    </Form.Input>
+                    Due Date: 
+                        <Form.Input
+                            placeholder='Enter Time (2020-12-05 23:00:00)'
+                            value={this.state.newQuizDueDate}
+                            onChange={this.handleQuizDueDateChange}
+                    >
+                        <DateTimePicker 
+                                    value={this.state.date1} 
+                                    isVisible={this.state.isVisible1}
+                                    mode={'datetime'}
+                                    is24Hour={true}
+                                    onConfirm={this.handlePicker1}
+                                    onCancel={this.hidePicker1}
+                                    onChange={this.setDate1}
+                                
+                    />
+                        </Form.Input>
+                        {/* Due Date: 
+                            <Form.Input
+                                placeholder='Enter Time (2020-12-05 23:00:00)'
+                                value={this.state.newQuizDueDate}
+                                onChange={this.handleQuizDueDateChange}
+                        >
+                            <DateTimePicker 
+                                        value={this.state.date1} 
+                                        isVisible={this.state.isVisible1}
+                                        mode={'datetime'}
+                                        is24Hour={true}
+                                        onConfirm={this.handlePicker1}
+                                        onCancel={this.hidePicker1}
+                                        onChange={this.setDate1}
                                     />
-                                    <Button
-                                        content="Submit"
-                                        labelPosition='right'
-                                        icon='checkmark'
-                                        onClick={this.handleSubmitNewQuiz}
-                                        positive
-                                    />
-                                </Modal.Actions>
-                            </Modal>
+                        </Form.Input> */}
+                        </Modal.Description>
+                    </Modal.Content>
+                    <Modal.Actions>
+                        <Button
+                            content="Close"
+                            labelPosition='left'
+                            icon='x'
+                            onClick={this.handleCloseNewQuizModal}
+                            negative
+                        />
+                        <Button
+                            content="Submit"
+                            labelPosition='right'
+                            icon='checkmark'
+                            onClick={this.handleSubmitNewQuiz}
+                            positive
+                        />
+                    </Modal.Actions>
+                </Modal>
                 
             </Segment>
         }

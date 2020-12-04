@@ -559,12 +559,12 @@ router.post('/getStudentStatus', AuthenticationFunctions.ensureAuthenticated, as
                             b=true;
                             results1[0].student_list.forEach(student => {
                                 if(student.charAt(0) !== '\''){
-                                    if(b) str1 += `WHERE studentId='${student}'`
+                                    if(b) str1 += `studentId='${student}'`
                                     else str1 += ` OR studentId='${student}'`
                                     b=false;
                                 }
                         });
-                            con.query(`SELECT DISTINCT studentId FROM quizQuestionAnswer ${str1} AND quizId=${quizId};`, (error, results3, fields) => {
+                            con.query(`SELECT DISTINCT studentId FROM quizQuestionAnswer WHERE (${str1}) AND quizId=${quizId} ;`, (error, results3, fields) => {
                                 if (error) {
                                     console.log(error.stack);
                                     con.end();
@@ -576,7 +576,7 @@ router.post('/getStudentStatus', AuthenticationFunctions.ensureAuthenticated, as
                                 }
                                 if(results3){
                                     console.log('results3', results3)
-                                    con.query(`SELECT DISTINCT studentId FROM quizGradeStudents ${str1} AND quizId=${quizId};`, (error, results4, fields) => {
+                                    con.query(`SELECT DISTINCT studentId FROM quizGradeStudents WHERE (${str1}) AND quizId=${quizId};`, (error, results4, fields) => {
                                         if (error) {
                                             console.log(error.stack);
                                             con.end();

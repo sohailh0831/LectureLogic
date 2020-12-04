@@ -1,6 +1,7 @@
 import React from "react";
-import { BrowserRouter, Route, Switch, Redirect } from "react-router-dom";
+import { BrowserRouter, Route, Switch, Redirect, } from "react-router-dom";
 import {Link} from 'react-router-dom';
+import {Header} from 'semantic-ui-react';
 import {GlobalStyles} from './config/global';
 
 import {
@@ -47,39 +48,24 @@ export default class Routes extends React.Component {
       }
   
     } /* End constructor */
+
     render() {
       const {activeItem} = this.state;
-      return(
-
+      var iconName;
+      if (localStorage.getItem('authenticated') === 'authenticated') {
+        iconName = 'user';
+      }
+      else {
+        iconName = 'align justify';
+      }
+      return( 
         <div>
           <GlobalStyles/>
               <div className="Routes">
                   {/* This is the menu bar */}
                   <BrowserRouter>
                         <Menu attached="top" size="massive">
-                          <Menu.Item
-                              icon='align justify'
-                              name={"Menu"}
-                              content="Menu"
-                              //content="Sidebar"
-                              //floated='right'
-                              onClick={this.handleSidebar}
-                              active={activeItem === 'Menu'}
-                          />
-                        </Menu>
-
-                          <Sidebar.Pusher>
-                            <Sidebar
-                              as={Menu}
-                              animation='overlay'
-                              icon='labeled'
-                              inverted
-                              onHide={() => this.setState({sidebarVisible: false})}
-                              vertical
-                              visible={this.state.sidebarVisible}
-                              width='thin'
-                            >
-                              <Menu.Item
+                            <Menu.Item
                                   as={Link}
                                   //replace={false}
                                   to={{pathname: '/', state: {}}} //where we can pass values into state (access as this.props.state.____)
@@ -87,25 +73,52 @@ export default class Routes extends React.Component {
                                   content="Dashboard"
                                   onClick={this.handlePageJump}
                                   active={activeItem === 'MainPage'}
-                              />
-                              <Menu.Item
+                               />
+                            <Menu.Item
                                   as={Link}
                                   //replace={false}
-                                  to={{pathname: '/register', state: {}}} //where we can pass values into state (access as this.props.state.____)
-                                  name={"Register"}
-                                  content="Register"
+                                  to={{pathname: '/confidence', state: {}}} //where we can pass values into state (access as this.props.state.____)
+                                  name={"Confidence"}
+                                  content="Confidence"
                                   onClick={this.handlePageJump}
-                                  active={activeItem === 'Register'}
+                                  active={activeItem === 'Confidence'}
                               />
-                              <Menu.Item
+                            <Menu.Item
                                   as={Link}
                                   //replace={false}
-                                  to={{pathname: '/login', state: {}}} //where we can pass values into state (access as this.props.state.____)
-                                  name={"Login"}
-                                  content="Login"
+                                  to={{pathname: '/grades', state: {}}} //where we can pass values into state (access as this.props.state.____)
+                                  name={"Grades"}
+                                  content="Grades"
                                   onClick={this.handlePageJump}
-                                  active={activeItem === 'Login'}
+                                  active={activeItem === 'Grades'}
                               />
+                            <Menu.Item
+                                  position='right'
+                                  icon={iconName}
+                                  //name={"Menu"}
+                                  //content="Menu"
+                                  //content="Sidebar"
+                                  //floated='right'
+                                  onClick={this.handleSidebar}
+                                  active={activeItem === 'Menu'}
+                              />
+                        </Menu>
+
+                        {/* This is the side menu bar */}
+
+                              
+                          <Sidebar.Pusher>
+                            <Sidebar
+                              as={Menu}
+                              animation='overlay'
+                              //icon='labeled'
+                              inverted
+                              onHide={() => this.setState({sidebarVisible: false})}
+                              vertical
+                              visible={this.state.sidebarVisible}
+                              width='thin'
+                              direction='right'
+                            >
                               <Menu.Item
                                   as={Link}
                                   //replace={false}
@@ -127,31 +140,29 @@ export default class Routes extends React.Component {
                               <Menu.Item
                                   as={Link}
                                   //replace={false}
-                                  to={{pathname: '/confidence', state: {}}} //where we can pass values into state (access as this.props.state.____)
-                                  name={"Confidence"}
-                                  content="Confidence"
+                                  to={{pathname: '/register', state: {}}} //where we can pass values into state (access as this.props.state.____)
+                                  name={"Register"}
+                                  content="Register"
                                   onClick={this.handlePageJump}
-                                  active={activeItem === 'Confidence'}
+                                  active={activeItem === 'Register'}
                               />
                               <Menu.Item
                                   as={Link}
                                   //replace={false}
-                                  to={{pathname: '/grades', state: {}}} //where we can pass values into state (access as this.props.state.____)
-                                  name={"Grades"}
-                                  content="Grades"
+                                  to={{pathname: '/login', state: {}}} //where we can pass values into state (access as this.props.state.____)
+                                  name={"Login"}
+                                  content="Login"
                                   onClick={this.handlePageJump}
-                                  active={activeItem === 'Grades'}
+                                  active={activeItem === 'Login'}
                               />
                               <Menu.Item
-                                //replace={false}
-                                visible={localStorage.getItem('authenticated') !== 'authenticated'}
-                                name={"Logout"}
-                                content="Logout"
-                                onClick={this.handleLogout}
-                                active={activeItem === 'Logout'}
+                                  //replace={false}
+                                  visible={localStorage.getItem('authenticated') !== 'authenticated'}
+                                  name={"Logout"}
+                                  content="Logout"
+                                  onClick={this.handleLogout}
+                                  active={activeItem === 'Logout'}
                               />
-
-                              
                             </Sidebar>
                           </Sidebar.Pusher>
 
@@ -185,6 +196,7 @@ export default class Routes extends React.Component {
                           
                   </BrowserRouter>
                   </div>
+                  
         </div>
       ) /* End return(...) */
     } /* End render(){...} */
